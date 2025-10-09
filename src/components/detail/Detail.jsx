@@ -4,11 +4,11 @@ function Detail() {
   return (
     <>
       <div className="container">
-        <div className="station-container">
-          <div className="next-station left"><p>〈 종각</p></div>
+          <div className='next-station-container' >
+            <div className="next-station left"><p>〈 종각</p></div>
+            <div className="next-station right"><p>서울역 〉</p></div>
+          </div>
           <div className="now-station"><span className='line-num' >➊</span><span>시청</span></div>
-          <div className="next-station right"><p>서울역 〉</p></div>
-        </div>
 
         <div>
           <div className="arrival-title">
@@ -20,10 +20,14 @@ function Detail() {
                 <p>연천 방면</p>
               </div>
               <div className="arrival-info">
-                <span>광운대</span>
-                <span>6분</span>
-                <span>청량리</span>
-                <span>12분</span>
+                <div className="arrival-info-1">
+                  <span>광운대</span>
+                  <span>6분</span>
+                </div>
+                <div className="arrival-info-1">
+                  <span>청량리</span>
+                  <span>12분</span>
+                </div>
               </div>
             </div>
             <div>
