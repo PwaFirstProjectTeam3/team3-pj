@@ -5,7 +5,7 @@ export const SERVICES = {
 const normalizeLine = (lineNum) => {
   const m = String(lineNum).match(/^([1-9])\s*호선$/);
   return m ? `0${m[1]}호선` : String(lineNum).trim();
-};
+}; 
 
 export const ENDPOINTS = {
   searchStnByLinePath: (

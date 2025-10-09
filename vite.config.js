@@ -12,7 +12,7 @@ export default defineConfig({
         target: 'http://openapi.seoul.go.kr:8088',
         changeOrigin: true,
         rewrite: p => p.replace(/^\/api/, ''),
-      },
+      }, 
     },
   },
 });

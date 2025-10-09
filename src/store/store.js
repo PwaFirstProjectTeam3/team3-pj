@@ -7,5 +7,5 @@ export const store = configureStore({
         lines: linesReducer,
     }
 });
-
+ 
 export default store;

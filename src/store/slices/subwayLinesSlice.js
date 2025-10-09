@@ -9,7 +9,7 @@ const initialList = (() => {
   } catch {
     return [];
   }
-})();
+})(); 
 
 const subwayLinesSlice = createSlice({
   name: "subwayLines",

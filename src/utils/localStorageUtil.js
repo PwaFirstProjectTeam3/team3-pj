@@ -6,7 +6,7 @@ export const localStorageUtil = {
   clearLocalStorage: () => {
     try { localStorage.clear(); } catch {}
   },
-
+ 
   // 전체/최근 조회 라인 1개분 캐시 (slice에서 쓰는 이름과 맞춤)
   setSeoulLines: (data) => {
     try { localStorage.setItem(SEOUL_LINES_KEY, JSON.stringify(data)); } catch {}

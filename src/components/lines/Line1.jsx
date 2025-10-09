@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSubwayLineStations } from "../../store/thunks/subwayLinesThunk.js";
 import { setSeoulLines } from "../../store/slices/subwayLinesSlice.js";
-import "./Line1.css";
+import "./Line1.css"; 
 
 function Line1() {
   const dispatch = useDispatch();

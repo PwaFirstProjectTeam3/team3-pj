@@ -21,7 +21,7 @@ export const fetchSubwayLineStations = createAsyncThunk(
         const path = ENDPOINTS.searchStnByLinePath(lineNum, {
           start, end,
           apiKey: "서울열린데이터광장api키값", 
-        });
+        }); 
         const { data } = await axios.get(path);
 
         const rows = Array.isArray(data?.SearchSTNBySubwayLineInfo?.row)
