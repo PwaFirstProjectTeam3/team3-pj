@@ -1,6 +1,8 @@
 import './Detail.css';
 
 function Detail() {
+
+
   return (
     <>
       <div className="container">
