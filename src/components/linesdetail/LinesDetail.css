@@ -13,7 +13,7 @@ html, body {
   height: 100dvh; /* 보이는 웹페이지 화면 너비 길이 지정 */ 
   display: flex; /* 카드 박스 전체를 중앙 정렬 */ 
   justify-content: center; 
-  align-items: center;
+  align-items: center; 
 } 
 
 *, *::before, *::after { box-sizing: border-box; }

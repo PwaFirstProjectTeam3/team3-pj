@@ -53,7 +53,7 @@ function LinesDetail( {lineNum} ) {
     return [...(first ? [first] : []), ...rest, ...(last ? [last] : [])];
   }, [list]);
 
-  // 3) 헤더 파싱
+  // 3) 헤더 파싱 
   const rawLineName = "1호선";
   const parseLineName = (name) => {
     const m = String(name).match(/(\d+)\s*호선/);
