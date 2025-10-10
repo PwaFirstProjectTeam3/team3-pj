@@ -35,10 +35,14 @@ function Detail() {
                 <p>인천,신창 방면</p>
               </div>
               <div className="arrival-info">
-                <span>신창</span>
-                <span>3분</span>
-                <span>서동탄</span>
-                <span>6분</span>
+                <div className="arrival-info-1">
+                  <span>신창</span>
+                  <span>3분</span>
+                </div>
+                <div className="arrival-info-1">
+                  <span>서동탄</span>
+                  <span>6분</span>
+                </div>
               </div>
             </div>
           </div>
@@ -79,7 +83,7 @@ function Detail() {
           <div className="station-info-container">
             <div className="station-info-addr">
               <p className='color-gray' >주소</p>
-              <p>서울 중구 서소문로 127</p>
+              <p>서울특별시 중구 세종대로 지하2(남대문로 5가)</p>
             </div>
             <div className="station-info-tel">
               <p className='color-gray' >전화번호</p>
