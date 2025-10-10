@@ -20,7 +20,7 @@ export const fetchSubwayLineStations = createAsyncThunk(
       while (true) {
         const path = ENDPOINTS.searchStnByLinePath(lineNum, {
           start, end,
-          apiKey: "서울열린데이터광장api키값", 
+          apiKey: "7858575352716f773534564f447358", 
         }); 
         const { data } = await axios.get(path);
 
