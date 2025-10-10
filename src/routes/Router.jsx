@@ -1,7 +1,8 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from "../App.jsx";
 import LineList from "../components/lines/LineList.jsx";
-import RouteSearch from "../components/searchs/RouteSearch.jsx";
+import SearchIndex from "../components/searchs/SearchIndex.jsx";
+// import RouteSearch from "../components/searchs/RouteSearch.jsx";
 import Evacuation from '../components/evacuations/EvacuationIndex.jsx';
 
 const router = createBrowserRouter([
@@ -14,7 +15,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/stations',
-        element: <RouteSearch />
+        element: <SearchIndex />
       },
       {
         path: '/evacuation',

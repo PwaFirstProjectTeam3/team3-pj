@@ -4,7 +4,7 @@ function LineList() {
 
   return (
     <>
-      <div className='container'>
+      <div className='linelist-container'>
         <div className='line-card'>
           <p>1호선</p>
           <div className='lavel line-1'></div>

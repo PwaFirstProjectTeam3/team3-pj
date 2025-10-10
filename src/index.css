@@ -8,6 +8,10 @@
   letter-spacing: 0.05em;
 }
 
+html {
+  overflow-y: scroll; /* 스크롤바가 항상 차지하도록 */
+}
+
 body {
   background-color: #F5F5F5;
 }

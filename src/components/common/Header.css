@@ -1,3 +1,14 @@
+.header-container {
+  position: relative;
+}
+
+.back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  cursor: pointer;
+}
+
 .header-img {
   margin: 13px auto 0;
   display: block;
