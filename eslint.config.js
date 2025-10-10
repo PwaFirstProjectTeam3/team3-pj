@@ -6,7 +6,11 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
   globalIgnores(['dist']),
+<<<<<<< HEAD
   { 
+=======
+  {
+>>>>>>> c24d33c (251010 header 추가)
     files: ['**/*.{js,jsx}'],
     extends: [
       js.configs.recommended,

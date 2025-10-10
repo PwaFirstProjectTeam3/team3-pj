@@ -1,1 +1,22 @@
+<<<<<<< HEAD
  
+=======
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Noto Sans KR", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  letter-spacing: 0.05em;
+}
+
+body {
+  background-color: #F5F5F5;
+}
+
+#root {
+  margin: 0 auto;
+  max-width: 1200px;
+}
+>>>>>>> c24d33c (251010 header 추가)
