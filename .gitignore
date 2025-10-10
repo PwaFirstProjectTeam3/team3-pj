@@ -10,16 +10,10 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
-<<<<<<< HEAD
-*.local 
-
-# Editor directories and files
-=======
 *.local
 
 # Editor directories and files
 .editorconfig
->>>>>>> c24d33c (251010 header 추가)
 .vscode/*
 !.vscode/extensions.json
 .idea

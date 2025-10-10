@@ -1,23 +1,4 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-<<<<<<< HEAD
-import Line1 from "../components/lines/Line1.jsx";
-import App from "../App.jsx";
-
-const router = createBrowserRouter([
-    {
-        element: <App />,
-        children: [
-            {
-                path: '/line1',
-                element: <Line1 />,
-            },
-        ]
-    }
-]); 
-
-function Router() {
-    return <RouterProvider router={router} />
-=======
 import App from "../App.jsx";
 import LineList from "../components/lines/LineList.jsx";
 import RouteSearch from "../components/searchs/RouteSearch.jsx";
@@ -57,7 +38,6 @@ const router = createBrowserRouter([
 
 function Router() {
   return <RouterProvider router={router} />
->>>>>>> c24d33c (251010 header 추가)
 }
 
 export default Router;
