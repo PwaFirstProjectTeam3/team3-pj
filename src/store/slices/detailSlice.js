@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { detailIndex } from "../thunks/detailThunk";
 
 const detailSlice = createSlice ({
   name: 'detailSlice',
@@ -10,6 +11,13 @@ const detailSlice = createSlice ({
       state.list = action.payload;
     }
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(detailIndex.fulfilled, (state,action) => {
+        console.log(action.payload, action.type);
+        
+      })
+  }
 });
 
 export const {
