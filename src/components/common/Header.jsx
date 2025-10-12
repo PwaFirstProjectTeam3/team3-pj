@@ -1,32 +1,21 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import './Header.css';
 
 function Header() {
-  const navigate = useNavigate();
   const location = useLocation();
 
-  const handleClick = () => {
-    navigate("/");
-  };
-  
   // nav를 숨기고 싶은 경로들 모음 배열
   const hiddenPatterns = [
 
-    /^\/details\/[^/]+$/
   ]
 
   const hideNav = hiddenPatterns.some(pattern => pattern.test(location.pathname));
 
   return(
     <>
-      <div className="header-container">
-        {
-          hideNav && (
-            <img className='back-btn' src="/btn/back-btn" alt="뒤로 돌아가는 버튼 아이콘" />
-          )
-        }
-        <img className='header-img' onClick={handleClick} src="/base/header.svg" alt="Metro인서울 헤더" />
-      </div>
+      <Link to='/'>
+        <img className='header-img' src="/base/header.svg" alt="Metro인서울 헤더" />
+      </Link>
       {
         !hideNav && (
         <nav>

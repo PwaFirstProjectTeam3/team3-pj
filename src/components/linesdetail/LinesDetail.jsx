@@ -23,7 +23,7 @@ function LinesDetail() {
   const dispatch = useDispatch();
   const { list } = useSelector((s) => s.lines);
 
-  // ★ 강력 정규화: 괄호/공백/중점/하이픈 제거 + '역' 접미사 제거
+  // 괄호/공백/중점/하이픈 제거 + '역' 접미사 제거
 const normalizeName = (s) => String(s ?? "")
   .normalize("NFKC")
   .replace(/\(.*?\)/g, "")
@@ -35,7 +35,7 @@ const normalizeName = (s) => String(s ?? "")
   .replace(/역$/u, "")
   .replace(/\s+/g, "");
 
-// 표시/UI용 (사람이 보기 좋게)
+// 표시/UI용 (configs에 있던 목록 이름 그대로)
   const displayName = (s) => String(s ?? "")
   .normalize("NFKC")
   .replace(/\(.*?\)\s*$/g, "")
