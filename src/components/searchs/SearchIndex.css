@@ -92,29 +92,25 @@
   color: #585858;
 }
 
+/* 환승노선도 */
 .card-route-container {
   margin-top: 15px;
+}
+
+.route-group {
   display: flex;
   gap: 30px;
 }
 
-.card-estimated-time-container {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-}
-
-.card-estimated-time-container:first-child {
-  margin-top: 2px;
-}
-
-.card-estimated-time {
+.estimated-time {
   font-size: 7px;
   font-weight: bold;
   color: #898989;
+  position: relative;
+  top: 2px;
 }
 
-.card-route-group {
+.route-map {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -133,13 +129,31 @@
   border: 2px solid #AD7A00;
 }
 
-.card-route-map .card-route-group:last-child .line {
-  display: none;
+.apply-station {
+  display: flex;
+  gap: 15px;
+  position: relative;
+  top: -2px;
 }
 
-.card-line-number {
+.line-number {
   width: 18px;
   height: 18px;
   background-color: #AD7A00;
   border-radius: 50%;
+  color: #fff;
+  text-align: center;
+  line-height: 18px;
+  font-size: 14px;
+}
+
+.station-name {
+  font-size: 14px;
+  font-weight: bold;
+  position: relative;
+  top: -2px;
+}
+
+.route-group:last-child .route-map .line {
+  display: none;
 }
