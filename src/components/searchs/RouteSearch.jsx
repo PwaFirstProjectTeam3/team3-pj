@@ -27,7 +27,7 @@ function RouteSearch() {
                 <span class="line-bottom"></span>
               </div>
               <p className="route-station-name">망원역</p>
-            </li>
+            </li> 
 
             <li className="route-item">
               <p className="route-arrival-time">09:53</p>

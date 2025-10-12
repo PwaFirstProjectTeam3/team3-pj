@@ -7,4 +7,4 @@ export default configureStore({
     routeSearch: routeSearchReducer,
     lines: linesReducer,
   }
-});
+}); 

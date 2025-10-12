@@ -4,7 +4,7 @@ import './LineList.css';
 function LineList() {
 
   return (
-    <>
+    <> 
       <div className='linelist-container'>
         <div className='line-card'>
           <Link to="/linesdetail/1" className="line-card-link"><p className="number">1</p><p className="text">호선</p></Link>
