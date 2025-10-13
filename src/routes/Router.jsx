@@ -3,6 +3,7 @@ import App from "../App.jsx";
 import LineList from "../components/lines/LineList.jsx";
 import SearchIndex from "../components/searchs/SearchIndex.jsx";
 import Evacuation from '../components/evacuations/EvacuationIndex.jsx';
+import LinesDetail from "../components/linesdetail/LinesDetail.jsx";
 import Detail from "../components/detail/Detail.jsx";
 
 const router = createBrowserRouter([
@@ -22,9 +23,13 @@ const router = createBrowserRouter([
         element: <Evacuation />
       },
       {
+        path: '/linesdetail/:num',
+        element: <LinesDetail />,
+      },
+      {
         path: '/details/:id',
         element: <Detail />
-      }
+      },
     ]
   }
 ])
