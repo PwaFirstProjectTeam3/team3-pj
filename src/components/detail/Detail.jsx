@@ -5,7 +5,7 @@ function Detail() {
 
   return (
     <>
-      <div className="container">
+      <div className="detail-container">
           <div className='next-station-container' >
             <div className="next-station left"><p>〈 종각</p></div>
             <div className="next-station right"><p>서울역 〉</p></div>
