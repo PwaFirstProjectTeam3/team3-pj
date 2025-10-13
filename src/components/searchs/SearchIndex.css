@@ -116,14 +116,14 @@
   align-items: center;
 }
 
-.circle {
+.search-circle {
   width: 15px;
   height: 15px;
   border-radius: 50%;
   border: 4px solid #AD7A00;
 }
 
-.line {
+.search-line {
   width: 0;
   height: 20px;
   border: 2px solid #AD7A00;
@@ -136,7 +136,7 @@
   top: -2px;
 }
 
-.line-number {
+.search-line-number {
   width: 18px;
   height: 18px;
   background-color: #AD7A00;
@@ -154,6 +154,6 @@
   top: -2px;
 }
 
-.route-group:last-child .route-map .line {
+.route-group:last-child .route-map .search-line {
   display: none;
 }

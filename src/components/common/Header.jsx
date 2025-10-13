@@ -11,18 +11,22 @@ function Header() {
   
   // nav를 숨기고 싶은 경로들 모음 배열
   const hiddenPatterns = [
-
+    /^\/linesdetail\/[^/]+$/,
     /^\/details\/[^/]+$/
   ]
 
   const hideNav = hiddenPatterns.some(pattern => pattern.test(location.pathname));
+
+  function redirectBack() {
+    navigate(-1);
+  }
 
   return(
     <>
       <div className="header-container">
         {
           hideNav && (
-            <img className='back-btn' src="/btn/back-btn" alt="뒤로 돌아가는 버튼 아이콘" />
+            <img className='back-btn' onClick={redirectBack} src="/btn/back-btn.svg" alt="뒤로 돌아가는 버튼 아이콘" />
           )
         }
         <img className='header-img' onClick={handleClick} src="/base/header.svg" alt="Metro인서울 헤더" />

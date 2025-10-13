@@ -25,44 +25,44 @@ function SearchIndex() {
               <div className='route-group'>
                 <p className='estimated-time'>09:53</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>6</p>
+                  <p className='search-line-number'>6</p>
                   <p className='station-name'>망원역</p>
                 </div>
               </div>
               <div className='route-group'>
                 <p className='estimated-time'>09:56</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>2</p>
+                  <p className='search-line-number'>2</p>
                   <p className='station-name'>합정역</p>
                 </div>
               </div>
               <div className='route-group'>
                 <p className='estimated-time'>10:07</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>1</p>
+                  <p className='search-line-number'>1</p>
                   <p className='station-name'>신도림역</p>
                 </div>
               </div>
               <div className='route-group'>
                 <p className='estimated-time'>10:09</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>1</p>
+                  <p className='search-line-number'>1</p>
                   <p className='station-name'>구로역</p>
                 </div>
               </div>
@@ -76,44 +76,44 @@ function SearchIndex() {
               <div className='route-group'>
                 <p className='estimated-time'>09:53</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>6</p>
+                  <p className='search-line-number'>6</p>
                   <p className='station-name'>망원역</p>
                 </div>
               </div>
               <div className='route-group'>
                 <p className='estimated-time'>09:56</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>2</p>
+                  <p className='search-line-number'>2</p>
                   <p className='station-name'>합정역</p>
                 </div>
               </div>
               <div className='route-group'>
                 <p className='estimated-time'>10:07</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>1</p>
+                  <p className='search-line-number'>1</p>
                   <p className='station-name'>신도림역</p>
                 </div>
               </div>
               <div className='route-group'>
                 <p className='estimated-time'>10:09</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>1</p>
+                  <p className='search-line-number'>1</p>
                   <p className='station-name'>구로역</p>
                 </div>
               </div>
@@ -127,44 +127,44 @@ function SearchIndex() {
               <div className='route-group'>
                 <p className='estimated-time'>09:53</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>6</p>
+                  <p className='search-line-number'>6</p>
                   <p className='station-name'>망원역</p>
                 </div>
               </div>
               <div className='route-group'>
                 <p className='estimated-time'>09:56</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>2</p>
+                  <p className='search-line-number'>2</p>
                   <p className='station-name'>합정역</p>
                 </div>
               </div>
               <div className='route-group'>
                 <p className='estimated-time'>10:07</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>1</p>
+                  <p className='search-line-number'>1</p>
                   <p className='station-name'>신도림역</p>
                 </div>
               </div>
               <div className='route-group'>
                 <p className='estimated-time'>10:09</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>1</p>
+                  <p className='search-line-number'>1</p>
                   <p className='station-name'>구로역</p>
                 </div>
               </div>
@@ -178,44 +178,44 @@ function SearchIndex() {
               <div className='route-group'>
                 <p className='estimated-time'>09:53</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>6</p>
+                  <p className='search-line-number'>6</p>
                   <p className='station-name'>망원역</p>
                 </div>
               </div>
               <div className='route-group'>
                 <p className='estimated-time'>09:56</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>2</p>
+                  <p className='search-line-number'>2</p>
                   <p className='station-name'>합정역</p>
                 </div>
               </div>
               <div className='route-group'>
                 <p className='estimated-time'>10:07</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>1</p>
+                  <p className='search-line-number'>1</p>
                   <p className='station-name'>신도림역</p>
                 </div>
               </div>
               <div className='route-group'>
                 <p className='estimated-time'>10:09</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>1</p>
+                  <p className='search-line-number'>1</p>
                   <p className='station-name'>구로역</p>
                 </div>
               </div>
@@ -229,44 +229,44 @@ function SearchIndex() {
               <div className='route-group'>
                 <p className='estimated-time'>09:53</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>6</p>
+                  <p className='search-line-number'>6</p>
                   <p className='station-name'>망원역</p>
                 </div>
               </div>
               <div className='route-group'>
                 <p className='estimated-time'>09:56</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>2</p>
+                  <p className='search-line-number'>2</p>
                   <p className='station-name'>합정역</p>
                 </div>
               </div>
               <div className='route-group'>
                 <p className='estimated-time'>10:07</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>1</p>
+                  <p className='search-line-number'>1</p>
                   <p className='station-name'>신도림역</p>
                 </div>
               </div>
               <div className='route-group'>
                 <p className='estimated-time'>10:09</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>1</p>
+                  <p className='search-line-number'>1</p>
                   <p className='station-name'>구로역</p>
                 </div>
               </div>
@@ -280,44 +280,44 @@ function SearchIndex() {
               <div className='route-group'>
                 <p className='estimated-time'>09:53</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>6</p>
+                  <p className='search-line-number'>6</p>
                   <p className='station-name'>망원역</p>
                 </div>
               </div>
               <div className='route-group'>
                 <p className='estimated-time'>09:56</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>2</p>
+                  <p className='search-line-number'>2</p>
                   <p className='station-name'>합정역</p>
                 </div>
               </div>
               <div className='route-group'>
                 <p className='estimated-time'>10:07</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>1</p>
+                  <p className='search-line-number'>1</p>
                   <p className='station-name'>신도림역</p>
                 </div>
               </div>
               <div className='route-group'>
                 <p className='estimated-time'>10:09</p>
                 <div className='route-map'>
-                  <div className='circle'></div>
-                  <div className='line'></div>
+                  <div className='search-circle'></div>
+                  <div className='search-line'></div>
                 </div>
                 <div className='apply-station'>
-                  <p className='line-number'>1</p>
+                  <p className='search-line-number'>1</p>
                   <p className='station-name'>구로역</p>
                 </div>
               </div>
