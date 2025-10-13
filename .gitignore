@@ -11,6 +11,10 @@ node_modules
 dist
 dist-ssr
 *.local
+<<<<<<< HEAD
+=======
+src/assets/back-btn.svg
+>>>>>>> 587b97f5bd6e18976864ea17fc6ca07183e82da1
 
 # Editor directories and files
 .editorconfig
@@ -22,4 +26,8 @@ dist-ssr
 *.ntvs*
 *.njsproj
 *.sln
+<<<<<<< HEAD
 *.sw?
+=======
+*.sw?
+>>>>>>> 587b97f5bd6e18976864ea17fc6ca07183e82da1
