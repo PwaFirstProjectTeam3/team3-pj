@@ -1,0 +1,62 @@
+.linelist-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 25px 25px;
+}
+
+.line-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 90px;
+  border: 1px solid #000;
+  background-color: #fff;
+}
+
+.line-card p {
+  padding-left: 25px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.lavel {
+  width: 80px;
+  height: 100%;
+}
+
+.line-1 {
+  background-color: #163191;
+}
+
+.line-2 {
+  background-color: #35A344;
+}
+
+.line-3 {
+  background-color: #E88200;
+}
+
+.line-4 {
+  background-color: #39A6E1;
+}
+
+.line-5 {
+  background-color: #9C4A9D;
+}
+
+.line-6 {
+  background-color: #AD7A00;
+}
+
+.line-7 {
+  background-color: #637531;
+}
+
+.line-8 {
+  background-color: #DF4C71;
+}
+
+.line-9 {
+  background-color: #BA9300;
+}
