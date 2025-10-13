@@ -1,9 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
 /* width > height > position > display 순서로 정렬 */ 
 
-.web-container { 
+.linesdetail-web-container { 
   width: 100%; /* 보이는 웹페이지 화면 너비 길이 지정*/ 
   height: 100dvh; /* 보이는 웹페이지 화면 너비 길이 지정 */ 
   display: flex; /* 카드 박스 전체를 중앙 정렬 */ 
@@ -14,7 +13,7 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-.container { 
+.linesdetail-container { 
   container-type: inline-size; /* cqw 단위 사용(컨테이너 크기 기반 반응형 너비 단위, 컨테이너 기준 (width)) */ 
   width: clamp(402px, 90vw, 1200px); /* clamp(최소값, 선호값, 최대값) */ 
   display: grid;
@@ -23,7 +22,7 @@
 
 } 
 
-.box { 
+.linesdetail-box { 
   background-color: #f5f5f5; 
   width: 100%; /* 좌우 여백을 부모에 준다 → 자식은 100%만 쓰면 됨 */ 
   padding-inline: 25px; /* 안전장치: 혹시라도 넘치는 픽셀은 잘라냄 */ 
@@ -36,14 +35,14 @@
   overflow: hidden; 
 } 
     
-.backbutton {
+.linesdetail-backbutton {
   position: absolute;
   top: 22px;
   left: 22px;
   cursor: pointer;
 } 
 
-.header {
+.linesdetail-header {
   position: absolute;
   top: 14px;
   margin: 0 auto;
@@ -51,7 +50,7 @@
   cursor: pointer;
 }
 
-.textbox { 
+.linesdetail-textbox { 
   container-type: inline-size; /* cqw 단위 사용(컨테이너 크기 기반 반응형 너비 단위, 컨테이너 기준 (width)) */ 
   width: clamp(402px, 90vw, 1200px); /* clamp(최소값, 선호값, 최대값), 반응형 웹/앱 위해 사용 */ 
   display: flex; 
@@ -59,8 +58,7 @@
   align-items: center;
 } 
   
-.line-number {
- font-family: "Roboto", sans-serif; 
+.linesdetail-line-number {
  font-size: 30px; 
  font-weight: 700; 
  font-style: normal; 
@@ -70,8 +68,8 @@
  letter-spacing: 1.5px; 
  text-align: center; 
 } 
- 
-.line-text { 
+
+.linesdetail-line-text { 
   font-family: "Noto Sans KR", sans-serif; 
   font-size: 30px; 
   font-weight: 700; 
@@ -83,7 +81,7 @@
   text-align: center; 
 }
    
-.frame { 
+.linesdetail-frame { 
   width: 100%; 
   height: inherit; 
   max-width: 1148px; 
@@ -93,7 +91,7 @@
   overflow: hidden; 
 } 
   
-.linebox, .hideboxes { /* 컨테이너 쿼리 기준은 이 박스로 */ 
+.linesdetail-linebox, .linesdetail-hideboxes { /* 컨테이너 쿼리 기준은 이 박스로 */ 
   container-type: inline-size; 
   width: clamp(344px, calc(90vw - 50px), 1148px); 
   max-width: 100%; /* 보강용 */
@@ -110,7 +108,7 @@
   border: 1px solid #000; 
 } 
    
-.line { 
+.linesdetail-line { 
   width: 5px; /* 너비 고정 */ 
   height: clamp( 614px, calc(554.1849866px + 14.87935657cqw), /* = 554.1849866px + 0.1487935657 * 100cqw */ 725px ); 
   position: relative; 
@@ -120,7 +118,7 @@
   border: none;
 } 
 
-.hideboxesverticallength { 
+.linesdetail-hideboxesverticallength { 
   width: 100%;
   height: clamp( 614px, calc(554.1849866px + 14.87935657cqw), /* 동일 공식 */ 725px ); 
   position: relative;
@@ -130,7 +128,7 @@
   z-index: 7; 
 }
 
-.hidebox1 {
+.linesdetail-hidebox1 {
   width: 20px;
   height: 35px;
   position: absolute;
@@ -142,7 +140,7 @@
 
 } 
 
-.hidebox2 {
+.linesdetail-hidebox2 {
   width: 20px;
   height: 35px;
   position: absolute;
@@ -153,7 +151,7 @@
   z-index: 20 ;                     
 }
 
-.stationscontainer {
+.linesdetail-stationscontainer {
   width: clamp(344px, calc(90vw - 50px), 1148px);
   max-width: 100%;
   position: absolute;          
@@ -168,7 +166,7 @@
   z-index: 20;  
 }
   
-.stations {
+.linesdetail-stations {
   font-family: "Noto Sans KR", sans-serif;
   font-size: 14px;
   font-weight: 700;
@@ -184,7 +182,7 @@
   -webkit-overflow-scrolling: touch;
 }
 
-.station {
+.linesdetail-station {
   width: 114px;
   height: 36px;
   position: static;
@@ -197,12 +195,12 @@
   z-index: 20;
 }
   
-.hide-scrollbar { 
+.linesdetail-hide-scrollbar { 
   -ms-overflow-style: none; /* IE, Edge */ 
   scrollbar-width: none; /* Firefox */ 
 }
 
-.hide-scrollbar::-webkit-scrollbar 
+.linesdetail-hide-scrollbar::-webkit-scrollbar 
 { 
   display: none; /* Chrome, Safari */ 
 }
