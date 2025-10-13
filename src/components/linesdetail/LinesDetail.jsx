@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { ROUTE_DISPLAY } from "../../configs/line-list-configs/subwayLinesRouteConfig.js";
 import "./LinesDetail.css";
-import backBtn from "../../../public/btn/back-btn.svg";
-import headerImg from "../../../public/base/header.svg";
 import LINE_COLORS from "../../configs/lineColors.js";
 
 function LinesDetail() {
@@ -19,7 +17,7 @@ function LinesDetail() {
   const stations = useMemo(() => {
     const names = Array.isArray(ROUTE_DISPLAY[lineNum]) ? ROUTE_DISPLAY[lineNum] : [];
     return names.map((nm, i) => ({ name: String(nm), idx: i })); // 렌더용 단순 구조
-  }, [lineNum]);
+  }, [lineNum]); 
 
   // 헤더 표기
   const parseLineName = (name) => {
@@ -119,28 +117,11 @@ function LinesDetail() {
     recalcRef.current && recalcRef.current();
   }, [stations.length]);
 
-  const navigate = useNavigate();
 
   return (
     <div className="linesdetail-web-container" style={{ "--line-color": lineColor }}>
       <div className="linesdetail-container">
         <div className="linesdetail-box">
-          <div className="linesdetail-backbutton">
-            <img
-              className="linesdetail-back"
-              src={backBtn}
-              alt="back-button"
-              onClick={() => navigate("/")}
-            />
-          </div>
-          <div className="linesdetail-header">
-            <img
-              className="linesdetail-MetroinSeoul"
-              src={headerImg}
-              alt="Metro인서울"
-              onClick={() => navigate("/")}
-            />
-          </div>
 
           <div className="linesdetail-textbox">
             <div className="linesdetail-line-number">

@@ -35,21 +35,6 @@
   overflow: hidden; 
 } 
     
-.linesdetail-backbutton {
-  position: absolute;
-  top: 22px;
-  left: 22px;
-  cursor: pointer;
-} 
-
-.linesdetail-header {
-  position: absolute;
-  top: 14px;
-  margin: 0 auto;
-  z-index: 20;
-  cursor: pointer;
-}
-
 .linesdetail-textbox { 
   container-type: inline-size; /* cqw 단위 사용(컨테이너 크기 기반 반응형 너비 단위, 컨테이너 기준 (width)) */ 
   width: clamp(402px, 90vw, 1200px); /* clamp(최소값, 선호값, 최대값), 반응형 웹/앱 위해 사용 */ 
