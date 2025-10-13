@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { ROUTE_DISPLAY } from "../../configs/lines-route.js"; // 네 데이터 경로에 맞춰 수정
+import { ROUTE_DISPLAY } from "../../configs/line-list-configs/subwayLinesRouteConfig.js";
 
 const initialList = Array.isArray(ROUTE_DISPLAY) ? ROUTE_DISPLAY : [];
 
