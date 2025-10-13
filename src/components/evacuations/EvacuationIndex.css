@@ -1,0 +1,67 @@
+.evacuation-container {
+  padding: 0 25px 25px;
+}
+
+/* 검색창 */
+.evacuation-search-box {
+  width: 100%;
+  margin-bottom: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.line-search label, .station-search label {
+  width: 63px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.evacuation-input {
+  flex: 1;
+  height: 38px;
+  padding: 0 10px;
+  background-color: #fff;
+  outline: none;
+  border: 1px solid #000;
+}
+
+.line-search, .station-search {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.line-search select {
+  /* 브라우저 기본 화살표 제어 */
+  appearance: none;       /* Chrome, Safari */
+  -webkit-appearance: none; /* iOS, Safari */
+  -moz-appearance: none;  /* Firefox */
+
+  background-image: url('/btn/dropbox-btn.svg');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+.station-search input {
+  background-image: url('/btn/search-btn.svg');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+/* 대피도 이미지 */
+.img-card {
+  position: relative;
+}
+
+.evacuation-img {
+  border: 1px solid #000;
+  width: 100%;
+}
+
+.expansion-icon {
+  width: 15px;
+  position: absolute;
+  top: 10px;
+  right: 10px
+}

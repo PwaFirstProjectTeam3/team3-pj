@@ -1,0 +1,29 @@
+import { createSlice } from "@reduxjs/toolkit";
+import { ROUTE_DISPLAY } from "../../configs/lines-route.js"; // 네 데이터 경로에 맞춰 수정
+
+const initialList = Array.isArray(ROUTE_DISPLAY) ? ROUTE_DISPLAY : [];
+
+const subwayLinesSlice = createSlice({
+  name: "subwayLines",
+  initialState: {
+    list: initialList,
+  },
+  reducers: {
+    // 필요 시 정적 데이터 덮어쓰기용으로만 유지
+    setSeoulLines: (state, action) => {
+      if (Array.isArray(action.payload)) {
+        state.list = action.payload;
+      }
+    },
+    clearSeoulLines: (state) => {
+      state.list = [];
+    },
+  },
+  // 더 이상 API 안 쓰므로 extraReducers 없음
+});
+
+export const { setSeoulLines, clearSeoulLines } = subwayLinesSlice.actions;
+export default subwayLinesSlice.reducer;
+
+// 셀렉터
+export const selectSeoulLines = (s) => s.lines.list;
