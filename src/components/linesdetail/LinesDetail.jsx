@@ -35,14 +35,6 @@ const normalizeName = (s) => String(s ?? "")
   .replace(/역$/u, "")
   .replace(/\s+/g, "");
 
-// 표시/UI용 (configs에 있던 목록 이름 그대로)
-  const displayName = (s) => String(s ?? "")
-  .normalize("NFKC")
-  .replace(/\(.*?\)\s*$/g, "")
-  .replace(/[\u200B-\u200D\uFEFF]/g, "")
-  .trim()
-  .replace(/\s*역\s*$/u, "");
-
   const { num } = useParams();            // "1" | "2" | ...
   const lineNum = `${num}호선`;           // "1호선" 형태로 변환
 
@@ -54,10 +46,7 @@ const normalizeName = (s) => String(s ?? "")
   const lineColor = useMemo(
     () => LINE_COLORS[lineNum] ?? "#acacacff",
     [lineNum]
-  );
-
-  // "1호선" → { num:"1", label:"호선" }
-  const m = String(lineNum).match(/(\d+)\s*호선/);
+  ); 
 
   // 2) 정렬/앵커 계산
 // 2) 정렬/앵커 계산
