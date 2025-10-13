@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ROUTE_DISPLAY } from "../../configs/lines-route.js";
+import { ROUTE_DISPLAY } from "../../configs/line-list-configs/subwayLinesRouteConfig.js";
 import "./LinesDetail.css";
 import backBtn from "../../../public/btn/back-btn.svg";
 import headerImg from "../../../public/base/header.svg";
-import LINE_COLORS from "./lineColors.js";
+import LINE_COLORS from "../../configs/lineColors.js";
 
 function LinesDetail() {
   const { num } = useParams();                // "1" | "2" | ...
