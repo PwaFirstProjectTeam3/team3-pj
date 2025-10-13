@@ -7,7 +7,6 @@
   height: 100dvh; /* 보이는 웹페이지 화면 너비 길이 지정 */ 
   display: flex; /* 카드 박스 전체를 중앙 정렬 */ 
   justify-content: center; 
-  align-items: center; 
   --line-color: #acacacff;
 } 
 
@@ -16,10 +15,10 @@
 .linesdetail-container { 
   container-type: inline-size; /* cqw 단위 사용(컨테이너 크기 기반 반응형 너비 단위, 컨테이너 기준 (width)) */ 
   width: clamp(402px, 90vw, 1200px); /* clamp(최소값, 선호값, 최대값) */ 
+  position: absolute;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(402px, 1fr)); 
-  place-items: center; 
-
+  place-items: center;
 } 
 
 .linesdetail-box { 
@@ -49,7 +48,7 @@
  font-style: normal; 
  position: relative; 
  display: inline-block; 
- top: 183px; 
+ top: 10px; 
  letter-spacing: 1.5px; 
  text-align: center; 
 } 
@@ -61,7 +60,7 @@
   font-style: normal; 
   position: relative; 
   display: inline-block; 
-  top: 183px;
+  top: 10px;
   letter-spacing: 1.5px;
   text-align: center; 
 }
@@ -83,6 +82,7 @@
   margin-inline: auto;     /* 가로 중앙 */
   height: auto;
   position: absolute;
+  top: 35px;
   left: 0;                 /* 둘 다 줘야 함 */
   right: 0;
   bottom: 25px;
