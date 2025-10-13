@@ -2,8 +2,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from "../App.jsx";
 import LineList from "../components/lines/LineList.jsx";
 import SearchIndex from "../components/searchs/SearchIndex.jsx";
-// import RouteSearch from "../components/searchs/RouteSearch.jsx";
 import Evacuation from '../components/evacuations/EvacuationIndex.jsx';
+import Detail from "../components/detail/Detail.jsx";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +20,10 @@ const router = createBrowserRouter([
       {
         path: '/evacuation',
         element: <Evacuation />
+      },
+      {
+        path: '/details/:id',
+        element: <Detail />
       }
     ]
   }
