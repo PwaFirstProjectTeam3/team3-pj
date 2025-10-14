@@ -19,7 +19,7 @@
   grid-template-columns: 1fr 1fr;
 }
 
-.next-station {
+.prev-station, .next-station {
   padding: 0 13px;
   border: 1px solid rgba(22, 49, 145, 1);
   background-color: rgba(22, 49, 145, 1);

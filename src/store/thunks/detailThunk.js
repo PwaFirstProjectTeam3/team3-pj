@@ -1,29 +1,39 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import detailAxiosConfig from "../../configs/apiConfigs/detailAxiosConfig";
+import axiosConfig from "../../configs/apiConfigs/axiosConfig";
 import axios from "axios";
 
-const detailIndex = createAsyncThunk(
-  'detailSlice/detailIndex',
+const arrivalInfoIndex = createAsyncThunk(
+  'detailSlice/arrivalInfoIndex',
   async () => {
-    // const state = thunkAPI.getState();
+    const url = `${axiosConfig.DETAIL_BASE_URL}/${axiosConfig.KEY}/${axiosConfig.TYPE}/${axiosConfig.ARRIVAL_INFO_SERVICE}/${axiosConfig.START_INDEX}/${axiosConfig.END_INDEX}`;
 
-    const url = detailAxiosConfig.BASE_URL;
+    const response = await axios.get(url);
+    return response.realtimeArrivalList;
+  }
+);
 
-    const config = {
-      params: {
-        key: detailAxiosConfig.KEY,
-        type: detailAxiosConfig.TYPE,
-        service: detailAxiosConfig.SERVICE,
-        startIndex: detailAxiosConfig.START_INDEX,
-        endIndex: detailAxiosConfig.END_INDEX
-      }
-    }
+const convenienceIndex = createAsyncThunk(
+  'detailSlice/convenienceIndex',
+  async () => {
+    const url = `${axiosConfig.SEARCH_BASE_URL}/${axiosConfig.KEY}/${axiosConfig.TYPE}/${axiosConfig.CONVENIENCE_SERVICE}/${axiosConfig.START_INDEX}/${axiosConfig.END_INDEX}`;
 
-    const response = await axios.get(url, config);
-    return response.data.response.body;
+    const response = await axios.get(url);
+    return response.TbSeoulmetroStConve.row;
+  }
+);
+
+const stationInfoIndex = createAsyncThunk(
+  'detailSlice/stationInfoIndex',
+  async () => {
+    const url = `${axiosConfig.SEARCH_BASE_URL}/${axiosConfig.KEY}/${axiosConfig.TYPE}/${axiosConfig.STATION_INFO_SERVICE}/${axiosConfig.START_INDEX}/${axiosConfig.END_INDEX}`;
+
+    const response = await axios.get(url);
+    return response.data.StationAdresTelno.row;
   }
 );
 
 export {
-  detailIndex
+  arrivalInfoIndex,
+  convenienceIndex,
+  stationInfoIndex,
 };
