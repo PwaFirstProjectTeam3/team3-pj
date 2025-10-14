@@ -27,7 +27,7 @@ const lineMap = {
 function EvacuationIndex() {
   const dispatch = useDispatch();
 
-  const searchList = useSelector(state => state.search.list);
+  const evacuationSearchList = useSelector(state => state.search.list);
 
   const [selectedLine, setSelectedLine] = useState(""); // 선택된 호선
   const [inputValue, setInputValue] = useState(""); // input에 입력된 역 명
@@ -101,7 +101,7 @@ function EvacuationIndex() {
   function searchStation() {
     setIsSearched(true);
     
-    setMatchedItem(searchList.find(
+    setMatchedItem(evacuationSearchList.find(
       (item) => item.STTN === `${inputValue}역`
     ))
     if(matchedItem !== null) {
