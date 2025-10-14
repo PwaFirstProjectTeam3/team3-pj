@@ -27,7 +27,7 @@ const lineMap = {
 function EvacuationIndex() {
   const dispatch = useDispatch();
 
-  const evacuationSearchList = useSelector(state => state.search.list);
+  const evacuationSearchList = useSelector(state => state.evacuation.list);
 
   const [selectedLine, setSelectedLine] = useState(""); // 선택된 호선
   const [inputValue, setInputValue] = useState(""); // input에 입력된 역 명
@@ -63,6 +63,8 @@ function EvacuationIndex() {
       setMatchedItem([]);
       setIsLoaded(false);
       setIsSearched(false);
+
+      setIsOpen(true);
     }
   }
 
