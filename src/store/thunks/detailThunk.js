@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import detailAxiosConfig from "../../configs/detailAxiosConfig.js";
+import detailAxiosConfig from "../../configs/apiConfigs/detailAxiosConfig";
 import axios from "axios";
 
 const detailIndex = createAsyncThunk(

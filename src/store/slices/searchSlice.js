@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 
-const routeSearchSlice = createSlice({
-  name: 'routeSearchSlice',
+const searchSlice = createSlice({
+  name: 'searchSlice',
   initialState: {
 
   },
@@ -14,4 +14,4 @@ const routeSearchSlice = createSlice({
   }
 })
 
-export default routeSearchSlice.reducer;
+export default searchSlice.reducer;

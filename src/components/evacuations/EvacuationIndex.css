@@ -37,17 +37,79 @@
   appearance: none;       /* Chrome, Safari */
   -webkit-appearance: none; /* iOS, Safari */
   -moz-appearance: none;  /* Firefox */
-
+  
   background-image: url('/btn/dropbox-btn.svg');
   background-repeat: no-repeat;
   background-position: right 10px center;
+  cursor: pointer;
+}
+
+.station-search {
+  position: relative;
 }
 
 .station-search input {
+  cursor: text;
+}
+
+.station-search-btn {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  background-color: #fff;
   background-image: url('/btn/search-btn.svg');
   background-repeat: no-repeat;
-  background-position: right 10px center;
+  background-position: center;
+  border: none;
+  cursor: pointer;
 }
+
+
+/* 툴팁 */
+.tooltip {
+  position: absolute;
+  top: 37px;
+  left: 63px;
+  background-color: #333;
+  color: #fff;
+  border: 1px solid #000;
+  border-radius: 5px;
+  font-size: 12px;
+  padding: 4px 8px;
+  margin-top: 4px;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+
+/* 드랍다운 */
+.dropdown {
+  position: absolute;
+  top: 37px;
+  left: 63px;
+  right: 0px;
+  border: 1px solid #ccc;
+  border-top: 1px solid #000;
+  background-color: #fff;
+  max-height: 200px; /* 항목 많을 때 스크롤 가능 */
+  overflow-y: auto; /* 스크롤이 필요할 경우에만 스크롤 생성 */
+  z-index: 1;
+  list-style: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.dropdown li {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.dropdown li:hover {
+  background-color: #f0f0f0;
+}
+
 
 /* 대피도 이미지 */
 .img-card {
@@ -55,8 +117,9 @@
 }
 
 .evacuation-img {
-  border: 1px solid #000;
+  max-width: 1150px;
   width: 100%;
+  border: 1px solid #000;
 }
 
 .expansion-icon {
