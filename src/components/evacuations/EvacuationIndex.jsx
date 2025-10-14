@@ -11,6 +11,7 @@ import { line9List } from '../../configs/line-list-configs/line9ListConfig.js';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { searchIndex } from '../../store/thunks/searchIndexThunk.js';
+import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 
 const lineMap = {
   "line-1": line1List,
@@ -189,11 +190,23 @@ function EvacuationIndex() {
             )}
           </div>
         </div>
-        <div className={`img-card ${isLoaded ? '' : 'border img-card-center'}`}>
+        <div className={`img-card ${isLoaded ? '' : 'img-card-center'}`}>
           {!isSearched ? (
             <p className='evacuation-img-placeholder'>역을 선택할 시 이곳에 대피도가 표시됩니다.</p>
           ) : matchedItem?.IMG_LINK ? (
-            <img className={`evacuation-img ${isLoaded ? 'border' : ''}`} src={matchedItem.IMG_LINK} alt={`${inputValue} 대피도`} onLoad={handleImageLoad} />
+            <TransformWrapper>
+              <TransformComponent
+                initialScale={1}
+                minScale={1}
+                maxScale={4}
+                wheel={{ step: 0.1 }}
+                pinch={{ step: 5 }}
+                doubleClick={{ disabled: false }}
+                pan={{ velocity: true }}
+              >
+                <img className='evacuation-img' src={matchedItem.IMG_LINK} alt={`${inputValue} 대피도`} onLoad={handleImageLoad} />
+              </TransformComponent>
+            </TransformWrapper>
           ) : (
             <p className='evacuation-img-placeholder'>해당 역의 대피도가 없습니다.</p>
           )}

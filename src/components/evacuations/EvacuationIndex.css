@@ -116,6 +116,8 @@
   position: relative;
   max-width: 1150px;
   width: 100%;
+  background-color: #fff;
+  border: 1px solid #000;
 }
 
 .img-card-center {
@@ -132,19 +134,16 @@
   text-align: center;
 }
 
-.border {
-  background-color: #fff;
-  border: 1px solid #000;
-}
-
 .evacuation-img {
   max-width: 1150px;
   width: 100%;
+  user-select: none;
+  touch-action: none;
 }
 
 .expansion-icon {
   width: 15px;
   position: absolute;
-  top: 10px;
-  right: 10px
+  top: 15px;
+  right: 15px
 }
