@@ -6,20 +6,11 @@ import axios from "axios";
 const searchIndex = createAsyncThunk(
   'searchSlice/searchIndex',
   async () => {
-    const url = axiosConfig.SEARCH_BASE_URL;
-    const config = {
-      params: {
-        KEY: axiosConfig.KEY,
-        TYPE: axiosConfig.TYPE,
-        SERVICE: axiosConfig.SEARCH_SERVICE,
-        START_INDEX: axiosConfig.START_INDEX,
-        END_INDEX: axiosConfig.END_INDEX,
-      }
-    }
+    const url = `${axiosConfig.SEARCH_BASE_URL}/${axiosConfig.KEY}/${axiosConfig.TYPE}/${axiosConfig.SEARCH_SERVICE}/${axiosConfig.START_INDEX}/${axiosConfig.END_INDEX}`;
 
-    const response = await axios.get(url, config);
+    const response = await axios.get(url);
 
-    return response.data.response.body;
+    return response.data.SmrtEmergerncyGuideImg.row;
   }
 );
 

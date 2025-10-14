@@ -1,6 +1,6 @@
 import './EvacuationIndex.css';
 import { line1List } from '../../configs/line-list-configs/line1ListConfig.js';
-import { line2List } from '../../configs/line-list-configs/line2ListConfig.js';
+import { line2List } from '../../configs/line-list-configs/detail-line-list-configs/line2ListConfig.js';
 import { line3List } from '../../configs/line-list-configs/line3ListConfig.js';
 import { line4List } from '../../configs/line-list-configs/line4ListConfig.js';
 import { line5List } from '../../configs/line-list-configs/line5ListConfig.js';
@@ -9,6 +9,8 @@ import { line7List } from '../../configs/line-list-configs/line7ListConfig.js';
 import { line8List } from '../../configs/line-list-configs/line8ListConfig.js';
 import { line9List } from '../../configs/line-list-configs/line9ListConfig.js';
 import { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { searchIndex } from '../../store/thunks/searchIndexThunk.js';
 
 const lineMap = {
   "line-1": line1List,
@@ -23,10 +25,17 @@ const lineMap = {
 }
 
 function EvacuationIndex() {
-  const [selectedLine, setSelectedLine] = useState("");
-  const [inputValue, setInputValue] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
-  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const dispatch = useDispatch();
+
+  const searchList = useSelector(state => state.search.list);
+
+  const [selectedLine, setSelectedLine] = useState(""); // 선택된 호선
+  const [inputValue, setInputValue] = useState(""); // input에 입력된 역 명
+  const [isOpen, setIsOpen] = useState(false); // 역 검색창을 눌렀는지 안 눌렀는지
+  const [tooltipVisible, setTooltipVisible] = useState(false); // 툴팁 출력
+  const [isLoaded, setIsLoaded] = useState(false); // 이미지가 로드 됐는지 안 됐는지
+  const [matchedItem, setMatchedItem] = useState([]); // inputValue와 api의 역 명이 같은 아이템 하나
+  const [isSearched, setIsSearched] = useState(false); // 검색 여부 저장
 
   const containerRef = useRef(null);
 
@@ -34,14 +43,27 @@ function EvacuationIndex() {
   function handleLineChange(e) {
     const line = e.target.value;
     setSelectedLine(line);
-    setInputValue(""); // 호선 변경 시 input 초기화
     setIsOpen(false);
+    // 호선 변경 시 state 초기화
+    setInputValue("");
+    setMatchedItem([]);
+    setIsLoaded(false);
   }
 
   // 역 이름 입력 시 상태 갱신
   function handleInputChange(e) {
     setInputValue(e.target.value);
     openDropdown();
+  }
+
+  // input 클릭 시 state 초기화
+  function handleInputValueChange() {
+    if(inputValue !== '') {
+      setInputValue('');
+      setMatchedItem([]);
+      setIsLoaded(false);
+      setIsSearched(false);
+    }
   }
 
   // 드롭다운 열기 (onFocus, 입력 시)
@@ -69,24 +91,50 @@ function EvacuationIndex() {
     }
   }
   
+  // 선택된 호선의 역 배열 가져오기
+  const stations = lineMap[selectedLine] || [];
+  
+  // 입력값 기반 실시간 필터링
+  const filteredStations = inputValue.trim() === "" ? stations : stations.filter((station) => station.includes(inputValue));
+  
+  // 선택된 역 이름과 같은 항목 찾기
+  function searchStation() {
+    setIsSearched(true);
+    
+    setMatchedItem(searchList.find(
+      (item) => item.STTN === `${inputValue}역`
+    ))
+    if(matchedItem !== null) {
+      setIsLoaded(false);
+    }
+  }
+
+  // onKeyDown 이벤트
+  const handleEnter = (e) => {
+    if (e.key === 'Enter') {
+      searchStation();
+    }
+  }
+
   // 외부 클릭 시 드롭다운 닫기
   useEffect(() => {
+    dispatch(searchIndex());
+
     function handleClickOutside(event) {
       if (containerRef.current && !containerRef.current.contains(event.target)) {
         closeDropdown();
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // 선택된 호선의 역 배열 가져오기
-  const stations = lineMap[selectedLine] || [];
-
-  // 입력값 기반 실시간 필터링
-  const filteredStations =
-    inputValue.trim() === "" ? stations : stations.filter((station) => station.includes(inputValue));
-
+  // 이미지가 로딩됐을 때 state 상태 변경
+  const handleImageLoad = () => {
+    setIsLoaded(true);
+  };
+  
   return (
     <>
       <div className="evacuation-container">
@@ -113,13 +161,15 @@ function EvacuationIndex() {
               onChange={handleInputChange}
               onFocus={handleInputFocus}
               onBlur={() => setTooltipVisible(false)}
+              onKeyDown={handleEnter}
+              onClick={handleInputValueChange}
               autoComplete="off" // 브라우저 기본 자동완성 기능 끄기
               type="text" id='station-search-input' placeholder='조회하실 역 명을 입력해주세요.'
             />
-            <button className='station-search-btn'></button>
+            <button className='station-search-btn' onClick={searchStation}></button>
             {tooltipVisible && (
               <div className="tooltip">
-                <p>호선을 선택해주세요</p>
+                <p>호선을 선택해주세요.</p>
               </div>
             )}
             {isOpen && filteredStations.length > 0 && (
@@ -137,8 +187,14 @@ function EvacuationIndex() {
             )}
           </div>
         </div>
-        <div className="img-card">
-          <img className='evacuation-img' src="/ex/evacuation-img.jpg" alt="대피도 이미지" />
+        <div className={`img-card ${isLoaded ? '' : 'border img-card-center'}`}>
+          {!isSearched ? (
+            <p className='evacuation-img-placeholder'>역을 선택할 시 이곳에 대피도가 표시됩니다.</p>
+          ) : matchedItem?.IMG_LINK ? (
+            <img className={`evacuation-img ${isLoaded ? 'border' : ''}`} src={matchedItem.IMG_LINK} alt={`${inputValue} 대피도`} onLoad={handleImageLoad} />
+          ) : (
+            <p className='evacuation-img-placeholder'>해당 역의 대피도가 없습니다.</p>
+          )}
           <img className='expansion-icon' src="/icons/expansion-icon.svg" alt="확대, 축소 및 드래그가 가능하다는 것을 나타내는 아이콘" />
         </div>
       </div>

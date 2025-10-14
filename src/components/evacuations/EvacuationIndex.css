@@ -114,12 +114,32 @@
 /* 대피도 이미지 */
 .img-card {
   position: relative;
+  max-width: 1150px;
+  width: 100%;
+}
+
+.img-card-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  aspect-ratio: 9 / 8;
+}
+
+.evacuation-img-placeholder {
+  margin: 15px;
+  font-size: 28px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.border {
+  background-color: #fff;
+  border: 1px solid #000;
 }
 
 .evacuation-img {
   max-width: 1150px;
   width: 100%;
-  border: 1px solid #000;
 }
 
 .expansion-icon {
