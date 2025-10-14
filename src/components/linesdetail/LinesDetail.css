@@ -7,7 +7,7 @@
   height: 100dvh; /* 보이는 웹페이지 화면 너비 길이 지정 */ 
   display: flex; /* 카드 박스 전체를 중앙 정렬 */ 
   justify-content: center; 
-  --line-color: #acacacff;
+  --line-color: #000000;
 } 
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -92,7 +92,7 @@
   background-color: #fff; 
   border: 1px solid #000; 
 } 
-   
+
 .linesdetail-line { 
   width: 5px; /* 너비 고정 */ 
   height: clamp( 614px, calc(554.1849866px + 14.87935657cqw), /* = 554.1849866px + 0.1487935657 * 100cqw */ 725px ); 
@@ -114,7 +114,7 @@
 }
 
 .linesdetail-hidebox1 {
-  width: 20px;
+  width: 200px;
   height: 35px;
   position: absolute;
   top: 0;
@@ -122,7 +122,6 @@
   place-self: center;
   background: #ffffff;
   z-index: 20;
-
 } 
 
 .linesdetail-hidebox2 {
@@ -180,6 +179,10 @@
   z-index: 20;
 }
   
+.linesdetail-long-name {
+  width: 146px;
+}
+
 .linesdetail-hide-scrollbar { 
   -ms-overflow-style: none; /* IE, Edge */ 
   scrollbar-width: none; /* Firefox */ 
@@ -190,3 +193,98 @@
   display: none; /* Chrome, Safari */ 
 }
  
+
+/* 실시간 지하철 위치 */
+.linesdetail-subwaysbox {
+  container-type: inline-size; 
+  width: clamp(344px, calc(90vw - 50px), 1148px); 
+  max-width: 100%; /* 보강용 */
+  margin-inline: auto;     /* 가로 중앙 */
+  height: auto;
+  position: absolute;
+  top: 35px;
+  left: 0;                 /* 둘 다 줘야 함 */
+  right: 0;
+  bottom: 25px;
+  display: flex; 
+  justify-content: center;
+  align-items: center;
+}
+
+.linesdetail-subways {
+  width: 100%;
+  height: clamp(
+    614px,
+    calc(554.1849866px + 14.87935657cqw),
+    725px);
+  margin: 0 auto;
+  position: relative;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.linesdetail-subway-line-up {
+  width: 30px;
+  height: 100%;
+  position: relative;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #f8f8f8;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.linesdetail-subway-up-image {
+  width: 30px;
+  display: block;
+}
+
+.linesdetail-subway-up-image2 {
+  width: 30px;
+  display: block;
+}
+
+.linesdetail-subway-line-down {
+  width: 30px;
+  height: 100%;
+  position: relative;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #f8f8f8;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.linesdetail-subway-down-image {
+  width: 30px;
+  display: block;
+}
+
+.linesdetail-subway-up-p {
+  container-type: inline-size; 
+  width: 140px;
+  position: relative;
+  left: -230px;
+  text-align: center;
+  padding: 20px 0;
+  background-color: #f5f5f5;
+  visibility: hidden;
+  z-index: 50;
+}
+
+.linesdetail-subway-up-image:hover ~ .linesdetail-subway-up-p {
+  display: inline-block;
+  opacity: 1;
+  visibility: visible;
+  z-index: 50;
+}
+
+.linesdetail-subway-down-image2 {
+  width: 30px;
+  display: block;
+}

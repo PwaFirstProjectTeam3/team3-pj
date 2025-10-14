@@ -19,7 +19,21 @@ const subwayLinesSlice = createSlice({
       state.list = [];
     },
   },
-  // 더 이상 API 안 쓰므로 extraReducers 없음
+  extraReducers: builder => {
+    builder
+    .addMatcher(
+        action => action.type.endsWith('/pending'),
+        state => {
+          console.log('처리중입니다.');
+        }
+      )
+      .addMatcher(
+        action => action.type.startsWith('subwayLinesSlice/') && action.type.endsWith('/rejected'),
+        (state, action) => {
+          console.error('에러에러.', action.error);
+        }
+      ); 
+  }
 });
 
 export const { setSeoulLines, clearSeoulLines } = subwayLinesSlice.actions;

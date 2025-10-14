@@ -1,27 +1,30 @@
 import { useEffect, useMemo, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ROUTE_DISPLAY } from "../../configs/line-list-configs/subwayLinesRouteConfig.js";
-import "./LinesDetail.css";
 import LINE_COLORS from "../../configs/lineColors.js";
+import "./LinesDetail.css";
+
 
 function LinesDetail() {
-  const { num } = useParams();                // "1" | "2" | ...
-  const lineNum = `${num}호선`;               // "1호선"
+  const { num } = useParams();
+  const lineNum = `${num}호선`;
 
   const lineColor = useMemo(
-    () => LINE_COLORS[lineNum] ?? "#acacacff",
+    () => LINE_COLORS[lineNum] ?? "#000000",
     [lineNum]
   );
 
-  // ✅ ROUTE_DISPLAY만 사용
+  // ROUTE_DISPLAY만 사용
   const stations = useMemo(() => {
-    const names = Array.isArray(ROUTE_DISPLAY[lineNum]) ? ROUTE_DISPLAY[lineNum] : [];
+    const names = 
+    Array.isArray(ROUTE_DISPLAY[lineNum]) ? ROUTE_DISPLAY[lineNum] : [];
     return names.map((nm, i) => ({ name: String(nm), idx: i })); // 렌더용 단순 구조
   }, [lineNum]); 
 
   // 헤더 표기
   const parseLineName = (name) => {
-    const m = String(name).match(/(\d+)\s*호선/);
+    const m = 
+    String(name).match(/(\d+)\s*호선/);
     return m ? { num: m[1], label: "호선" } : { num: String(name), label: "" };
   };
   const { num: lineNumOnly, label: lineLabel } = parseLineName(lineNum);
@@ -118,48 +121,112 @@ function LinesDetail() {
   }, [stations.length]);
 
 
+  useEffect(() => {
+    const imageUp = document.querySelector('.linesdetail-subway-up-image')
+    const imageDown =document.querySelector('.linesdetail-subway-down-image')
+    const stations = document.querySelectorAll('.linesdetail-station')
+    if (!imageUp || !imageDown || stations.length === 0) return;
+
+    let pos = 0;
+    let reversePos = 0;
+    const onClicked = () => {
+      pos += 10;
+      reversePos -= 10;
+      imageUp.style.transform = `translateY(${pos}px)`;
+      imageDown.style.transform =`translateY(${reversePos}px)`;
+    };
+  
+    stations.forEach((el) => (el.addEventListener('click', onClicked)));
+    return () => stations.forEach((el) => el.removeEventListener('click', onClicked));
+  },[]);
+
+  const navigate = useNavigate();
+
+  const goToDetails = () => {
+    navigate('/details/1')
+  }
+
+  useEffect(() => {
+
+    const popPop = document.querySelector('.linesdetail-subway-up-p')
+    const image1 = document.querySelector('.linesdetail-subway-up-image')
+
+    image1.addEventListener("mouseenter", () => {
+      popPop.style.visibility ='visible';
+    });
+
+    image1.addEventListener('mouseleave', () => {
+    popPop.style.visibility = 'hidden';
+  });
+
+  })
+
   return (
     <div className="linesdetail-web-container" style={{ "--line-color": lineColor }}>
       <div className="linesdetail-container">
+          {/* 바깥 박스틀 */}
         <div className="linesdetail-box">
-
+          {/* n호선 표시 */}
           <div className="linesdetail-textbox">
             <div className="linesdetail-line-number">
               {lineNumOnly}{lineLabel}
             </div>
           </div>
-
           <div className="linesdetail-frame">
+            {/* 안쪽 박스틀 */}
             <div className="linesdetail-linebox">
+              {/* 노선  */}
               <div className="linesdetail-line" ref={lineRef} />
             </div>
-
+            {/* 실시간 지하철 위치 */}
+            <div className="linesdetail-subwaysbox">
+              <div className="linesdetail-subways">
+                <div className="linesdetail-subway-line-up">
+                  <img className="linesdetail-subway-up-image" src="../../icon-subway.png" alt="지하철 이미지 상행선"></img>
+                  <img className="linesdetail-subway-up-image2" src="../../icon-subway.png" alt="지하철 이미지 상행선2" />
+                </div>
+                <p className="linesdetail-subway-up-p">1호선 상행 일반</p>
+                <div className="linesdetail-subway-line-down">
+                  <img className="linesdetail-subway-down-image" src="../../icon-subway.png" alt="지하철 이미지 하행선" />
+                  <img className="linesdetail-subway-down-image2" src="../../icon-subway.png" alt="지하철 이미지 하행선2" />
+                </div>
+              </div>
+            </div>
+            {/* 제일 위/아래 스크롤 시 튀어나온 선 없애주는 박스들 */}
             <div className="linesdetail-hideboxes">
               <div className="linesdetail-hideboxesverticallength">
                 <div className="linesdetail-hidebox1" ref={hideTopRef} />
                 <div className="linesdetail-hidebox2" ref={hideBotRef} />
-
+            {/* 역들(8자 이상 ... 붙임) */}
                 <div className="linesdetail-stationscontainer">
                   <div className="linesdetail-stations linesdetail-hide-scrollbar" ref={listRef}>
-                    {stations.map(({ name }, idx) => (
+                    {stations.map(({ name }, idx) => {
+                    // 글자 수가 8자 이상인지 판단
+                     const lengthForCheck = name.replace(/-/g, "").length;
+
+                    // 표시용: '-'는 그대로 둠
+                    const isLongName = lengthForCheck >= 8;
+                    const displayName = isLongName ? name.slice(0, 6) + "..." : name;
+
+                    return (
                       <div
-                        className={`linesdetail-station linesdetail-station${idx + 1}`}
+                        className="linesdetail-station"
                         key={`${lineNum}-${name}-${idx}`}
                         ref={idx === 0 ? stRef : null}
+                        onDoubleClick={goToDetails}
                       >
-                        {name}
+                        {displayName}
                       </div>
-                    ))}
-                    {stations.length === 0 && (
-                      <div className="linesdetail-empty">해당 호선 데이터가 없습니다.</div>
-                    )}
-                  </div>
+                    );
+                  })}
+                  {stations.length === 0 && (
+                    <div className="linesdetail-empty">해당 호선 데이터가 없습니다.</div>
+                  )}
                 </div>
-
+                </div>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>
