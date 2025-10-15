@@ -11,8 +11,8 @@ function Header() {
   
   // nav를 숨기고 싶은 경로들 모음 배열
   const hiddenPatterns = [
-    /^\/linesdetail\/[^/]+$/,
-    /^\/details\/[^/]+$/
+    /^\/linesdetail\/([^/]+)$/,
+    /^\/linesdetail\/([^/]+)\/details\/([^/]+)$/,
   ]
 
   const hideNav = hiddenPatterns.some(pattern => pattern.test(location.pathname));
