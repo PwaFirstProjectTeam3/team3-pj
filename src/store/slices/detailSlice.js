@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { arrivalInfoIndex, stationInfoIndex } from "../thunks/detailThunk";
+import { arrivalInfoIndex, convenienceInfoIndex, stationInfoIndex } from "../thunks/detailThunk";
 import { line1List } from "../../configs/line-list-configs/line1ListConfig.js";
 import { line2List } from "../../configs/line-list-configs/detail-line-list-configs/line2ListConfig.js";
 import { line3List } from "../../configs/line-list-configs/line3ListConfig.js";
@@ -27,14 +27,22 @@ const detailSlice = createSlice ({
   initialState: {
     lines: lineLists,
     selectedStation: null,
+    arrivalInfo: [],
+    convenienceInfo: [],
     stationInfo: [],
   },
   reducers: {
+    setSelectedStation(state, action) {
+      state.selectedStation = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(arrivalInfoIndex.fulfilled, (state, action) => {
-        console.log(action.payload, action.type);
+        state.arrivalInfo = action.payload.realtimeArrivalList;
+      })
+      .addCase(convenienceInfoIndex.fulfilled, (state, action) => {
+        state.convenienceInfo = action.payload;
       })
       .addCase(stationInfoIndex.fulfilled, (state, action) => {
         state.stationInfo = action.payload;
@@ -56,7 +64,6 @@ const detailSlice = createSlice ({
 
 export const {
   setSelectedStation,
-  setstationInfo
 } = detailSlice.actions;
 
 export default detailSlice.reducer;
