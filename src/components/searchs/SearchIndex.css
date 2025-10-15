@@ -67,6 +67,7 @@
   width: 35px;
   height: 35px;
   background-color: #fff;
+  border: 1px solid #000;
   border-radius: 7px;
   display: flex;
   align-items: center;
