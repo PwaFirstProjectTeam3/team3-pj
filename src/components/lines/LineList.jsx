@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import './LineList.css';
-import { ROUTE_DISPLAY } from '../../configs/line-list-configs/subwayLinesRouteConfig';
-import LINE_COLORS from '../../configs/lineColors';
+import { ROUTE_DISPLAY } from '../../configs/line-list-configs/subwayLinesRouteConfig.js';
+import LINE_COLORS from '../../configs/lineColors.js';
 
 function LineList() {
   const navigate = useNavigate();
