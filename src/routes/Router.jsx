@@ -27,7 +27,7 @@ const router = createBrowserRouter([
         element: <LinesDetail />,
       },
       {
-        path: '/details/:station',
+        path: '/linesdetail/:num/details/:station',
         element: <Detail />
       },
     ]
