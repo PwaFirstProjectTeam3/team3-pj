@@ -15,12 +15,54 @@
   display: block;
   background-color: #fff;
   border: 1px solid #000;
+    outline: none;
 }
 
 .arrival-station {
   border-top: none;
 }
 
+
+/* 드랍다운 */
+.search-departure-station, .search-arrival-station {
+  position: relative; /* 드롭다운 기준 */
+}
+
+.search-dropdown {
+  position: absolute;
+  top: 100%;  /* input 바로 아래 */
+  left: 0;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-top: 1px solid #000;
+  background-color: #fff;
+  max-height: 200px; /* 항목 많을 때 스크롤 가능 */
+  overflow-y: auto; /* 스크롤이 필요할 경우에만 스크롤 생성 */
+  z-index: 2;
+  list-style: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.search-dropdown li {
+  padding: 5px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.search-dropdown li:hover {
+  background-color: #f0f0f0;
+}
+
+.dropdown-station-line {
+  margin-left: 10px;
+  color: #585858;
+  font-size: 12px;
+}
+
+
+/* 위아래 교체, 리셋, 길찾기버튼 */
 .reverse-btn {
   width: 35px;
   height: 35px;
@@ -33,6 +75,7 @@
   top: 27px;
   right: 27px;
   cursor: pointer;
+  z-index: 1;
 }
 
 .search-btns {
@@ -59,6 +102,7 @@
 .search-btn {
   color: #1F007C;
 }
+
 
 /* 카드 */
 .search-card-container {
