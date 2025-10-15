@@ -20,7 +20,7 @@ const searchStations = Object.keys(stationMap);
 function SearchIndex() {
   const departureRef = useRef(null);
   const arrivalRef = useRef(null);
-  
+
   const [departureInputValue, setDepartureInputValue] = useState(""); // 출발지 input에 입력된 역 명
   const [arrivalInputValue, setArrivalInputValue] = useState(""); // 도착지 input에 입력된 역 명
   const [activeField, setActiveField] = useState(null); // 출발지, 도착지 검색창 중 어떤 것이 활성화 되어있는지
@@ -34,7 +34,7 @@ function SearchIndex() {
   function searchCloseDropdown() {
     setActiveField(null);
   }
-  
+
   // 드롭다운 아이템 클릭 시 input에 값 넣고 드랍다운 닫기
   function handleSearchSelectStation(station) {
     if (activeField === "departure") setDepartureInputValue(station);
@@ -45,7 +45,7 @@ function SearchIndex() {
   // input 클릭 시 입력값 초기화 및 드랍박스 오픈
   // 출발지
   function handleDepartureInputValuereset() {
-    if(departureInputValue) {
+    if (departureInputValue) {
       setDepartureInputValue('');
 
       searchOpenDropdown("departure");
@@ -53,7 +53,7 @@ function SearchIndex() {
   }
   // 도착지
   function handleArrivalInputValuereset() {
-    if(arrivalInputValue) {
+    if (arrivalInputValue) {
       setArrivalInputValue('');
 
       searchOpenDropdown("arrival");
@@ -66,12 +66,20 @@ function SearchIndex() {
     else setArrivalInputValue(e.target.value);
     searchOpenDropdown(field);
   }
-  
+
   // 입력값 기반 실시간 필터링
   const searchFilteredStations = activeField === "departure" ? searchStations.filter(station => station.includes(departureInputValue)) : activeField === "arrival" ? searchStations.filter(station => station.includes(arrivalInputValue)) : [];
 
   // 외부 클릭 시 드롭다운 닫기
   useEffect(() => {
+
+    // station_nm 이 서울 .contains
+    // const arr = stationData.DATA.filter(obj=>{
+    //   console.log(obj.station_nm);
+    //   return obj.station_nm.includes('서울');
+    // })
+    // console.log(arr);
+
     function handleSearchClickOutside(event) {
       if (departureRef.current && !departureRef.current.contains(event.target) && arrivalRef.current && !arrivalRef.current.contains(event.target)) {
         searchCloseDropdown();
@@ -83,7 +91,7 @@ function SearchIndex() {
 
   // 리버스 버튼
   function reverseBtn() {
-    if(departureInputValue && arrivalInputValue) {
+    if (departureInputValue && arrivalInputValue) {
       setDepartureInputValue(arrivalInputValue);
       setArrivalInputValue(departureInputValue);
     }
@@ -91,7 +99,7 @@ function SearchIndex() {
 
   // 리셋 버튼
   function resetBtn() {
-    if(departureInputValue || arrivalInputValue) {
+    if (departureInputValue || arrivalInputValue) {
       setDepartureInputValue("");
       setArrivalInputValue("");
     }
@@ -115,15 +123,15 @@ function SearchIndex() {
                 {searchFilteredStations.map(station => (
                   stationMap[station].length > 1
                     ? stationMap[station].map(line => (
-                        <li
-                          key={`${station}-${line}`}
-                          onClick={() => handleSearchSelectStation(station)}
-                          onMouseDown={e => e.preventDefault()}
-                        >
-                          <span>{station}</span>
-                          <span className="dropdown-station-line">{line}</span>
-                        </li>
-                      ))
+                      <li
+                        key={`${station}-${line}`}
+                        onClick={() => handleSearchSelectStation(station)}
+                        onMouseDown={e => e.preventDefault()}
+                      >
+                        <span>{station}</span>
+                        <span className="dropdown-station-line">{line}</span>
+                      </li>
+                    ))
                     : (
                       <li
                         key={station}
@@ -154,15 +162,15 @@ function SearchIndex() {
                 {searchFilteredStations.map(station => (
                   stationMap[station].length > 1
                     ? stationMap[station].map(line => (
-                        <li
-                          key={`${station}-${line}`}
-                          onClick={() => handleSearchSelectStation(station)}
-                          onMouseDown={e => e.preventDefault()}
-                        >
-                          <span>{station}</span>
-                          <span className="dropdown-station-line">{line}</span>
-                        </li>
-                      ))
+                      <li
+                        key={`${station}-${line}`}
+                        onClick={() => handleSearchSelectStation(station)}
+                        onMouseDown={e => e.preventDefault()}
+                      >
+                        <span>{station}</span>
+                        <span className="dropdown-station-line">{line}</span>
+                      </li>
+                    ))
                     : (
                       <li
                         key={station}
@@ -173,8 +181,8 @@ function SearchIndex() {
                       </li>
                     )
                 ))}
-            </ul>
-          )}
+              </ul>
+            )}
           </div>
           <div className='search-btns'>
             <button className='reset-btn' onClick={resetBtn} type="button">리셋</button>
