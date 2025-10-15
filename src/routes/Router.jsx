@@ -23,11 +23,11 @@ const router = createBrowserRouter([
         element: <Evacuation />
       },
       {
-        path: '/linesdetail/:num',
+        path: '/linesdetail/:lineId',
         element: <LinesDetail />,
       },
       {
-        path: '/linesdetail/:num/details/:station',
+        path: '/linesdetail/:lineId/details/:station',
         element: <Detail />
       },
     ]

@@ -6,8 +6,8 @@ import "./LinesDetail.css";
 
 
 function LinesDetail() {
-  const { num } = useParams();
-  const lineNum = `${num}호선`;
+  const { lineId } = useParams();
+  const lineNum = lineId.replace('line', '') + '호선';
 
   const lineColor = useMemo(
     () => LINE_COLORS[lineNum] ?? "#000000",
@@ -142,8 +142,8 @@ function LinesDetail() {
 
   const navigate = useNavigate();
 
-  const goToDetails = () => {
-    navigate('/details/1')
+  const goToDetails = (station) => {
+    navigate(`/linesdetail/${lineId}/details/${station}`)
   }
 
   useEffect(() => {
@@ -213,7 +213,7 @@ function LinesDetail() {
                         className="linesdetail-station"
                         key={`${lineNum}-${name}-${idx}`}
                         ref={idx === 0 ? stRef : null}
-                        onDoubleClick={goToDetails}
+                        onClick={() => goToDetails(displayName)}
                       >
                         {displayName}
                       </div>

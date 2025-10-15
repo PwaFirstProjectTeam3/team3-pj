@@ -1,46 +1,29 @@
+import { useNavigate } from 'react-router-dom';
 import './LineList.css';
+import { ROUTE_DISPLAY } from '../../configs/line-list-configs/subwayLinesRouteConfig';
+import LINE_COLORS from '../../configs/lineColors';
 
 function LineList() {
+  const navigate = useNavigate();
 
+  const handleClick = (lineName) => {
+    const lineId = "line" + lineName.replace("호선", "");
+    navigate(`/linesdetail/${lineId}`)
+  }
+  
   return (
     <>
       <div className='linelist-container'>
-        <div className='line-card'>
-          <p>1호선</p>
-          <div className='lavel line-1'></div>
-        </div>
-        <div className='line-card'>
-          <p>2호선</p>
-          <div className='lavel line-2'></div>
-        </div>
-        <div className='line-card'>
-          <p>3호선</p>
-          <div className='lavel line-3'></div>
-        </div>
-        <div className='line-card'>
-          <p>4호선</p>
-          <div className='lavel line-4'></div>
-        </div>
-        <div className='line-card'>
-          <p>5호선</p>
-          <div className='lavel line-5'></div>
-        </div>
-        <div className='line-card'>
-          <p>6호선</p>
-          <div className='lavel line-6'></div>
-        </div>
-        <div className='line-card'>
-          <p>7호선</p>
-          <div className='lavel line-7'></div>
-        </div>
-        <div className='line-card'>
-          <p>8호선</p>
-          <div className='lavel line-8'></div>
-        </div>
-        <div className='line-card'>
-          <p>9호선</p>
-          <div className='lavel line-9'></div>
-        </div>
+        {
+          Object.keys(ROUTE_DISPLAY).map((lineName) => {
+            return (
+              <div key={lineName} className='line-card' onClick={() => handleClick(lineName)}>
+                <p>{lineName}</p>
+                <div className='lavel' style={{ '--line-color': LINE_COLORS[lineName] }}></div>
+              </div>
+            )
+          })
+        }
       </div>
     </>
   )
