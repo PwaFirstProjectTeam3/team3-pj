@@ -10,7 +10,7 @@ import { line8List } from '../../configs/line-list-configs/line8ListConfig.js';
 import { line9List } from '../../configs/line-list-configs/line9ListConfig.js';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { searchIndex } from '../../store/thunks/searchIndexThunk.js';
+import { evacuationIndex } from '../../store/thunks/evacuationThunk.js';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 
 const lineMap = {
@@ -50,12 +50,9 @@ function EvacuationIndex() {
     setMatchedItem([]);
     setIsLoaded(false);
   }
-
-  // 역 이름 입력 시 상태 갱신
-  function handleInputChange(e) {
-    setInputValue(e.target.value);
-    openDropdown();
-  }
+  
+  // 선택된 호선의 역 배열 가져오기
+  const stations = lineMap[selectedLine] || [];
 
   // input 클릭 시 state 초기화
   function handleInputValueChange() {
@@ -64,7 +61,16 @@ function EvacuationIndex() {
       setMatchedItem([]);
       setIsLoaded(false);
       setIsSearched(false);
-
+      
+      setIsOpen(true);
+    }
+  }
+  
+  // 툴팁 출력
+  function handleInputFocus() {
+    if (!stations.length) {
+      setTooltipVisible(true);
+    } else {
       setIsOpen(true);
     }
   }
@@ -85,17 +91,11 @@ function EvacuationIndex() {
     closeDropdown();
   }
 
-  // 툴팁 출력
-  function handleInputFocus() {
-    if (!stations.length) {
-      setTooltipVisible(true);
-    } else {
-      setIsOpen(true);
-    }
+  // 역 이름 입력 시 상태 갱신
+  function handleInputChange(e) {
+    setInputValue(e.target.value);
+    openDropdown();
   }
-  
-  // 선택된 호선의 역 배열 가져오기
-  const stations = lineMap[selectedLine] || [];
   
   // 입력값 기반 실시간 필터링
   const filteredStations = inputValue.trim() === "" ? stations : stations.filter((station) => station.includes(inputValue));
@@ -111,17 +111,22 @@ function EvacuationIndex() {
       setIsLoaded(false);
     }
   }
-
+  
   // onKeyDown 이벤트
   const handleEnter = (e) => {
     if (e.key === 'Enter') {
       searchStation();
     }
   }
+  
+  // 이미지가 로딩됐을 때 state 상태 변경
+  const handleImageLoad = () => {
+    setIsLoaded(true);
+  };
 
-  // 외부 클릭 시 드롭다운 닫기
+  // API 호출 & 외부 클릭 시 드롭다운 닫기
   useEffect(() => {
-    dispatch(searchIndex());
+    dispatch(evacuationIndex());
 
     function handleClickOutside(event) {
       if (containerRef.current && !containerRef.current.contains(event.target)) {
@@ -132,11 +137,6 @@ function EvacuationIndex() {
 
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  // 이미지가 로딩됐을 때 state 상태 변경
-  const handleImageLoad = () => {
-    setIsLoaded(true);
-  };
   
   return (
     <>

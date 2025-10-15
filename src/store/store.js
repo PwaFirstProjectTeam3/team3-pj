@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import evacuationReducer from './slices/searchSlice.js';
+import evacuationReducer from './slices/evacuationSlice.js';
 import searchIndexReducer from './slices/searchIndexSlice.js';
 import detailReducer from './slices/detailSlice.js';
 import subwayLinesReducer from "./slices/subwayLinesSlice";
