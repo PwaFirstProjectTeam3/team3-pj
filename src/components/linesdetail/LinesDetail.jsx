@@ -28,6 +28,7 @@ function LinesDetail() {
     return matchResult ? { num: matchResult[1], label: "호선" } : { num: String(name), label: "" };
   };
   const { num: lineNumOnly, label: lineLabel } = readLineTag(lineNum);
+
   // Refs
   const stationRef = useRef(null);
   const listRef = useRef(null);
@@ -35,6 +36,7 @@ function LinesDetail() {
   const hideTopRef = useRef(null);
   const hideBottomRef = useRef(null);
   const recalculateRef = useRef(() => {});
+
   // 드래그/리사이즈 등 보정 로직
   useEffect(() => {
     const station1 = stationRef.current;
@@ -43,6 +45,7 @@ function LinesDetail() {
     const hideboxTop = hideTopRef.current;
     const hideboxBottom = hideBottomRef.current;
     if (!station1 || !stations || !line || !hideboxTop || !hideboxBottom) return;
+
     // 드래그 스크롤
     station1.setAttribute("draggable", "true");
     let lastY = null;
@@ -53,10 +56,12 @@ function LinesDetail() {
       lastY = e.clientY;
       recalculateRef.current();
     };
+
     const onEnd = () => { lastY = null; };
     station1.addEventListener("dragstart", onStart);
     station1.addEventListener("drag", onDrag);
     station1.addEventListener("dragend", onEnd);
+
     // hidebox 높이 계산
     const MIN = 35, BLEED = 0;
     const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -77,6 +82,7 @@ function LinesDetail() {
         hideboxBottom.style.height = `${botH}px`;
       });
     };
+
     recalculateRef.current = recalc;
     const onScroll = () => recalc();
     stations.addEventListener("scroll", onScroll);
@@ -101,26 +107,30 @@ function LinesDetail() {
       mo.disconnect();
     };
   }, [stations.length]); // ← 역 개수 변동에 반응
+
   useEffect(() => {
     recalculateRef.current && recalculateRef.current();
   }, [stations.length]);
+
   useEffect(() => {
     const imageUp = document.querySelector('.linesdetail-subway-up-image')
     const imageDown =document.querySelector('.linesdetail-subway-down-image')
     const stations = document.querySelectorAll('.linesdetail-station')
     if (!imageUp || !imageDown || stations.length === 0) return;
-    let pos = 0;
-    let reversePos = 0;
+    let position = 0;
+    let reversePosition = 0;
     const onClicked = () => {
-      pos += 10;
-      reversePos -= 10;
-      imageUp.style.transform = `translateY(${pos}px)`;
-      imageDown.style.transform =`translateY(${reversePos}px)`;
+      position += 10;
+      reversePosition -= 10;
+      imageUp.style.transform = `translateY(${position}px)`;
+      imageDown.style.transform =`translateY(${reversePosition}px)`;
     };
     stations.forEach((el) => (el.addEventListener('click', onClicked)));
     return () => stations.forEach((el) => el.removeEventListener('click', onClicked));
   },[]);
+
   const navigate = useNavigate();
+
   const goToDetails = (station) => {
     navigate(`/linesdetail/${lineId}/details/${station}`)
   }
@@ -134,6 +144,42 @@ function LinesDetail() {
     popPop.style.visibility = 'hidden';
   });
   })
+
+useEffect(() => {
+  const topToScroll = document.querySelector(".linesdetail-stations");
+  const basis = document.querySelector(".linesdetail-stationscontainer"); // 필요 시
+  if (!topToScroll) return;
+
+  const apply = () => {
+    const width = (basis ?? topToScroll).getBoundingClientRect().width;
+    const isSmall = width <= 789.5;
+    const atTop = topToScroll.scrollTop <= 0;
+
+    // 초기화
+    topToScroll.querySelectorAll(".station7, .station8").forEach(el => {
+      el.style.removeProperty("clip-path");
+      el.style.removeProperty("overflow");
+    });
+
+    if (!atTop) 
+      return;
+
+    const selector = isSmall ? ".station7" : ".station8";
+    const target = topToScroll.querySelector(selector);
+
+    if (target) {
+      target.style.overflow = "hidden";
+      target.style.setProperty("clip-path", "inset(0 0 50% 0)", "important");
+    }
+  };
+
+  const checkStationMask = new ResizeObserver(apply);
+  checkStationMask.observe(topToScroll);
+  topToScroll.addEventListener("scroll", apply, { passive: true });
+  apply();
+  return () => { checkStationMask.disconnect(); topToScroll.removeEventListener("scroll", apply); };
+}, []);
+
   return (
     <div className="linesdetail-web-container" style={{ "--line-color": lineColor }}>
       <div className="linesdetail-container">
@@ -143,7 +189,7 @@ function LinesDetail() {
           <div className="linesdetail-textbox">
             <div className="linesdetail-line-number">
               {lineNumOnly}{lineLabel}
-            </div>
+            </div>  
           </div>
           <div className="linesdetail-frame">
             {/* 안쪽 박스틀 */}
@@ -179,15 +225,19 @@ function LinesDetail() {
                     // 표시용: '-'는 그대로 둠
                     const isLongName = lengthForCheck >= 7;
                     const displayName = isLongName ? name.slice(0, 5) + "..." : name;
+
                     const branchLine = name.includes("지선");
                     const loopLine = name.includes("순환선");
+
                     const classStation = [
                     "linesdetail-station",
                     branchLine && "linesdetail-branchLine",
                     loopLine && "linesdetail-loopLine",
                     "station1",
-                    ]
-                    .join(" ");
+                    idx === 6 && "station7",
+                    idx === 7 && "station8",
+                    ].join(" ");
+
                     return (
                          <div
                         className={classStation}
