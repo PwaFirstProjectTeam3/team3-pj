@@ -49,6 +49,7 @@ function EvacuationIndex() {
     setInputValue("");
     setMatchedItem([]);
     setIsLoaded(false);
+    setIsSearched(false);
   }
   
   // 선택된 호선의 역 배열 가져오기
