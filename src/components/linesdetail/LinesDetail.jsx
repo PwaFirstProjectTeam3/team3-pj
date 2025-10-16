@@ -16,117 +16,99 @@ function LinesDetail() {
 
   // ROUTE_DISPLAY만 사용
   const stations = useMemo(() => {
-    const names = 
+    const names =
     Array.isArray(ROUTE_DISPLAY[lineNum]) ? ROUTE_DISPLAY[lineNum] : [];
-    return names.map((nm, i) => ({ name: String(nm), idx: i })); // 렌더용 단순 구조
-  }, [lineNum]); 
+    return names.map((stationName, i) => ({ name: String(stationName), idx: i }));
+  }, [lineNum]);
 
   // 헤더 표기
-  const parseLineName = (name) => {
-    const m = 
-    String(name).match(/(\d+)\s*호선/);
-    return m ? { num: m[1], label: "호선" } : { num: String(name), label: "" };
+  const readLineTag = (name) => {
+    const matchResult =
+    String(name).match(/([0-9]+)[ ]*호선/);
+    return matchResult ? { num: matchResult[1], label: "호선" } : { num: String(name), label: "" };
   };
-  const { num: lineNumOnly, label: lineLabel } = parseLineName(lineNum);
-
+  const { num: lineNumOnly, label: lineLabel } = readLineTag(lineNum);
   // Refs
-  const stRef = useRef(null);
+  const stationRef = useRef(null);
   const listRef = useRef(null);
   const lineRef = useRef(null);
   const hideTopRef = useRef(null);
-  const hideBotRef = useRef(null);
-  const recalcRef = useRef(() => {});
-
+  const hideBottomRef = useRef(null);
+  const recalculateRef = useRef(() => {});
   // 드래그/리사이즈 등 보정 로직
   useEffect(() => {
-    const st1 = stRef.current;
-    const sts = listRef.current;
+    const station1 = stationRef.current;
+    const stations = listRef.current;
     const line = lineRef.current;
-    const hbTop = hideTopRef.current;
-    const hbBot = hideBotRef.current;
-    if (!st1 || !sts || !line || !hbTop || !hbBot) return;
-
+    const hideboxTop = hideTopRef.current;
+    const hideboxBottom = hideBottomRef.current;
+    if (!station1 || !stations || !line || !hideboxTop || !hideboxBottom) return;
     // 드래그 스크롤
-    st1.setAttribute("draggable", "true");
+    station1.setAttribute("draggable", "true");
     let lastY = null;
     const onStart = () => { lastY = null; };
     const onDrag = (e) => {
       if (e.clientY === 0) return;
-      if (lastY !== null) sts.scrollTop -= (e.clientY - lastY);
+      if (lastY !== null) stations.scrollTop -= (e.clientY - lastY);
       lastY = e.clientY;
-      recalcRef.current();
+      recalculateRef.current();
     };
     const onEnd = () => { lastY = null; };
-
-    st1.addEventListener("dragstart", onStart);
-    st1.addEventListener("drag", onDrag);
-    st1.addEventListener("dragend", onEnd);
-
+    station1.addEventListener("dragstart", onStart);
+    station1.addEventListener("drag", onDrag);
+    station1.addEventListener("dragend", onEnd);
     // hidebox 높이 계산
     const MIN = 35, BLEED = 0;
     const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
     const recalc = () => {
       requestAnimationFrame(() => {
         const lineH = line.getBoundingClientRect().height;
-        const viewH = sts.getBoundingClientRect().height;
+        const viewH = stations.getBoundingClientRect().height;
         const extra = Math.max(0, lineH - viewH);
         const half  = extra / 2;
-
-        const maxScroll  = sts.scrollHeight - sts.clientHeight;
-        const topScroll  = sts.scrollTop;
+        const maxScroll  = stations.scrollHeight - stations.clientHeight;
+        const topScroll  = stations.scrollTop;
         const bottomGap  = maxScroll - topScroll;
-
         const topNeed    = half - topScroll + BLEED;
         const bottomNeed = half - bottomGap + BLEED;
-
         const topH = clamp(Math.ceil(topNeed + MIN), MIN, extra + MIN);
         const botH = clamp(Math.ceil(bottomNeed + MIN), MIN, extra + MIN);
-
-        hbTop.style.height = `${topH}px`;
-        hbBot.style.height = `${botH}px`;
+        hideboxTop.style.height = `${topH}px`;
+        hideboxBottom.style.height = `${botH}px`;
       });
     };
-    recalcRef.current = recalc;
-
+    recalculateRef.current = recalc;
     const onScroll = () => recalc();
-    sts.addEventListener("scroll", onScroll);
-
+    stations.addEventListener("scroll", onScroll);
     const ro = new ResizeObserver(() => recalc());
     ro.observe(line);
-    ro.observe(sts);
+    ro.observe(stations);
     window.addEventListener("resize", recalc);
-
     const mo = new MutationObserver(() => recalc());
-    mo.observe(sts, { childList: true, subtree: true });
-
+    mo.observe(stations, { childList: true, subtree: true });
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(() => recalc());
     }
     recalc();
     requestAnimationFrame(recalc);
-
     return () => {
-      st1.removeEventListener("dragstart", onStart);
-      st1.removeEventListener("drag", onDrag);
-      st1.removeEventListener("dragend", onEnd);
-      sts.removeEventListener("scroll", onScroll);
+      station1.removeEventListener("dragstart", onStart);
+      station1.removeEventListener("drag", onDrag);
+      station1.removeEventListener("dragend", onEnd);
+      stations.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", recalc);
       ro.disconnect();
       mo.disconnect();
     };
   }, [stations.length]); // ← 역 개수 변동에 반응
-
   useEffect(() => {
-    recalcRef.current && recalcRef.current();
+    recalculateRef.current && recalculateRef.current();
   }, [stations.length]);
-
-
   useEffect(() => {
     const imageUp = document.querySelector('.linesdetail-subway-up-image')
     const imageDown =document.querySelector('.linesdetail-subway-down-image')
     const stations = document.querySelectorAll('.linesdetail-station')
     if (!imageUp || !imageDown || stations.length === 0) return;
-
     let pos = 0;
     let reversePos = 0;
     const onClicked = () => {
@@ -135,32 +117,23 @@ function LinesDetail() {
       imageUp.style.transform = `translateY(${pos}px)`;
       imageDown.style.transform =`translateY(${reversePos}px)`;
     };
-  
     stations.forEach((el) => (el.addEventListener('click', onClicked)));
     return () => stations.forEach((el) => el.removeEventListener('click', onClicked));
   },[]);
-
   const navigate = useNavigate();
-
   const goToDetails = (station) => {
     navigate(`/linesdetail/${lineId}/details/${station}`)
   }
-
   useEffect(() => {
-
     const popPop = document.querySelector('.linesdetail-subway-up-p')
     const image1 = document.querySelector('.linesdetail-subway-up-image')
-
     image1.addEventListener("mouseenter", () => {
       popPop.style.visibility ='visible';
     });
-
     image1.addEventListener('mouseleave', () => {
     popPop.style.visibility = 'hidden';
   });
-
   })
-
   return (
     <div className="linesdetail-web-container" style={{ "--line-color": lineColor }}>
       <div className="linesdetail-container">
@@ -196,32 +169,36 @@ function LinesDetail() {
             <div className="linesdetail-hideboxes">
               <div className="linesdetail-hideboxesverticallength">
                 <div className="linesdetail-hidebox1" ref={hideTopRef} />
-                <div className="linesdetail-hidebox2" ref={hideBotRef} />
-            {/* 역들(8자 이상 ... 붙임) */}
+                <div className="linesdetail-hidebox2" ref={hideBottomRef} />
+            {/* 역들(7자 이상 ... 붙임) */}
                 <div className="linesdetail-stationscontainer">
                   <div className="linesdetail-stations linesdetail-hide-scrollbar" ref={listRef}>
                     {stations.map(({ name }, idx) => {
-                    // 글자 수가 8자 이상인지 판단
-                     const lengthForCheck = name.replace(/-/g, "").length;
-
+                    // 글자 수가 7자 이상인지 판단
+                     const lengthForCheck = name.length;
                     // 표시용: '-'는 그대로 둠
-                    const isLongName = lengthForCheck >= 8;
-                    const displayName = isLongName ? name.slice(0, 6) + "..." : name;
-
+                    const isLongName = lengthForCheck >= 7;
+                    const displayName = isLongName ? name.slice(0, 5) + "..." : name;
+                    const branchLine = name.includes("지선");
+                    const loopLine = name.includes("순환선");
+                    const classStation = [
+                    "linesdetail-station",
+                    branchLine && "linesdetail-branchLine",
+                    loopLine && "linesdetail-loopLine",
+                    "station1",
+                    ]
+                    .join(" ");
                     return (
-                      <div
-                        className="linesdetail-station"
+                         <div
+                        className={classStation}
                         key={`${lineNum}-${name}-${idx}`}
-                        ref={idx === 0 ? stRef : null}
+                        ref={idx === 0 ? stationRef : null}
                         onClick={() => goToDetails(displayName)}
-                      >
+                          >
                         {displayName}
-                      </div>
-                    );
-                  })}
-                  {stations.length === 0 && (
-                    <div className="linesdetail-empty">해당 호선 데이터가 없습니다.</div>
-                  )}
+                          </div>
+                          );
+                    })}
                 </div>
                 </div>
               </div>
@@ -232,5 +209,4 @@ function LinesDetail() {
     </div>
   );
 }
-
 export default LinesDetail;
