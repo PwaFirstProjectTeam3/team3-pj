@@ -132,7 +132,7 @@
   display: grid;
   place-self: center;
   background: #FFFFFF;
-  z-index: 20 ;
+  z-index: 20;
 }
 
 .linesdetail-stationscontainer {
@@ -147,37 +147,39 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 20;
+  z-index: 50;
 }
 
-.linesdetail-stations {
-  font-family: "Noto Sans KR", sans-serif;
-  font-size: 14px;
-  font-weight: bold;
-  height: clamp(504px, calc(470.2px + 9.7015cqw), 582px); /* 576→621(= +45) */
-  display: grid;
-  grid-auto-rows: min-content;
-  row-gap: 42px;  
-  place-items: center;
-  padding-inline: 12px;
-  overflow-y: auto;
-  scrollbar-gutter: stable both-edges;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-}
+  .linesdetail-stations {
+    font-family: "Noto Sans KR", sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    height: clamp(504px, calc(470.2px + 9.7015cqw), 582px); /* 576→621(= +45) */
+    position: relative; 
+    padding: 16px 16px;
+    display: grid;
+    grid-auto-rows: min-content;
+    row-gap: 42px;  
+    place-items: center;
+    z-index: 50;
+    overflow-y: scroll;
+    scrollbar-gutter: stable both-edges;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
 
 .linesdetail-station {
   font-family: "Noto Sans KR", sans-serif;
   width: 114px;
   height: 36px;
-  position: static; 
+  position: relative; 
   display: grid;
   place-items: center;
   text-align: center;
   border-radius: 18px;
   border: 4px solid var(--line-color);
   background-color: #fff;
-  z-index: 20;
+  z-index: 50;
   cursor: pointer;
   overflow: hidden;
 }
@@ -186,7 +188,7 @@
 .linesdetail-branchLine, .linesdetail-loopLine {
   width: 126px;
   height: 36px;
-  position: static;
+  position: relative;
   display: grid;
   place-items: center;
   text-align: center;
@@ -195,7 +197,7 @@
   background-color: #35A344;
   color: #fff;
   box-shadow: 0 2px 7px #333;
-  z-index: 20;
+  z-index: 70 !important;
   pointer-events: none !important;
 }
 
