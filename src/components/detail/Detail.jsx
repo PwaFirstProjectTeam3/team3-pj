@@ -15,14 +15,25 @@ function Detail() {
   const convenienceInfo = useSelector((state) => state.detail.convenienceInfo);
   const arrivalInfo = useSelector((state) => state.detail.arrivalInfo);
   
-  const lineNum = lineId.replace('line', '') + '호선';
+  // lineId의 숫자만 가져와서 비교
+  const lineNumOnly = lineId.replace('line', '');
+  const matchesLineField = (fieldValue) => {
+    if (!fieldValue) return false;
+    const normalized = String(fieldValue);
+    return normalized.includes(lineNumOnly) || normalized.includes(`${lineNumOnly}호`) || normalized.includes(`${lineNumOnly}호선`);
+  };
 
+  // 윤희님 작업 : 호선별 색상 변경
+  const lineNum = lineId.replace('line', '') + '호선';
   const lineColor = useMemo(
   () => LINE_COLORS[lineNum] ?? "#000000",
   [lineNum]
   );
 
-  // 도착 정보 불러오기
+
+
+  // ---------- 도착 정보 ----------
+
   // useEffect(() => {
   //   dispatch(arrivalInfoIndex());
   // }, []);
@@ -50,12 +61,16 @@ function Detail() {
   // };
   // console.log("arrivalInfo:", arrivalInfo);
 
-  // 편의시설 정보 불러오기
+
+
+  // ---------- 편의시설 ----------
+
   useEffect(() => {
     dispatch(convenienceInfoIndex());
   }, []);
 
-  const currentConvenienceInfo = Array.isArray(convenienceInfo) ? convenienceInfo.find(info => info.STATION_NAME === station) : null;
+  const currentConvenienceInfo = Array.isArray(convenienceInfo) ? convenienceInfo.find(info =>
+    info.STATION_NAME === station && (matchesLineField(info.LINE) || matchesLineField(info.LINE?.toString?.()))) || convenienceInfo.find(info => info.STATION_NAME === station) : null;
 
   const getConvenienceInfo = (key) => {
     const value = currentConvenienceInfo?.[key];
@@ -76,17 +91,33 @@ function Detail() {
     return { iconSrc, textColor };
   };
 
-  // 역 정보 불러오기
+
+
+  // ---------- 역 정보 ----------
+
   useEffect(() => {
     dispatch(stationInfoIndex());
   }, []);
 
-  const currentStationInfo = Array.isArray(stationInfo) ? stationInfo.find(info => info.SBWY_STNS_NM === station) : null;
+  const currentStationInfo = Array.isArray(stationInfo)
+    ? stationInfo.find(info =>
+        info.SBWY_STNS_NM === station && (
+          matchesLineField(info.SBWY_ROUT_LN) || matchesLineField(info.SBWY_ROUT_LN?.toString?.())
+        )
+      ) || stationInfo.find(info => info.SBWY_STNS_NM === station) // fallback: 이름만
+    : null;
 
-  // 현재역(station)이 포함된 노선, 역리스트 찾기
-  const foundLine = Object.entries(lines).find(([, list]) => list.includes(station));
-  const currentLineName = foundLine ? foundLine[0] : undefined;
-  const stationList = foundLine ? foundLine[1] : undefined;
+
+
+  // ---------- 이전역/현재역/다음역 ----------
+  
+  // 현재 line의 현재역(station)이 포함된 리스트 찾기
+  const targetLineKey = `${lineId}List`; // ex)line1 -> line1List로 만들기
+  let stationList = lines && lines[targetLineKey] ? lines[targetLineKey] : undefined;
+  if (!stationList) {
+    const foundLineEntry = Object.entries(lines).find(([, list]) => Array.isArray(list) && list.includes(station));
+    stationList = foundLineEntry ? foundLineEntry[1] : undefined;
+  }
   if (!stationList) {
     return <p> ⚠️ "{station}" 역을 찾을 수 없습니다. </p>
   }
@@ -98,7 +129,7 @@ function Detail() {
 
   // 노선 번호 표시용 특수문자
   // TODO : 시간되면 특수문자 말고 div로 자동설정되기 수정
-  const lineSymbolMap = {
+  const lineSymbolMapbyId = {
     line1List: "➊",
     line2List: "➋",
     line3List: "➌",
@@ -109,29 +140,39 @@ function Detail() {
     line8List: "➑",
     line9List: "➒",
   }
-    // 객체에서 특정 키에 해당하는 값을 꺼내는 문법
-  const lineSymbol = lineSymbolMap[currentLineName] || "";
+  
+  const lineSymbol = lineSymbolMapbyId[targetLineKey] || ""; // 객체에서 특정 키에 해당하는 값을 꺼내는 문법
 
+  // 현재역의 이전/다음으로 이동
   const MovePrevStation = () => {
     if(prevStation) navigate(`/linesdetail/${lineId}/details/${prevStation}`);
   }
   const MoveNextStation = () => {
-    if(prevStation) navigate(`/linesdetail/${lineId}/details/${nextStation}`);
+    if(nextStation) navigate(`/linesdetail/${lineId}/details/${nextStation}`);
   }
+
+
 
   return (
     <>
       <div className="detail-container" style={{ "--line-color": lineColor }}>
 
-        {/* 이전역-현재역-다음역 표시 */}
+        {/* 이전역-다음역 표시 */}
         <div className='next-station-container' >
           {/* <div className="prev-station left"><p>〈 종각</p></div> */}
           {/* <div className="next-station right"><p>서울역 〉</p></div> */}
-          <div className="prev-station left" onClick={MovePrevStation} ><p>〈 {prevStation || ""}</p></div>
-          <div className="next-station right" onClick={MoveNextStation} ><p>{nextStation || ""} 〉</p></div>
+          <div className={`prev-station left ${!prevStation ? "disabled" : ""}`} onClick={prevStation ? MovePrevStation : undefined} style={{cursor: prevStation ? 'pointer' : 'default'}} >
+            <p>〈 {prevStation || ""}</p>
+          </div>
+          <div className={`next-station right ${!nextStation ? "disabled" : ""}`} onClick={nextStation ? MoveNextStation : undefined} style={{cursor: nextStation ? 'pointer' : 'default'}} >
+            <p>{nextStation || ""} 〉</p>
+          </div>
         </div>
-        {/* <div className="now-station"><span className='line-num' >➊</span><span>시청</span></div> */}
-        <div className="now-station"><span className='line-num' >{lineSymbol}</span><span>{station}</span></div>
+        {/* 현재역 표시 */}
+        <div className="now-station">
+          <span className='line-num' >{lineSymbol}</span>
+          <span>{station}</span>
+        </div>
 
         {/* 도착정보 */}
         <div>

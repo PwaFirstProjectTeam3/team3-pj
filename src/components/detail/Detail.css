@@ -28,7 +28,11 @@
   height: 40px;
   line-height: 37px;
   border-radius: 50px;
-  cursor: pointer;
+  /* cursor: pointer; */
+}
+
+.prev-station.disabled, .next-station.disabled {
+  pointer-events: none;
 }
 
 .left {
