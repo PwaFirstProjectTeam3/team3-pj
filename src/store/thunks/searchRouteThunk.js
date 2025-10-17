@@ -57,6 +57,7 @@ const getSearchRoute = createAsyncThunk(
           endStation: state.endStation,
         }
       };
+
     } catch (err) {
       // 오류 메시지 정제
       const message =

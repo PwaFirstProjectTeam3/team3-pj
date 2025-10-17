@@ -1,16 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { getSearchRoute } from "../thunks/searchRouteThunk.js";
-import { enrichWithBaseTime, parseXMLResponse } from "../../components/utils/xmlMetroParser.js";
+import { parseXMLResponse } from "../../components/utils/xmlMetroParser.js";
+// import { enrichWithBaseTime, parseXMLResponse } from "../../components/utils/xmlMetroParser.js";
 
 const searchRouteSlice = createSlice({
   name: 'searchRouteSlice',
   initialState : {
-    startStationItem: null,
-    endStationItem: null,
     startStationId: '',
     endStationId: '',
     startStation: '',
     endStation: '',
+    totalTime: 0,
+    lineNum: 0,
+    countStationNum: 0,
     sKind: '1',
 
     // 결과/상태
@@ -33,20 +35,8 @@ const searchRouteSlice = createSlice({
     setEndStation: (state, action) => {
       state.endStation = action.payload;
     },
-    setStopId: (state, action) => {
-      state.stopId = action.payload;
-    },
     setSKind: (state, action) => {
       state.sKind = String(action.payload ?? '1');
-    },
-    setSTime: (state, action) => {
-      state.sTime = action.payload ?? '';
-    },
-    setWeekTag: (state, action) => {
-      state.weekTag = action.payload ?? '';
-    },
-    setIsArrivalTimeSearch: (state, action) => {
-      state.isArrivalTimeSearch = action.payload ?? '';
     },
     // swapStations: (state) => {
     //   // 출발/도착 역 및 ID를 교환
@@ -75,13 +65,14 @@ const searchRouteSlice = createSlice({
         state.error = null;
         state.rawXML = action.payload?.rawXML || '';
         state.meta = action.payload?.meta || null;
+        state.parsedRoute = parseXMLResponse(action.payload?.rawXML);
+        // try {
+        //   const parsed = parseXMLResponse(state.rawXML);
+        //   state.parsedRoute = enrichWithBaseTime(parsed, new Date());
+        // } catch {
+        //   state.parsedRoute = null;
+        // }
 
-        try {
-          const parsed = parseXMLResponse(state.rawXML);
-          state.parsedRoute = enrichWithBaseTime(parsed, new Date());
-        } catch {
-          state.parsedRoute = null;
-        }
       })
       .addCase(getSearchRoute.rejected, (state, action) => {
         state.loading = false;
@@ -95,11 +86,7 @@ export const {
   setEndStationId,
   setStartStation,
   setEndStation,
-  setStopId,
   setSKind,
-  setSTime,
-  setWeekTag,
-  setIsArrivalTimeSearch,
   // swapStations,
   clearRoute
 } = searchRouteSlice.actions;
