@@ -5,17 +5,16 @@ import Main from './components/Main.jsx';
 import { useEffect, useState } from 'react';
 
 function App() {
-  const [showIntro, setShowIntro] = useState(() => !sessionStorage.getItem("introSeen"));
+  const [showIntro, setShowIntro] = useState(() => sessionStorage.getItem("introSeen") === 'true');
 
   useEffect(() => {
-    if (showIntro) {
+    if (!showIntro) {
       const timer = setTimeout(() => {
-        setShowIntro(false);
         sessionStorage.setItem("introSeen", "true");
       }, 2500); // 2.5초 후 인트로 제거
       return () => clearTimeout(timer);
     }
-  }, [showIntro]);
+  }, []);
 
   return (
     <>
@@ -23,7 +22,7 @@ function App() {
       <main>
         <Outlet />
       </main>
-      { showIntro && <Main /> } {/* 호선 목록 페이지 위에 겹쳐서 표시 */}
+      { !showIntro && <Main /> } {/* 호선 목록 페이지 위에 겹쳐서 표시 */}
     </>
   )
 }

@@ -10,7 +10,7 @@ function SearchIndex() {
   const departureRef = useRef(null);
   const arrivalRef = useRef(null);
 
-  const searchStationList = useSelector(state => state.search.list);
+  const allStationList = useSelector(state => state.search.list);
   const searchDepartureStationId = useSelector(state => state.search.departureStationId);
   const searchArrivalStationId = useSelector(state => state.search.arrivalStationId);
   const searchDepartureStationFrCord = useSelector(state => state.search.departureStationFrCord);
@@ -60,7 +60,7 @@ function SearchIndex() {
   const renderDropdown = (stations) => {
     return stations.map(station => {
       // 중복 역 정보 가져오기
-      const duplicationStation = searchStationList.filter(s => s.STATION_NM === station.STATION_NM).length > 1;
+      const duplicationStation = allStationList.filter(stationItem => stationItem.STATION_NM === station.STATION_NM).length > 1;
 
       // LINE_NUM 화면용 포맷: "01호선" → "1호선"
       const displayLineNum = station.LINE_NUM.replace(/^0/, '');
@@ -94,7 +94,7 @@ function SearchIndex() {
   
   // 입력값 기반 실시간 필터링
   const searchFilteredStations = activeField
-  ? searchStationList
+  ? allStationList
       .filter(station => {
         const searchInputValue = activeField === "departure" ? departureInputValue : arrivalInputValue;
         return station.STATION_NM.toLowerCase().includes(searchInputValue.toLowerCase());
@@ -116,20 +116,7 @@ function SearchIndex() {
       })
   : [];
   
-  // 외부 클릭 시 드롭다운 닫기
-  useEffect(() => {
-    dispatch(searchIndex());
-
-    function handleSearchClickOutside(event) {
-      if (departureRef.current && !departureRef.current.contains(event.target) && arrivalRef.current && !arrivalRef.current.contains(event.target)) {
-        searchCloseDropdown();
-      }
-    }
-    document.addEventListener("mousedown", handleSearchClickOutside);
-    return () => document.removeEventListener("mousedown", handleSearchClickOutside);
-  }, []);
-
-  // 리버스 버튼
+  // 리버스 버튼 (수정필요)
   function reverseBtn() {
     if(departureInputValue && arrivalInputValue) {
       setDepartureInputValue(arrivalInputValue);
@@ -140,7 +127,7 @@ function SearchIndex() {
       dispatch(setArrivalStationFrCord(searchDepartureStationFrCord));
     }
   }
-
+  
   // 리셋 버튼
   function resetBtn() {
     if(departureInputValue || arrivalInputValue) {
@@ -152,6 +139,20 @@ function SearchIndex() {
       dispatch(setArrivalStationFrCord(''));
     }
   }
+  
+  // 외부 클릭 시 드롭다운 닫기
+  useEffect(() => {
+    dispatch(searchIndex());
+
+    function handleSearchClickOutside(event) {
+      if (departureRef.current && !departureRef.current.contains(event.target) && arrivalRef.current && !arrivalRef.current.contains(event.target)) {
+        searchCloseDropdown();
+      }
+    }
+    document.addEventListener("mousedown", handleSearchClickOutside);
+
+    return () => document.removeEventListener("mousedown", handleSearchClickOutside);
+  }, []);
 
   return (
     <>
