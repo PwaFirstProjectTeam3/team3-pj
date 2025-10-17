@@ -11,15 +11,15 @@ const searchRouteSlice = createSlice({
     startStation: '',
     endStation: '',
     totalTime: 0,
-    lineNum: 0,
+    lineNum: '',
     countStationNum: 0,
-    sKind: '1',
+    parsedData: [], // 파싱 결과(객체) 저장용
+    // sKind: '1',
 
     // 결과/상태
     loading: false,
     error: null,
     rawXML: '',
-    parsedRoute: null, // 파싱 결과(객체) 저장용
     meta: null,
   },
   reducers: {
@@ -35,21 +35,34 @@ const searchRouteSlice = createSlice({
     setEndStation: (state, action) => {
       state.endStation = action.payload;
     },
-    setSKind: (state, action) => {
-      state.sKind = String(action.payload ?? '1');
+    setTotalTime: (state, action) => {
+      state.totalTime = action.payload;
     },
+    setLineNum: (state, action) => {
+      state.lineNum = action.payload;
+    },
+    clearPathList: (state) => {
+      state.startStation = '';
+      state.endStation = '';
+      state.totalTime = 0;
+      state.lineNum = '';
+      state.countStationNum = 0;
+    }
+    // setSKind: (state, action) => {
+    //   state.sKind = String(action.payload ?? '1');
+    // },
     // swapStations: (state) => {
     //   // 출발/도착 역 및 ID를 교환
     //   [state.startStationId, state.endStationId] = [state.endStationId, state.startStationId];
     //   [state.startStation, state.endStation] = [state.endStation, state.startStation];
     // },
-    clearRoute: (state) => {
-      state.loading = false;
-      state.error = null;
-      state.rawXML = '';
-      state.parsedRoute = null;
-      state.meta = null;
-    }
+    // clearRoute: (state) => {
+    //   state.loading = false;
+    //   state.error = null;
+    //   state.rawXML = '';
+    //   state.parsedRoute = null;
+    //   state.meta = null;
+    // }
   },
   extraReducers: (builder) => {
     builder
@@ -65,7 +78,8 @@ const searchRouteSlice = createSlice({
         state.error = null;
         state.rawXML = action.payload?.rawXML || '';
         state.meta = action.payload?.meta || null;
-        state.parsedRoute = parseXMLResponse(action.payload?.rawXML);
+        state.parsedData = parseXMLResponse(action.payload?.rawXML);
+
         // try {
         //   const parsed = parseXMLResponse(state.rawXML);
         //   state.parsedRoute = enrichWithBaseTime(parsed, new Date());
@@ -78,9 +92,9 @@ const searchRouteSlice = createSlice({
         state.loading = false;
         state.error = action.payload || action.error?.message || '요청 실패';
       });
-  }
-});
-
+    }
+  });
+  
 export const {
   setStartStationId,
   setEndStationId,
