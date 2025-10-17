@@ -127,6 +127,10 @@ function SearchIndex() {
     if(departureInputValue && arrivalInputValue) {
       setDepartureInputValue(arrivalInputValue);
       setArrivalInputValue(departureInputValue);
+      dispatch(setDepartureStationId(searchArrivalStationId));
+      dispatch(setArrivalStationId(searchDepartureStationId));
+      dispatch(setDepartureStationFrCord(searchArrivalStationFrCord));
+      dispatch(setArrivalStationFrCord(searchDepartureStationFrCord));
     }
   }
 
@@ -135,6 +139,10 @@ function SearchIndex() {
     if(departureInputValue || arrivalInputValue) {
       setDepartureInputValue("");
       setArrivalInputValue("");
+      dispatch(setDepartureStationId(''));
+      dispatch(setArrivalStationId(''));
+      dispatch(setDepartureStationFrCord(''));
+      dispatch(setArrivalStationFrCord(''));
     }
   }
 
