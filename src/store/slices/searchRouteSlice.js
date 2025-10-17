@@ -106,6 +106,7 @@ const searchRouteSlice = createSlice({
       })
       .addCase(getSearchRoute.rejected, (state, action) => {
         console.error('요청 실패', action.error);
+        console.error('요청 실패', action.error);
       });
     }
   });
