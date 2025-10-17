@@ -101,12 +101,19 @@ function SearchIndex() {
       })
       .filter(station => /^0[1-9]호선/.test(station.LINE_NUM)) // LINE_NUM이 1호선~9호선만 통과
       .sort(function(a, b) {
-        return a.STATION_NM.localeCompare(
-          b.STATION_NM,       // 비교할 문자열
-          'ko',               // 한국어 기준
-          { sensitivity: 'base' } // 대소문자 구분 없이
+        // 역 이름 가나다순으로 정렬
+        const nameCompare = a.STATION_NM.localeCompare(
+          b.STATION_NM,
+          "ko",
+          { sensitivity: "base" }
         );
-      }) // 드랍다운 목록 가나다순으로 정렬 처리
+        if (nameCompare !== 0) return nameCompare;
+
+        // 같은 역 이름끼리는 호선 기준으로 정렬
+        const aLine = parseInt(a.LINE_NUM.replace(/[^0-9]/g, ""), 10);
+        const bLine = parseInt(b.LINE_NUM.replace(/[^0-9]/g, ""), 10);
+        return aLine - bLine;
+      })
   : [];
   
   // 외부 클릭 시 드롭다운 닫기
