@@ -1,8 +1,9 @@
 import { useDispatch, useSelector } from 'react-redux';
 import './Detail.css';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { arrivalInfoIndex, convenienceInfoIndex, stationInfoIndex } from '../../store/thunks/detailThunk';
+import LINE_COLORS from "../../configs/lineColors.js";
 
 function Detail() {
   const dispatch = useDispatch();
@@ -14,6 +15,13 @@ function Detail() {
   const convenienceInfo = useSelector((state) => state.detail.convenienceInfo);
   const arrivalInfo = useSelector((state) => state.detail.arrivalInfo);
   
+  const lineNum = lineId.replace('line', '') + '호선';
+
+  const lineColor = useMemo(
+  () => LINE_COLORS[lineNum] ?? "#000000",
+  [lineNum]
+  );
+
   // 도착 정보 불러오기
   // useEffect(() => {
   //   dispatch(arrivalInfoIndex());
@@ -113,7 +121,7 @@ function Detail() {
 
   return (
     <>
-      <div className="detail-container">
+      <div className="detail-container" style={{ "--line-color": lineColor }}>
 
         {/* 이전역-현재역-다음역 표시 */}
         <div className='next-station-container' >

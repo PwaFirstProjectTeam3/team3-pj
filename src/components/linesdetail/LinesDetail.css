@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
+
 /* width > height > position > display 순서로 정렬 */
+
 .linesdetail-web-container {
   width: 100%; /* 보이는 웹페이지 화면 너비 길이 지정*/
   height: 100dvh; /* 보이는 웹페이지 화면 너비 길이 지정 */
@@ -7,7 +9,9 @@
   justify-content: center;
   --line-color: #000000;
 }
+
 *, *::before, *::after { box-sizing: border-box; }
+
 .linesdetail-container {
   container-type: inline-size; /* cqw 단위 사용(컨테이너 크기 기반 반응형 너비 단위, 컨테이너 기준 (width)) */
   width: clamp(402px, 90vw, 1200px); /* clamp(최소값, 선호값, 최대값) */
@@ -16,6 +20,7 @@
   grid-template-columns: repeat(auto-fit, minmax(402px, 1fr));
   place-items: center;
 }
+
 .linesdetail-box {
   background-color: #F5F5F5;
   width: 100%; /* 좌우 여백을 부모에 준다 → 자식은 100%만 쓰면 됨 */
@@ -28,6 +33,7 @@
   align-items: center;
   overflow: hidden;
 }
+
 .linesdetail-textbox {
   container-type: inline-size; /* cqw 단위 사용(컨테이너 크기 기반 반응형 너비 단위, 컨테이너 기준 (width)) */
   width: clamp(402px, 90vw, 1200px); /* clamp(최소값, 선호값, 최대값), 반응형 웹/앱 위해 사용 */
@@ -35,6 +41,7 @@
   justify-content: center;
   align-items: center;
 }
+
 .linesdetail-line-number {
  font-size: 30px;
  font-weight: 700;
@@ -45,6 +52,7 @@
  letter-spacing: 1.5px;
  text-align: center;
 }
+
 .linesdetail-line-text {
   font-family: "Noto Sans KR", sans-serif;
   font-size: 30px;
@@ -56,6 +64,7 @@
   letter-spacing: 1.5px;
   text-align: center;
 }
+
 .linesdetail-frame {
   width: 100%;
   height: inherit;
@@ -65,6 +74,7 @@
   position: relative;
   overflow: hidden;
 }
+
 .linesdetail-linebox, .linesdetail-hideboxes {
   container-type: inline-size;
   width: clamp(344px, calc(90vw - 50px), 1148px);
@@ -82,6 +92,7 @@
   background-color: #fff;
   border: 1px solid #000;
 }
+
 .linesdetail-line {
   width: 5px; /* 너비 고정 */
   height: clamp( 614px, calc(554.1849866px + 14.87935657cqw), /* = 554.1849866px + 0.1487935657 * 100cqw */ 725px );
@@ -91,6 +102,7 @@
   z-index: 5;
   border: none;
 }
+
 .linesdetail-hideboxesverticallength {
   width: 100%;
   height: clamp( 614px, calc(554.1849866px + 14.87935657cqw), /* 동일 공식 */ 725px );
@@ -100,6 +112,7 @@
   justify-content: center;
   z-index: 7;
 }
+
 .linesdetail-hidebox1 {
   width: 200px;
   height: 35px;
@@ -110,6 +123,7 @@
   background: #FFFFFF;
   z-index: 20;
 }
+
 .linesdetail-hidebox2 {
   width: 20px;
   height: 35px;
@@ -120,6 +134,7 @@
   background: #FFFFFF;
   z-index: 20 ;
 }
+
 .linesdetail-stationscontainer {
   width: clamp(344px, calc(90vw - 50px), 1148px);
   max-width: 100%;
@@ -134,6 +149,7 @@
   align-items: center;
   z-index: 20;
 }
+
 .linesdetail-stations {
   font-family: "Noto Sans KR", sans-serif;
   font-size: 14px;
@@ -141,19 +157,20 @@
   height: clamp(504px, calc(470.2px + 9.7015cqw), 582px); /* 576→621(= +45) */
   display: grid;
   grid-auto-rows: min-content;
-  row-gap: 42px;                 /* 역 간격 42px 고정 */
-  justify-items: center;         /* 항목 가로 중앙 */
-  justify-content: center;       /* 그리드 자체 중앙 */
+  row-gap: 42px;  
+  place-items: center;
+  padding-inline: 12px;
   overflow-y: auto;
   scrollbar-gutter: stable both-edges;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
 }
+
 .linesdetail-station {
   font-family: "Noto Sans KR", sans-serif;
   width: 114px;
   height: 36px;
-  position: static;
+  position: static; 
   display: grid;
   place-items: center;
   text-align: center;
@@ -162,32 +179,22 @@
   background-color: #fff;
   z-index: 20;
   cursor: pointer;
-}
-/* 지선, 순환선 따로 표시 */
-.linesdetail-branchLine {
-  width: 114px;
-  height: 36px;
-  position: static;
-  display: grid;
-  place-items: center;
-  text-align: center;
-  border-radius: 0 !important;
-  border: 4px solid #BBBBBB !important;
-  background-color: #fff;
-  z-index: 20;
-  pointer-events: none !important;
+  overflow: hidden;
 }
 
-.linesdetail-loopLine {
-  width: 114px;
+/* 지선, 순환선 따로 표시 */
+.linesdetail-branchLine, .linesdetail-loopLine {
+  width: 126px;
   height: 36px;
   position: static;
   display: grid;
   place-items: center;
   text-align: center;
   border-radius: 0 !important;
-  border: 4px solid #accedb !important;
-  background-color: #fff;
+  border: 4px solid #fff !important;
+  background-color: #35A344;
+  color: #fff;
+  box-shadow: 0 2px 7px #333;
   z-index: 20;
   pointer-events: none !important;
 }
@@ -196,10 +203,12 @@
   -ms-overflow-style: none; /* IE, Edge */
   scrollbar-width: none; /* Firefox */
 }
+
 .linesdetail-hide-scrollbar::-webkit-scrollbar
 {
   display: none; /* Chrome, Safari */
 }
+
 /* 실시간 지하철 위치 */
 .linesdetail-subwaysbox {
   container-type: inline-size;
@@ -216,6 +225,7 @@
   justify-content: center;
   align-items: center;
 }
+
 .linesdetail-subways {
   width: 100%;
   height: clamp(
@@ -228,6 +238,7 @@
   justify-content: space-evenly;
   align-items: center;
 }
+
 .linesdetail-subway-line-up {
   width: 30px;
   height: 100%;
@@ -240,14 +251,17 @@
   z-index: 10;
   overflow: hidden;
 }
+
 .linesdetail-subway-up-image {
   width: 30px;
   display: block;
 }
+
 .linesdetail-subway-up-image2 {
   width: 30px;
   display: block;
 }
+
 .linesdetail-subway-line-down {
   width: 30px;
   height: 100%;
@@ -260,10 +274,12 @@
   z-index: 10;
   overflow: hidden;
 }
+
 .linesdetail-subway-down-image {
   width: 30px;
   display: block;
 }
+
 .linesdetail-subway-up-p {
   container-type: inline-size;
   width: 140px;
@@ -275,12 +291,14 @@
   visibility: hidden;
   z-index: 50;
 }
+
 .linesdetail-subway-up-image:hover ~ .linesdetail-subway-up-p {
   display: inline-block;
   opacity: 1;
   visibility: visible;
   z-index: 50;
 }
+
 .linesdetail-subway-down-image2 {
   width: 30px;
   display: block;

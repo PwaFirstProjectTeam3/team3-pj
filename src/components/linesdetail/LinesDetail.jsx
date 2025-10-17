@@ -6,6 +6,9 @@ import "./LinesDetail.css";
 
 
 function LinesDetail() {
+
+  const navigate = useNavigate();
+
   const { lineId } = useParams();
   const lineNum = lineId.replace('line', '') + '호선';
 
@@ -21,7 +24,7 @@ function LinesDetail() {
     return names.map((stationName, i) => ({ name: String(stationName), idx: i }));
   }, [lineNum]);
 
-  // 헤더 표기
+  // 호선 표기
   const readLineTag = (name) => {
     const matchResult =
     String(name).match(/([0-9]+)[ ]*호선/);
@@ -129,21 +132,26 @@ function LinesDetail() {
     return () => stations.forEach((el) => el.removeEventListener('click', onClicked));
   },[]);
 
-  const navigate = useNavigate();
-
   const goToDetails = (station) => {
     navigate(`/linesdetail/${lineId}/details/${station}`)
   }
+
   useEffect(() => {
-    const popPop = document.querySelector('.linesdetail-subway-up-p')
-    const image1 = document.querySelector('.linesdetail-subway-up-image')
-    image1.addEventListener("mouseenter", () => {
-      popPop.style.visibility ='visible';
-    });
-    image1.addEventListener('mouseleave', () => {
-    popPop.style.visibility = 'hidden';
-  });
-  })
+  const popPop = document.querySelector('.linesdetail-subway-up-p');
+  const image1 = document.querySelector('.linesdetail-subway-up-image');
+  if (!popPop || !image1) return;
+
+  const onEnter = () => (popPop.style.visibility = 'visible');
+  const onLeave = () => (popPop.style.visibility = 'hidden');
+
+  image1.addEventListener('mouseenter', onEnter);
+  image1.addEventListener('mouseleave', onLeave);
+
+  return () => {
+    image1.removeEventListener('mouseenter', onEnter);
+    image1.removeEventListener('mouseleave', onLeave);
+  };
+}, []); // ✅ mount/unmount 시 한 번만 등록
 
 useEffect(() => {
   const topToScroll = document.querySelector(".linesdetail-stations");
@@ -152,7 +160,7 @@ useEffect(() => {
 
   const apply = () => {
     const width = (basis ?? topToScroll).getBoundingClientRect().width;
-    const isSmall = width <= 789.5;
+    const isSmallPage = width <= 789.5;
     const atTop = topToScroll.scrollTop <= 0;
 
     // 초기화
@@ -164,8 +172,8 @@ useEffect(() => {
     if (!atTop) 
       return;
 
-    const selector = isSmall ? ".station7" : ".station8";
-    const target = topToScroll.querySelector(selector);
+    const loopAndBranchLinePageWidth = isSmallPage ? ".station7" : ".station8";
+    const target = topToScroll.querySelector(loopAndBranchLinePageWidth);
 
     if (target) {
       target.style.overflow = "hidden";
@@ -220,16 +228,15 @@ useEffect(() => {
                 <div className="linesdetail-stationscontainer">
                   <div className="linesdetail-stations linesdetail-hide-scrollbar" ref={listRef}>
                     {stations.map(({ name }, idx) => {
-                    // 글자 수가 7자 이상인지 판단
-                     const lengthForCheck = name.length;
-                    // 표시용: '-'는 그대로 둠
-                    const isLongName = lengthForCheck >= 7;
-                    const displayName = isLongName ? name.slice(0, 5) + "..." : name;
 
                     const branchLine = name.includes("지선");
                     const loopLine = name.includes("순환선");
+                    
+                    const linesDetailDisplayName = (branchLine || loopLine)
+                    ? name
+                    : (name.length >= 7 ? name.slice(0, 5) + "..." : name );
 
-                    const classStation = [
+                    const linesDetailClassStation = [
                     "linesdetail-station",
                     branchLine && "linesdetail-branchLine",
                     loopLine && "linesdetail-loopLine",
@@ -240,12 +247,12 @@ useEffect(() => {
 
                     return (
                          <div
-                        className={classStation}
+                        className={linesDetailClassStation}
                         key={`${lineNum}-${name}-${idx}`}
                         ref={idx === 0 ? stationRef : null}
-                        onClick={() => goToDetails(displayName)}
+                        onClick={() => goToDetails(linesDetailDisplayName)}
                           >
-                        {displayName}
+                        {linesDetailDisplayName}
                           </div>
                           );
                     })}

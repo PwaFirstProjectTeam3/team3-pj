@@ -22,7 +22,7 @@ const subwayLinesSlice = createSlice({
   extraReducers: builder => {
     builder
     .addMatcher(
-        action => action.type.endsWith('/pending'),
+        action => action => action.type.startsWith('subwayLinesSlice/') && action.type.endsWith('/pending'),
         state => {
           console.log('처리중입니다.');
         }
