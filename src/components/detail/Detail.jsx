@@ -161,17 +161,20 @@ function Detail() {
         <div className='next-station-container' >
           {/* <div className="prev-station left"><p>〈 종각</p></div> */}
           {/* <div className="next-station right"><p>서울역 〉</p></div> */}
-          <div className={`prev-station left ${!prevStation ? "disabled" : ""}`} onClick={prevStation ? MovePrevStation : undefined} style={{cursor: prevStation ? 'pointer' : 'default'}} >
-            <p>〈 {prevStation || ""}</p>
+          <div className={`prev-station ${!prevStation ? "disabled" : ""}`} onClick={prevStation ? MovePrevStation : undefined} style={{cursor: prevStation ? 'pointer' : 'default'}} >
+            {/* <p>〈 {prevStation || ""}</p> */}
+            <span className='prev-station-arrow' >〈 </span>
+            <span className='prev-station-name' >{prevStation || ""}</span>
           </div>
-          <div className={`next-station right ${!nextStation ? "disabled" : ""}`} onClick={nextStation ? MoveNextStation : undefined} style={{cursor: nextStation ? 'pointer' : 'default'}} >
-            <p>{nextStation || ""} 〉</p>
+          <div className={`next-station ${!nextStation ? "disabled" : ""}`} onClick={nextStation ? MoveNextStation : undefined} style={{cursor: nextStation ? 'pointer' : 'default'}} >
+            <span className='next-station-name' >{nextStation || ""}</span>
+            <span className='next-station-arrow' > 〉</span>
           </div>
         </div>
         {/* 현재역 표시 */}
         <div className="now-station">
           <span className='line-num' >{lineSymbol}</span>
-          <span>{station}</span>
+          <span className='now-station-name' >{station}</span>
         </div>
 
         {/* 도착정보 */}

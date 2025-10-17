@@ -250,7 +250,7 @@ useEffect(() => {
                         className={linesDetailClassStation}
                         key={`${lineNum}-${name}-${idx}`}
                         ref={idx === 0 ? stationRef : null}
-                        onClick={() => goToDetails(linesDetailDisplayName)}
+                        onClick={() => goToDetails(name)}
                           >
                         {linesDetailDisplayName}
                           </div>
