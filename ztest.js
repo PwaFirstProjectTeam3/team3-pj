@@ -1,0 +1,200 @@
+const XML = `<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<route>
+    <sLang>k</sLang>
+    <dayKind>WEEKDAY</dayKind>
+    <startStationCode>2622</startStationCode>
+    <startStationName>망원</startStationName>
+    <endStationCode>0234</endStationCode>
+    <endStationName>신도림</endStationName>
+    <transferNum>1</transferNum>
+    <totalTime>15</totalTime>
+    <writeDate>20251017 12:35:51</writeDate>
+    <price>1550</price>
+    <price2>1650</price2>
+    <div>11</div>
+    <regular>68200</regular>
+    <regularStep>0</regularStep>
+    <distance>6.0</distance>
+    <XStartStationnumber>621</XStartStationnumber>
+    <XEndStationnumber>234</XEndStationnumber>
+    <teensPrice>900</teensPrice>
+    <teensPrice2>1650</teensPrice2>
+    <childPrice>550</childPrice>
+    <childPrice2>550</childPrice2>
+    <startLatitude>37.555943859991</startLatitude>
+    <startLongitude>126.90981655224</startLongitude>
+    <endLatitude>37.508749940191</endLatitude>
+    <endLongitude>126.89125105975</endLongitude>
+    <sPath>
+        <pathList>
+            <endLatitude>37.549798878035</endLatitude>
+            <endLongitude>126.91412387745</endLongitude>
+            <endStationCode>2623</endStationCode>
+            <endStationName>합정</endStationName>
+            <endTime>124140</endTime>
+            <line>6</line>
+            <pathType>spath</pathType>
+            <runTime>02:00</runTime>
+            <startLatitude>37.555943859991</startLatitude>
+            <startLongitude>126.90981655224</startLongitude>
+            <startStationCode>2622</startStationCode>
+            <startStationName>망원</startStationName>
+            <startTime>124020</startTime>
+            <upDown>DOWN</upDown>
+            <viewTime>2</viewTime>
+            <XEndStationnumber>622</XEndStationnumber>
+            <XStartStationnumber>621</XStartStationnumber>
+        </pathList>
+        <pathList>
+            <endLatitude>37.549598878035</endLatitude>
+            <endLongitude>126.91412387745</endLongitude>
+            <endStationCode>0238</endStationCode>
+            <endStationName>합정</endStationName>
+            <endTime>null</endTime>
+            <line>6</line>
+            <pathType>tpath</pathType>
+            <startLatitude>37.549798878035</startLatitude>
+            <startLongitude>126.91412387745</startLongitude>
+            <startStationCode>2623</startStationCode>
+            <startStationName>합정</startStationName>
+            <startTime>null</startTime>
+            <upDown></upDown>
+            <viewTime> </viewTime>
+            <XEndStationnumber> </XEndStationnumber>
+            <XStartStationnumber>622</XStartStationnumber>
+        </pathList>
+        <pathList>
+            <endLatitude>37.534257527403085</endLatitude>
+            <endLongitude>126.90242410030254</endLongitude>
+            <endStationCode>0237</endStationCode>
+            <endStationName>당산</endStationName>
+            <endTime>null</endTime>
+            <line>2</line>
+            <pathType>spath</pathType>
+            <runTime>03:00</runTime>
+            <startLatitude>37.549598878035</startLatitude>
+            <startLongitude>126.91412387745</startLongitude>
+            <startStationCode>0238</startStationCode>
+            <startStationName>합정</startStationName>
+            <startTime>124700</startTime>
+            <upDown>DOWN</upDown>
+            <viewTime>8</viewTime>
+            <XEndStationnumber>237</XEndStationnumber>
+            <XStartStationnumber>238</XStartStationnumber>
+        </pathList>
+        <pathList>
+            <endLatitude>37.525248472289</endLatitude>
+            <endLongitude>126.89583333918</endLongitude>
+            <endStationCode>0236</endStationCode>
+            <endStationName>영등포구청</endStationName>
+            <endTime>null</endTime>
+            <line>2</line>
+            <pathType>spath</pathType>
+            <runTime>02:00</runTime>
+            <startLatitude>37.534257527403085</startLatitude>
+            <startLongitude>126.90242410030254</startLongitude>
+            <startStationCode>0237</startStationCode>
+            <startStationName>당산</startStationName>
+            <startTime>null</startTime>
+            <upDown>DOWN</upDown>
+            <viewTime>10</viewTime>
+            <XEndStationnumber>236</XEndStationnumber>
+            <XStartStationnumber>237</XStartStationnumber>
+        </pathList>
+        <pathList>
+            <endLatitude>37.517797355814</endLatitude>
+            <endLongitude>126.89454385427</endLongitude>
+            <endStationCode>0235</endStationCode>
+            <endStationName>문래</endStationName>
+            <endTime>null</endTime>
+            <line>2</line>
+            <pathType>spath</pathType>
+            <runTime>01:30</runTime>
+            <startLatitude>37.525248472289</startLatitude>
+            <startLongitude>126.89583333918</startLongitude>
+            <startStationCode>0236</startStationCode>
+            <startStationName>영등포구청</startStationName>
+            <startTime>null</startTime>
+            <upDown>DOWN</upDown>
+            <viewTime>11</viewTime>
+            <XEndStationnumber>235</XEndStationnumber>
+            <XStartStationnumber>236</XStartStationnumber>
+        </pathList>
+        <pathList>
+            <endLatitude>37.508749940191</endLatitude>
+            <endLongitude>126.89125105975</endLongitude>
+            <endStationCode>0234</endStationCode>
+            <endStationName>신도림</endStationName>
+            <endTime>125530</endTime>
+            <line>2</line>
+            <pathType>spath</pathType>
+            <runTime>02:30</runTime>
+            <startLatitude>37.517797355814</startLatitude>
+            <startLongitude>126.89454385427</startLongitude>
+            <startStationCode>0235</startStationCode>
+            <startStationName>문래</startStationName>
+            <startTime>null</startTime>
+            <upDown>DOWN</upDown>
+            <viewTime>14</viewTime>
+            <XEndStationnumber>234</XEndStationnumber>
+            <XStartStationnumber>235</XStartStationnumber>
+        </pathList>
+    </sPath>
+    <sTransfer>
+        <transferList>
+            <afterLine>2호선</afterLine>
+            <beforeLine>6호선</beforeLine>
+            <door>2</door>
+            <timeavg>3</timeavg>
+            <train>6</train>
+        </transferList>
+    </sTransfer>
+    <lastTimeList>
+        <lastTime>
+            <lastTimeDay>00:31:20 (한강진행)</lastTimeDay>
+            <lastTimeHoli></lastTimeHoli>
+            <lastTimeSat>23:42:40 (한강진행)</lastTimeSat>
+            <lastTimeSun>23:42:40 (한강진행)</lastTimeSun>
+            <stationName>망원</stationName>
+            <type>startTime</type>
+        </lastTime>
+        <lastTime>
+            <lastTimeDay>00:52:00 (신도림행)</lastTimeDay>
+            <lastTimeHoli></lastTimeHoli>
+            <lastTimeSat>23:53:00 (신도림행)</lastTimeSat>
+            <lastTimeSun>23:53:00 (신도림행)</lastTimeSun>
+            <stationName>합정</stationName>
+            <type>startTime</type>
+        </lastTime>
+        <lastTime>
+            <lastTimeDay></lastTimeDay>
+            <lastTimeHoli></lastTimeHoli>
+            <lastTimeSat></lastTimeSat>
+            <lastTimeSun></lastTimeSun>
+            <type>startTime</type>
+        </lastTime>
+        <lastTime>
+            <lastTimeDay></lastTimeDay>
+            <lastTimeHoli></lastTimeHoli>
+            <lastTimeSat></lastTimeSat>
+            <lastTimeSun></lastTimeSun>
+            <type>endTime</type>
+        </lastTime>
+    </lastTimeList>
+    <endTrain>FALSE</endTrain>
+    <prevTime>123120</prevTime>
+    <nextTime>124720</nextTime>
+    <firstStartTime>053910</firstStartTime>
+    <lastStartTime>243120</lastStartTime>
+</route>`;
+
+const axiosResult = {
+  rawXML: XML, // 그대로 XML 문자열을 반환
+  meta: { // 사용자가 검색했을 때 어떤 요청인지를 구분하기 위함
+    sKind: String(1), // API는 보통 문자열을 받기 때문에 숫자로 들어가는 걸 방지
+    startStation: '2622',
+    endStation: '0234',
+  }
+}
+
+console.log(axiosResult);

@@ -17,8 +17,6 @@ const searchRouteSlice = createSlice({
     // sKind: '1',
 
     // 결과/상태
-    loading: false,
-    error: null,
     rawXML: '',
     meta: null,
   },
@@ -40,6 +38,9 @@ const searchRouteSlice = createSlice({
     },
     setLineNum: (state, action) => {
       state.lineNum = action.payload;
+    },
+    setCountStationNum: (state) => {
+      state.countStationNum += 1;
     },
     clearPathList: (state) => {
       state.startStation = '';
@@ -67,18 +68,33 @@ const searchRouteSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getSearchRoute.pending, (state) => {
-        state.loading = true;
-        state.error = null;
         state.rawXML = '';
         state.parsedRoute = null;
         state.meta = null;
       })
       .addCase(getSearchRoute.fulfilled, (state, action) => {
-        state.loading = false;
-        state.error = null;
         state.rawXML = action.payload?.rawXML || '';
         state.meta = action.payload?.meta || null;
-        state.parsedData = parseXMLResponse(action.payload?.rawXML);
+        const parsedXMLResponse = parseXMLResponse(action.payload?.rawXML);
+        const resultData = [];
+
+        // runTime 존재 여부 체크
+        parsedXMLResponse.map((parsedData) => {
+          if(parsedData.runTime) {
+            if (parsedData.startStation === '') {
+              
+            }
+            setEndStation(state.endStation.trim());
+            setCountStationNum();
+            setLineNum();
+            setTotalTime();
+          } else {
+            const 
+          }
+
+          state.parsedData = resultData;
+        })
+
 
         // try {
         //   const parsed = parseXMLResponse(state.rawXML);
@@ -89,8 +105,7 @@ const searchRouteSlice = createSlice({
 
       })
       .addCase(getSearchRoute.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || action.error?.message || '요청 실패';
+        console.error('요청 실패', action.error);
       });
     }
   });
