@@ -1,35 +1,30 @@
 import { useEffect, useRef, useState } from 'react';
 import './SearchIndex.css';
-import { ANNOTATION_VER_ROUTE_DISPLAY } from '../../configs/line-list-configs/subwayLinesRouteConfig';
-
-// 역 이름 → 호선 맵 생성
-const stationMap = (() => {
-  const map = {};
-  Object.entries(ANNOTATION_VER_ROUTE_DISPLAY).forEach(([line, stations]) => {
-    stations.forEach(name => {
-      if (!map[name]) map[name] = [];
-      map[name].push(line);
-    });
-  });
-  return map;
-})();
-
-// 자동완성 검색에 사용할 모든 역 이름 배열
-const searchStations = Object.keys(stationMap);
+import { useDispatch, useSelector } from 'react-redux';
+import { setArrivalStationFrCord, setArrivalStationId, setDepartureStationFrCord, setDepartureStationId } from '../../store/slices/searchSlice';
+import { searchIndex } from '../../store/thunks/searchThunk';
 
 function SearchIndex() {
+  const dispatch = useDispatch();
+
   const departureRef = useRef(null);
   const arrivalRef = useRef(null);
-  
+
+  const searchStationList = useSelector(state => state.search.list);
+  const searchDepartureStationId = useSelector(state => state.search.departureStationId);
+  const searchArrivalStationId = useSelector(state => state.search.arrivalStationId);
+  const searchDepartureStationFrCord = useSelector(state => state.search.departureStationFrCord);
+  const searchArrivalStationFrCord = useSelector(state => state.search.arrivalStationFrCord);
+
   const [departureInputValue, setDepartureInputValue] = useState(""); // 출발지 input에 입력된 역 명
   const [arrivalInputValue, setArrivalInputValue] = useState(""); // 도착지 input에 입력된 역 명
   const [activeField, setActiveField] = useState(null); // 출발지, 도착지 검색창 중 어떤 것이 활성화 되어있는지
-
+ 
   // 드롭다운 열기
   const searchOpenDropdown = (field) => {
     setActiveField(field); // 어떤 input이 활성화 되었는지
   };
-
+  
   // 드롭다운 닫기
   function searchCloseDropdown() {
     setActiveField(null);
@@ -37,41 +32,87 @@ function SearchIndex() {
   
   // 드롭다운 아이템 클릭 시 input에 값 넣고 드랍다운 닫기
   function handleSearchSelectStation(station) {
-    if (activeField === "departure") setDepartureInputValue(station);
-    else if (activeField === "arrival") setArrivalInputValue(station);
+    if (activeField === "departure") {
+      setDepartureInputValue(station.STATION_NM);
+      dispatch(setDepartureStationId(station.STATION_CD));
+      dispatch(setDepartureStationFrCord(station.FR_CODE));
+    } else if (activeField === "arrival") {
+      setArrivalInputValue(station.STATION_NM);
+      dispatch(setArrivalStationId(station.STATION_CD));
+      dispatch(setArrivalStationFrCord(station.FR_CODE));
+    }
     searchCloseDropdown();
   }
-
+  
   // input 클릭 시 입력값 초기화 및 드랍박스 오픈
   // 출발지
   function handleDepartureInputValuereset() {
-    if(departureInputValue) {
-      setDepartureInputValue('');
-
-      searchOpenDropdown("departure");
-    }
+    setDepartureInputValue('');
+    searchOpenDropdown("departure");
   }
   // 도착지
   function handleArrivalInputValuereset() {
-    if(arrivalInputValue) {
-      setArrivalInputValue('');
-
-      searchOpenDropdown("arrival");
-    }
+    setArrivalInputValue('');
+    searchOpenDropdown("arrival");
   }
+  
+  // 드롭다운 렌더링 함수
+  const renderDropdown = (stations) => {
+    return stations.map(station => {
+      // 중복 역 정보 가져오기
+      const duplicationStation = searchStationList.filter(s => s.STATION_NM === station.STATION_NM).length > 1;
+
+      // LINE_NUM 화면용 포맷: "01호선" → "1호선"
+      const displayLineNum = station.LINE_NUM.replace(/^0/, '');
+
+      // 각 매칭 객체를 <li>로 반환
+      return (
+        <li
+          key={station.STATION_CD}
+          onClick={() => handleSearchSelectStation(station)}
+          onMouseDown={e => e.preventDefault()}
+        >
+          <div className='dropdown-station-info'>
+            <span>{station.STATION_NM}</span>
+            <span className='dropdown-station-frcord'>{`(${station.FR_CODE})`}</span>
+          </div>
+          {duplicationStation && <span className="dropdown-station-line">{displayLineNum}</span>}
+        </li>
+      );
+    });
+  };
 
   // 역 이름 입력 시 상태 갱신
   function handleSearchInputChange(e, field) {
-    if (field === "departure") setDepartureInputValue(e.target.value);
-    else setArrivalInputValue(e.target.value);
-    searchOpenDropdown(field);
+    if (field === "departure") {
+      setDepartureInputValue(e.target.value);
+    } else {
+      setArrivalInputValue(e.target.value);
+      searchOpenDropdown(field);
+    }
   }
   
   // 입력값 기반 실시간 필터링
-  const searchFilteredStations = activeField === "departure" ? searchStations.filter(station => station.includes(departureInputValue)) : activeField === "arrival" ? searchStations.filter(station => station.includes(arrivalInputValue)) : [];
-
+  const searchFilteredStations = activeField
+  ? searchStationList
+      .filter(station => {
+        const searchInputValue = activeField === "departure" ? departureInputValue : arrivalInputValue;
+        return station.STATION_NM.toLowerCase().includes(searchInputValue.toLowerCase());
+      })
+      .filter(station => /^0[1-9]호선/.test(station.LINE_NUM)) // LINE_NUM이 1호선~9호선만 통과
+      .sort(function(a, b) {
+        return a.STATION_NM.localeCompare(
+          b.STATION_NM,       // 비교할 문자열
+          'ko',               // 한국어 기준
+          { sensitivity: 'base' } // 대소문자 구분 없이
+        );
+      }) // 드랍다운 목록 가나다순으로 정렬 처리
+  : [];
+  
   // 외부 클릭 시 드롭다운 닫기
   useEffect(() => {
+    dispatch(searchIndex());
+
     function handleSearchClickOutside(event) {
       if (departureRef.current && !departureRef.current.contains(event.target) && arrivalRef.current && !arrivalRef.current.contains(event.target)) {
         searchCloseDropdown();
@@ -112,28 +153,7 @@ function SearchIndex() {
             />
             {activeField === "departure" && searchFilteredStations.length > 0 && (
               <ul className="search-dropdown">
-                {searchFilteredStations.map(station => (
-                  stationMap[station].length > 1
-                    ? stationMap[station].map(line => (
-                        <li
-                          key={`${station}-${line}`}
-                          onClick={() => handleSearchSelectStation(station)}
-                          onMouseDown={e => e.preventDefault()}
-                        >
-                          <span>{station}</span>
-                          <span className="dropdown-station-line">{line}</span>
-                        </li>
-                      ))
-                    : (
-                      <li
-                        key={station}
-                        onClick={() => handleSearchSelectStation(station)}
-                        onMouseDown={e => e.preventDefault()}
-                      >
-                        <span>{station}</span>
-                      </li>
-                    )
-                ))}
+                {renderDropdown(searchFilteredStations)}
               </ul>
             )}
           </div>
@@ -151,30 +171,9 @@ function SearchIndex() {
             />
             {activeField === "arrival" && searchFilteredStations.length > 0 && (
               <ul className="search-dropdown">
-                {searchFilteredStations.map(station => (
-                  stationMap[station].length > 1
-                    ? stationMap[station].map(line => (
-                        <li
-                          key={`${station}-${line}`}
-                          onClick={() => handleSearchSelectStation(station)}
-                          onMouseDown={e => e.preventDefault()}
-                        >
-                          <span>{station}</span>
-                          <span className="dropdown-station-line">{line}</span>
-                        </li>
-                      ))
-                    : (
-                      <li
-                        key={station}
-                        onClick={() => handleSearchSelectStation(station)}
-                        onMouseDown={e => e.preventDefault()}
-                      >
-                        <span>{station}</span>
-                      </li>
-                    )
-                ))}
-            </ul>
-          )}
+                {renderDropdown(searchFilteredStations)}
+              </ul>
+            )}
           </div>
           <div className='search-btns'>
             <button className='reset-btn' onClick={resetBtn} type="button">리셋</button>

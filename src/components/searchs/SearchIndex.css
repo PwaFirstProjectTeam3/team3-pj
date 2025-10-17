@@ -55,12 +55,16 @@
   background-color: #f0f0f0;
 }
 
+.dropdown-station-frcord {
+  margin-left: 5px;
+  color: #585858;
+  font-size: 10px;
+}
+
 .dropdown-station-line {
-  margin-left: 10px;
   color: #585858;
   font-size: 12px;
 }
-
 
 /* 위아래 교체, 리셋, 길찾기버튼 */
 .reverse-btn {
