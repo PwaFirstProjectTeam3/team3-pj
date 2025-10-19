@@ -10,11 +10,9 @@ const searchRouteSlice = createSlice({
     endStationId: '',
     startStation: '',
     endStation: '',
-    totalTime: 0,
-    lineNum: '',
-    countStationNum: 0,
+
     parsedData: [], // 파싱 결과(객체) 저장용
-    // sKind: '1',
+    sKind: '1',
 
     // 결과/상태
     rawXML: '',
@@ -33,22 +31,6 @@ const searchRouteSlice = createSlice({
     setEndStation: (state, action) => {
       state.endStation = action.payload;
     },
-    setTotalTime: (state, action) => {
-      state.totalTime = action.payload;
-    },
-    setLineNum: (state, action) => {
-      state.lineNum = action.payload;
-    },
-    setCountStationNum: (state) => {
-      state.countStationNum += 1;
-    },
-    clearPathList: (state) => {
-      state.startStation = '';
-      state.endStation = '';
-      state.totalTime = 0;
-      state.lineNum = '';
-      state.countStationNum = 0;
-    }
     // setSKind: (state, action) => {
     //   state.sKind = String(action.payload ?? '1');
     // },
@@ -69,45 +51,66 @@ const searchRouteSlice = createSlice({
     builder
       .addCase(getSearchRoute.pending, (state) => {
         state.rawXML = '';
-        state.parsedRoute = null;
+        state.parsedData = null;
         state.meta = null;
       })
       .addCase(getSearchRoute.fulfilled, (state, action) => {
         state.rawXML = action.payload?.rawXML || '';
         state.meta = action.payload?.meta || null;
+
         const parsedXMLResponse = parseXMLResponse(action.payload?.rawXML);
         const resultData = [];
 
+        // 변수 선언
+        let currentStartStation = '';
+        let currentEndStation = '';
+        let stationCount = 0;
+        let currentLine = '';
+        let totalRunTime = 0;
+
+        const accumulationPush = () => {
+          if (!currentStartStation || !currentEndStation || !currentLine) return; // 누적이 없으면 무시
+          resultData.push({
+            startStation: currentStartStation,
+            endStation: currentEndStation,
+            stationCount,
+            line: currentLine,
+            totalTime: totalRunTime,
+          });
+        };
+
         // runTime 존재 여부 체크
-        parsedXMLResponse.map((parsedData) => {
+        parsedXMLResponse.forEach((parsedData) => {
           if(parsedData.runTime) {
-            if (parsedData.startStation === '') {
-              
+            if (!currentStartStation) {
+              currentStartStation = (parsedData.startStation ?? '').trim();
             }
-            setEndStation(state.endStation.trim());
-            setCountStationNum();
-            setLineNum();
-            setTotalTime();
+            currentEndStation = (parsedData.endStation ?? '').trim();
+            stationCount += 1;
+            if (!currentLine) {
+              currentLine = (parsedData.line ?? '').trim();
+            }
+            totalRunTime += parsedData.runTime;
           } else {
-            const 
+            // 누적된 값 저장
+            accumulationPush();
+            
+            // 변수 초기화
+            currentStartStation = '';
+            currentEndStation = '';
+            stationCount = 0;
+            currentLine = '';
+            totalRunTime = 0;
           }
+        });
 
-          state.parsedData = resultData;
-        })
+        accumulationPush();
 
-
-        // try {
-        //   const parsed = parseXMLResponse(state.rawXML);
-        //   state.parsedRoute = enrichWithBaseTime(parsed, new Date());
-        // } catch {
-        //   state.parsedRoute = null;
-        // }
-
+        state.parsedData = resultData;
       })
       .addCase(getSearchRoute.rejected, (state, action) => {
         console.error('요청 실패', action.error);
-        console.error('요청 실패', action.error);
-      });
+      })
     }
   });
   
@@ -116,9 +119,6 @@ export const {
   setEndStationId,
   setStartStation,
   setEndStation,
-  setSKind,
-  // swapStations,
-  clearRoute
 } = searchRouteSlice.actions;
 
 export default searchRouteSlice.reducer;

@@ -6,6 +6,8 @@ const getSearchRoute = createAsyncThunk(
   async (arg, thunkAPI) => {
     try {
       const state = thunkAPI.getState();
+
+      const searchKind = String(arg?.sKind ?? state.sKind);
       // const {
       //   startStationId, // 출발역 ID
       //   endStationId, // 도착역 ID
