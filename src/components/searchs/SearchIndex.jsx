@@ -48,11 +48,17 @@ function SearchIndex() {
   // 출발지
   function handleDepartureInputValuereset() {
     setDepartureInputValue('');
+    dispatch(setDepartureStationId(''));
+    dispatch(setDepartureStationFrCord(''));
+
     searchOpenDropdown("departure");
   }
   // 도착지
   function handleArrivalInputValuereset() {
     setArrivalInputValue('');
+    dispatch(setArrivalStationId(''));
+    dispatch(setArrivalStationFrCord(''));
+
     searchOpenDropdown("arrival");
   }
   
