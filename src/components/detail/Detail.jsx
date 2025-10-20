@@ -180,12 +180,12 @@ function Detail() {
           {/* <div className="next-station right"><p>서울역 〉</p></div> */}
           <div className={`prev-station ${!prevStation ? "disabled" : ""}`} onClick={prevStation ? MovePrevStation : undefined} style={{cursor: prevStation ? 'pointer' : 'default'}} >
             {/* <p>〈 {prevStation || ""}</p> */}
-            <span className='prev-station-arrow' >〈 </span>
+            <span className='prev-station-arrow' >〈</span>
             <span className='prev-station-name' >{prevStation || ""}</span>
           </div>
           <div className={`next-station ${!nextStation ? "disabled" : ""}`} onClick={nextStation ? MoveNextStation : undefined} style={{cursor: nextStation ? 'pointer' : 'default'}} >
             <span className='next-station-name' >{nextStation || ""}</span>
-            <span className='next-station-arrow' > 〉</span>
+            <span className='next-station-arrow' >〉</span>
           </div>
         </div>
         {/* 현재역 표시 */}
@@ -195,44 +195,6 @@ function Detail() {
         </div>
 
         {/* 도착정보 */}
-        {/* <div>
-          <div className="arrival-title">
-            <p>도착 정보</p>
-          </div>
-          <div className="arrival-container">
-            <div>
-              <div className="arrival-direction">
-                <p>연천 방면</p>
-              </div>
-              <div className="arrival-info">
-                <div className="arrival-info-1">
-                  <span>광운대</span>
-                  <span>6분</span>
-                </div>
-                <div className="arrival-info-2">
-                  <span>청량리</span>
-                  <span>12분</span>
-                </div>
-              </div>
-            </div>
-            <div>
-              <div className="arrival-direction">
-                <p>인천,신창 방면</p>
-              </div>
-              <div className="arrival-info">
-                <div className="arrival-info-1">
-                  <span>신창</span>
-                  <span>3분</span>
-                </div>
-                <div className="arrival-info-1">
-                  <span>서동탄</span>
-                  <span>6분</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
-
         <div>
           <div className="arrival-title">
             <p>도착 정보</p>
@@ -242,7 +204,7 @@ function Detail() {
               Object.entries(groupedByDirection).map(([direction, trains]) => (
                 <div key={direction}>
                   <div className="arrival-direction">
-                    <p className={`arrival-direction-nm ${direction.length > 10 ? (direction.length > 14 ? "longer" : "long") : ""}`}>{direction}</p>
+                    <p>{direction}</p>
                   </div>
                   <div className="arrival-info">
                     {trains.map((train, idx) => (

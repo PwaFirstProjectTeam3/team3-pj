@@ -70,7 +70,7 @@
 
 /* 현재역 표시 (가운데 떠 있음) */
 .now-station {
-  padding: 0 7px;
+  padding: 0 10px;
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
@@ -78,7 +78,7 @@
   justify-content: center;
 
   display: flex;
-  gap: 5px;
+  gap: 4px;
 
   border: 3px solid var(--line-color);
   background-color: #fff;
@@ -86,24 +86,30 @@
   height: 50px;
   border-radius: 50px;
   font-weight: 700;
-  font-size: 20px;
+  font-size: 19px;
+  line-height: 2px;
   width: 30%;
   min-width: 150px;
   max-width: 250px; /* 필요 시 제한 */
   z-index: 2; /* 위로 띄움 */
 }
 
-/* 현재역명 : 5글자 초과시 설정 */
+/* 현재역명 : 5글자 초과시 설정 (6,7) */
 .now-station-name.long {
   display: flex;
+  text-align: center;
   justify-content: center;
-  transform: scale(0.85);
+  font-size: 16px;
+  line-height: 20px;
 }
-/* 현재역명 : 7글자 초과시 설정 */
+/* 현재역명 : 7글자 초과시 설정 (8,9) */
 .now-station-name.longer {
+  padding: 3px 0;
   display: flex;
+  text-align: center;
   justify-content: center;
-  transform: scale(0.75);
+  font-size: 16px;
+  line-height: 20px;
 }
 
 /* 노선 심볼 */
@@ -130,7 +136,7 @@
   padding: 20px;
   gap: 10px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 }
 
 .arrival-direction {
@@ -142,21 +148,6 @@
   font-size: 18px;
   font-weight: 500;
   line-height: 38px;
-}
-
-/* 방면 : 10글자 초과시 설정 */
-.arrival-direction-nm.long {
-  display: flex;
-  justify-content: center;
-  transform: scale(0.90);
-  white-space: nowrap;
-}
-/* 방면 : 14글자 초과시 설정 */
-.arrival-direction-nm.longer {
-  display: flex;
-  justify-content: center;
-  transform: scale(0.74);
-  white-space: nowrap;
 }
 
 .arrival-info {
