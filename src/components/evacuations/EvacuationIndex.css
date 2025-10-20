@@ -11,10 +11,22 @@
   gap: 20px;
 }
 
+.line-search, .station-search {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .line-search label, .station-search label {
   width: 63px;
   font-size: 18px;
   font-weight: bold;
+}
+
+.line-dropdown-container, .station-dropdown-container {
+  flex: 1;
+  position: relative;
+  display: flex;
 }
 
 .evacuation-input {
@@ -24,28 +36,28 @@
   background-color: #fff;
   outline: none;
   border: 1px solid #000;
-}
-
-.line-search, .station-search {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.line-search select {
-  /* 브라우저 기본 화살표 제어 */
-  appearance: none;       /* Chrome, Safari */
-  -webkit-appearance: none; /* iOS, Safari */
-  -moz-appearance: none;  /* Firefox */
-  
-  background-image: url('/btn/dropbox-btn.svg');
-  background-repeat: no-repeat;
-  background-position: right 10px center;
   cursor: pointer;
 }
 
-.station-search {
-  position: relative;
+/* 호선선택 드랍다운에 화살표 아이콘 넣기 */
+.dropdown-btn {
+  position: absolute;
+  top: 50%;
+  right: 11px;
+  width: 15px;
+  height: 10px;
+  background-image: url('/public/btn/dropbox-btn.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  transform: translateY(-50%) rotate(0deg);
+  transition: transform 0.2s;
+  transform-origin: center center; /* 중앙 회전 */
+  cursor: pointer;
+}
+
+/* 드랍다운이 열리면 화살표 회전 */
+.dropdown-btn.evacuation-line-search-open {
+  transform: translateY(-50%) rotate(180deg);
 }
 
 .station-search input {
@@ -72,7 +84,7 @@
 .tooltip {
   position: absolute;
   top: 37px;
-  left: 63px;
+  left: 0;
   background-color: #333;
   color: #fff;
   border: 1px solid #000;
@@ -86,10 +98,10 @@
 
 
 /* 드랍다운 */
-.dropdown {
+.evacuation-dropdown {
   position: absolute;
   top: 37px;
-  left: 63px;
+  left: 0px;
   right: 0px;
   border: 1px solid #ccc;
   border-top: 1px solid #000;
@@ -101,12 +113,12 @@
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
-.dropdown li {
+.evacuation-dropdown li {
   padding: 5px 10px;
   cursor: pointer;
 }
 
-.dropdown li:hover {
+.evacuation-dropdown li:hover {
   background-color: #f0f0f0;
 }
 

@@ -25,36 +25,65 @@ const lineMap = {
   "line-9": line9List,
 }
 
+// 호선 목록
+// value 내부 식별용 키 / label UI 표시 용
+const lineOptions = [
+  { value: "line-1", label: "1호선" },
+  { value: "line-2", label: "2호선" },
+  { value: "line-3", label: "3호선" },
+  { value: "line-4", label: "4호선" },
+  { value: "line-5", label: "5호선" },
+  { value: "line-6", label: "6호선" },
+  { value: "line-7", label: "7호선" },
+  { value: "line-8", label: "8호선" },
+  { value: "line-9", label: "9호선" },
+];
+
 function EvacuationIndex() {
   const dispatch = useDispatch();
 
   const evacuationSearchList = useSelector(state => state.evacuation.list);
 
   const [selectedLine, setSelectedLine] = useState(""); // 선택된 호선
+  const [lineDropdownOpen, setLineDropdownOpen] = useState(false); // 호선의 선택창의 드랍다운이 열렸는지 안 열렸는지
   const [inputValue, setInputValue] = useState(""); // input에 입력된 역 명
-  const [isOpen, setIsOpen] = useState(false); // 역 검색창을 눌렀는지 안 눌렀는지
+  const [stationDropdownOpen, setStationDropdownOpen] = useState(false); // 역 검색창을 눌렀는지 안 눌렀는지
   const [tooltipVisible, setTooltipVisible] = useState(false); // 툴팁 출력
   const [isLoaded, setIsLoaded] = useState(false); // 이미지가 로드 됐는지 안 됐는지
   const [matchedItem, setMatchedItem] = useState([]); // inputValue와 api의 역 명이 같은 아이템 하나
   const [isSearched, setIsSearched] = useState(false); // 검색 여부 저장
 
-  const containerRef = useRef(null);
+  const evacuationLineSearchRef = useRef(null);
+  const evacuationStationSearchRef = useRef(null);
+
+  // 선택된 호선의 역 배열 가져오기
+  const stations = lineMap[selectedLine] || [];
+  
+  // 호선 드롭다운 토글
+  function toggleLineDropdown() {
+    setLineDropdownOpen(prev => !prev);
+  }
 
   // 호선 선택
-  function handleLineChange(e) {
-    const line = e.target.value;
-    setSelectedLine(line);
-    setIsOpen(false);
+  function handleSelectLine(lineValue) {
+    setSelectedLine(lineValue);
+    setLineDropdownOpen(false);
     // 호선 변경 시 state 초기화
     setInputValue("");
     setMatchedItem([]);
     setIsLoaded(false);
     setIsSearched(false);
   }
-  
-  // 선택된 호선의 역 배열 가져오기
-  const stations = lineMap[selectedLine] || [];
 
+  // 툴팁 출력
+  function handleInputFocus() {
+    if (!stations.length) {
+      setTooltipVisible(true);
+    } else {
+      setStationDropdownOpen(true);
+    }
+  }
+  
   // input 클릭 시 state 초기화
   function handleInputValueChange() {
     if(inputValue !== '') {
@@ -62,40 +91,20 @@ function EvacuationIndex() {
       setMatchedItem([]);
       setIsLoaded(false);
       setIsSearched(false);
-      
-      setIsOpen(true);
     }
+    setStationDropdownOpen(true);
   }
   
-  // 툴팁 출력
-  function handleInputFocus() {
-    if (!stations.length) {
-      setTooltipVisible(true);
-    } else {
-      setIsOpen(true);
-    }
-  }
-
-  // 드롭다운 열기 (onFocus, 입력 시)
-  function openDropdown() {
-    setIsOpen(true);
-  }
-
-  // 드롭다운 닫기
-  function closeDropdown() {
-    setIsOpen(false);
-  }
-  
-  // 드롭다운 아이템 클릭 시 input에 값 넣고 드랍다운 닫기
+  // 역 검색 드롭다운 아이템 클릭 시 input에 값 넣고 드랍다운 닫기
   function handleSelectStation(station) {
     setInputValue(station);
-    closeDropdown();
+    setStationDropdownOpen(false);
   }
 
   // 역 이름 입력 시 상태 갱신
   function handleInputChange(e) {
     setInputValue(e.target.value);
-    openDropdown();
+    setStationDropdownOpen(true);
   }
   
   // 입력값 기반 실시간 필터링
@@ -105,9 +114,7 @@ function EvacuationIndex() {
   function searchStation() {
     setIsSearched(true);
     
-    setMatchedItem(evacuationSearchList.find(
-      (item) => item.STTN === `${inputValue}역`
-    ))
+    setMatchedItem(evacuationSearchList.find((item) => item.STTN === `${inputValue}역`) || null);
     if(matchedItem !== null) {
       setIsLoaded(false);
     }
@@ -130,8 +137,11 @@ function EvacuationIndex() {
     dispatch(evacuationIndex());
 
     function handleClickOutside(event) {
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
-        closeDropdown();
+      if (evacuationLineSearchRef.current && !evacuationLineSearchRef.current.contains(event.target)) {
+        setLineDropdownOpen(false);
+      }
+      if (evacuationStationSearchRef.current && !evacuationStationSearchRef.current.contains(event.target)) {
+        setStationDropdownOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -143,52 +153,64 @@ function EvacuationIndex() {
     <>
       <div className="evacuation-container">
         <div className='evacuation-search-box'>
-          <div className='line-search'>
+          <div className='line-search' ref={evacuationLineSearchRef}>
             <label htmlFor="line-select">호선</label>
-            <select className='evacuation-input' value={selectedLine} onChange={handleLineChange} id="line-select">
-              <option value="" disabled hidden>호선을 선택하세요.</option>
-              <option value="line-1">1호선</option>
-              <option value="line-2">2호선</option>
-              <option value="line-3">3호선</option>
-              <option value="line-4">4호선</option>
-              <option value="line-5">5호선</option>
-              <option value="line-6">6호선</option>
-              <option value="line-7">7호선</option>
-              <option value="line-8">8호선</option>
-              <option value="line-9">9호선</option>
-            </select>
+            <div className='line-dropdown-container' onClick={toggleLineDropdown}>
+              <input
+                id='line-select'
+                className='evacuation-input'
+                readOnly
+                value={selectedLine ? lineOptions.find(option => option.value === selectedLine).label : "호선을 선택하세요."}
+                type="text"
+              />
+              <span className={`dropdown-btn ${lineDropdownOpen ? 'evacuation-line-search-open' : ''}`}></span>
+              {lineDropdownOpen && (
+                <ul className='evacuation-dropdown'>
+                  {lineOptions.map(option => (
+                    <li key={option.value} onClick={(e) => {
+                      e.stopPropagation(); // 버블링(이벤트가 부모로 전파되는 현상) 방지
+                      handleSelectLine(option.value)}}
+                    >
+                      {option.label}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
-          <div className='station-search' ref={containerRef}>
+          <div className='station-search' ref={evacuationStationSearchRef}>
             <label htmlFor="station-search-input">역 명</label>
-            <input className='evacuation-input'
-              value={inputValue}
-              onChange={handleInputChange}
-              onFocus={handleInputFocus}
-              onBlur={() => setTooltipVisible(false)}
-              onKeyDown={handleEnter}
-              onClick={handleInputValueChange}
-              autoComplete="off" // 브라우저 기본 자동완성 기능 끄기
-              type="text" id='station-search-input' placeholder='조회하실 역 명을 입력해주세요.'
-            />
-            <button className='station-search-btn' onClick={searchStation}></button>
-            {tooltipVisible && (
-              <div className="tooltip">
-                <p>호선을 선택해주세요.</p>
-              </div>
-            )}
-            {isOpen && filteredStations.length > 0 && (
-              <ul className="dropdown">
-                {filteredStations.map((station) => (
-                  <li
-                    key={station}
-                    onClick={() => handleSelectStation(station)}
-                    onMouseDown={(e) => e.preventDefault()} // input 포커스 유지
-                  >
-                    {station}
-                  </li>
-                ))}
-              </ul>
-            )}
+            <div className='station-dropdown-container'>
+              <input className='evacuation-input'
+                value={inputValue}
+                onChange={handleInputChange}
+                onFocus={handleInputFocus}
+                onBlur={() => setTooltipVisible(false)}
+                onKeyDown={handleEnter}
+                onClick={handleInputValueChange}
+                autoComplete="off" // 브라우저 기본 자동완성 기능 끄기
+                type="text" id='station-search-input' placeholder='조회하실 역 명을 입력해주세요.'
+              />
+              <button className='station-search-btn' onClick={searchStation}></button>
+              {tooltipVisible && (
+                <div className="tooltip">
+                  <p>호선을 선택해주세요.</p>
+                </div>
+              )}
+              {stationDropdownOpen && filteredStations.length > 0 && (
+                <ul className="evacuation-dropdown">
+                  {filteredStations.map((station) => (
+                    <li
+                      key={station}
+                      onClick={() => handleSelectStation(station)}
+                      onMouseDown={(e) => e.preventDefault()} // input 포커스 유지
+                    >
+                      {station}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
         </div>
         <div className={`img-card ${isLoaded ? '' : 'img-card-center'}`}>
