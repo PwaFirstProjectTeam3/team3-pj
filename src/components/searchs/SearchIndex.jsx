@@ -116,15 +116,23 @@ function SearchIndex() {
       })
   : [];
   
-  // 리버스 버튼 (수정필요)
+  // 리버스 버튼
   function reverseBtn() {
     if(departureInputValue && arrivalInputValue) {
+      // 값 임시저장
+      let temporarySaveInputValue = departureInputValue;
+      let temporarySaveStationId = searchDepartureStationId;
+      let temporarySaveFrCord = searchDepartureStationFrCord;
+
+      // input 뒤바꿈 처리
       setDepartureInputValue(arrivalInputValue);
-      setArrivalInputValue(departureInputValue);
+      setArrivalInputValue(temporarySaveInputValue);
+      // station id 뒤바꿈 처리
       dispatch(setDepartureStationId(searchArrivalStationId));
-      dispatch(setArrivalStationId(searchDepartureStationId));
+      dispatch(setArrivalStationId(temporarySaveStationId));
+      // station frcord 뒤바꿈 처리
       dispatch(setDepartureStationFrCord(searchArrivalStationFrCord));
-      dispatch(setArrivalStationFrCord(searchDepartureStationFrCord));
+      dispatch(setArrivalStationFrCord(temporarySaveFrCord));
     }
   }
   
