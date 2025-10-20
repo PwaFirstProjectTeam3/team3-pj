@@ -5,7 +5,7 @@ import LINE_COLORS from "../../configs/lineColors.js";
 import "./LinesDetail.css";
 
 
-function LinesDetailCopy() {
+function LinesDetail() {
 
   const navigate = useNavigate();
 
@@ -14,6 +14,12 @@ function LinesDetailCopy() {
   const { lineId } = useParams();
   const lineNum = lineId.replace('line', '') + '호선';
 
+
+    // detail 링크
+  const goToDetails = (station) => {
+    navigate(`/linesdetail/${lineId}/details/${station}`)
+  }
+  
 
   // 색상 호선 별로 나누기
   const lineColor = useMemo(
@@ -48,131 +54,163 @@ function LinesDetailCopy() {
 
 
   // Refs
-  const stationRef = useRef(null);
   const linesDetailStationsRef = useRef(null);
-  const linesDetailLineRef = useRef(null);
-  const scopeRef = useRef(null);
 
   // 드래그/리사이즈/그라디언트 해제 등 보정 로직
  useEffect(() => {
-  const linesDetailStations = linesDetailStationsRef.current;
-  const linesDetailLine     = linesDetailLineRef.current;
-  const scope               = scopeRef.current; // .linesdetail-hideboxesverticallength
-  if (!linesDetailStations || !linesDetailLine || !scope) return;
+  const el = linesDetailStationsRef.current;
+  if (!el) return;
+
+  // hidebox 래퍼/박스들: el 기준으로 찾는다 (doc.querySelector 사용 X)
+  const host = el.closest('.linesdetail-hideboxesverticallength') ?? el;
+  const hidebox1 = host.querySelector('.linesdetail-hidebox1');
+  const hidebox2 = host.querySelector('.linesdetail-hidebox2');
+
+  const SCROLL_TOLERANCE = 12;
+
+  const isAtTop = () => el.scrollTop <= SCROLL_TOLERANCE;
+  const isAtBottom = () =>
+    Math.ceil(el.scrollTop + el.clientHeight) >= Math.floor(el.scrollHeight) - SCROLL_TOLERANCE;
+
+  // 최신 하단 상태를 유지(클로저 고정 방지)
+  const wasAtBottomRef = { current: isAtBottom() };
 
   const apply = () => {
-    const lineH    = linesDetailLine.getBoundingClientRect().height;
-    const viewH    = linesDetailStations.clientHeight;
-    const extra    = Math.max(0, lineH - viewH);
-    const maxScroll= Math.max(1, linesDetailStations.scrollHeight - linesDetailStations.clientHeight);
-    const progress = linesDetailStations.scrollTop / maxScroll;
+    const top = isAtTop();
+    const bottom = isAtBottom();
 
-    // CSS 변수 전달
-    scope.style.setProperty("--extra", String(extra));
-    scope.style.setProperty("--scroll-progress", String(progress));
+    host.classList.toggle('at-top', top);
+    host.classList.toggle('at-bottom', bottom);
 
-    // 최상/최하 판정 (약간의 여유)
-    const atTop    = linesDetailStations.scrollTop <= 0;
-    const atBottom = linesDetailStations.scrollTop >= (maxScroll - 1);
-
-    // hidebox 보너스용 클래스 (scope에!)
-    scope.classList.toggle("at-top",    atTop && !atBottom);
-    scope.classList.toggle("at-bottom", atBottom && !atTop);
-
-    // (그라디언트용) 리스트에도 at-top 유지하고 싶다면 그대로 두기
-    linesDetailStations.classList.toggle("at-top", atTop);
+    if (hidebox1) hidebox1.classList.toggle('at-top', top);
+    if (hidebox2) hidebox2.classList.toggle('at-bottom', bottom);
   };
 
-  const ro = new ResizeObserver(apply);
-  ro.observe(linesDetailStations);
-  ro.observe(linesDetailLine);
-  linesDetailStations.addEventListener("scroll", apply, { passive: true });
-  if (document.fonts?.ready) document.fonts.ready.then(apply);
-  apply();
+  const onScroll = () => {
+    wasAtBottomRef.current = isAtBottom();
+    apply();
+  };
+
+  // 리사이즈/리플로우 후 scrollHeight 안정될 때까지 기다렸다가 바닥 고정
+  const pinBottomSafely = () => {
+    let lastH = -1, stable = 0;
+    const step = () => {
+      const h = el.scrollHeight;
+      if (h !== lastH) { lastH = h; stable = 0; requestAnimationFrame(step); }
+      else if (stable < 2) { stable++; requestAnimationFrame(step); }
+      else { el.scrollTop = el.scrollHeight; }
+    };
+    requestAnimationFrame(step);
+  };
+
+  const onResizeLike = () => {
+    if (wasAtBottomRef.current) pinBottomSafely();
+    requestAnimationFrame(apply);
+  };
+
+  // 관찰자: 스크롤 컨테이너만(라인 ref 제거)
+  const ro = new ResizeObserver(onResizeLike);
+  ro.observe(el);
+
+  el.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onResizeLike);
+
+  // 초기/리소스 로드 후 상태 적용
+  requestAnimationFrame(apply);
+  if (document.fonts?.ready) document.fonts.ready.then(apply).catch(()=>{});
+  if (document.readyState === 'complete') requestAnimationFrame(apply);
+  else window.addEventListener('load', apply, { once: true });
 
   return () => {
     ro.disconnect();
-    linesDetailStations.removeEventListener("scroll", apply);
+    window.removeEventListener('resize', onResizeLike);
+    el.removeEventListener('scroll', onScroll);
+  };
+}, []);
+
+  // hidebox 스크롤 최상단/최하단 
+  useEffect(() => {
+  const baseStationsDisplay = document.querySelector('.linesdetail-stations');
+  const hidebox1 = document.querySelector('.linesdetail-hidebox1');
+  const hidebox2 = document.querySelector('.linesdetail-hidebox2');
+  if (!baseStationsDisplay || !hidebox1 || !hidebox2) return;
+
+  const scrollMargin = 12; 
+
+  const isAtTop = () => baseStationsDisplay.scrollTop <= scrollMargin;
+
+  const isAtBottom = () => {
+
+    // 소수점 반올림/내림으로 안전판
+    const topPlusView = Math.ceil(baseStationsDisplay.scrollTop + baseStationsDisplay.clientHeight);
+    const full = Math.floor(baseStationsDisplay.scrollHeight);
+    return topPlusView >= full - scrollMargin;
+  };
+
+  const apply = () => {
+    hidebox1.classList.toggle('at-top', isAtTop());
+    hidebox2.classList.toggle('at-bottom', isAtBottom());
+  };
+
+  const onScroll = () => apply();
+  baseStationsDisplay.addEventListener('scroll', onScroll, { passive: true });
+
+  // 초기 1회 적용 + 레이아웃 확정 후 한 번 더
+  requestAnimationFrame(apply);
+  if (document.fonts?.ready) document.fonts.ready.then(apply);
+  if (document.readyState === 'complete') apply();
+  else window.addEventListener('load', apply, { once: true });
+
+  return () => {
+    baseStationsDisplay.removeEventListener('scroll', onScroll);
+  };
+}, []);
+
+  // 스크롤 맨하단 시 튕기는 문제 해결
+useEffect(() => {
+  const baseStationsDisplay = document.querySelector('.linesdetail-stations');
+  if (!baseStationsDisplay) return;
+
+  const isAtBottom = () =>
+    baseStationsDisplay.scrollHeight - baseStationsDisplay.scrollTop - baseStationsDisplay.clientHeight <= 2;
+
+  let wasAtBottom = isAtBottom(); // 초기 상태 기록
+
+  const handleScroll = () => {
+    wasAtBottom = isAtBottom();   // ← 스크롤할 때마다 갱신
+  };
+
+  const handleResize = () => {
+    if (wasAtBottom) {
+      // 레이아웃 확정 뒤에 적용
+      requestAnimationFrame(() => {
+        baseStationsDisplay.scrollTop = baseStationsDisplay.scrollHeight;
+      });
+    }
+  };
+
+  const scrollBottomDisplay = new ResizeObserver(handleResize);
+  scrollBottomDisplay.observe(baseStationsDisplay);
+
+  window.addEventListener('resize', handleResize);
+  baseStationsDisplay.addEventListener('scroll', handleScroll, { passive: true });
+
+  return () => {
+    scrollBottomDisplay.disconnect();
+    window.removeEventListener('resize', handleResize);
+    baseStationsDisplay.removeEventListener('scroll', handleScroll);
   };
 }, []);
 
 
-
-
-  // 지하철 실시간 api ui만
-  useEffect(() => {
-    const imageUp = document.querySelector('.linesdetail-subway-up-image')
-    const imageDown =document.querySelector('.linesdetail-subway-down-image')
-    const stations = document.querySelectorAll('.linesdetail-station')
-    if (!imageUp || !imageDown || stations.length === 0) return;
-    let position = 0;
-    let reversePosition = 0;
-    const onClicked = () => {
-      position += 10;
-      reversePosition -= 10;
-      imageUp.style.transform = `translateY(${position}px)`;
-      imageDown.style.transform =`translateY(${reversePosition}px)`;
-    };
-    stations.forEach((el) => (el.addEventListener('click', onClicked)));
-    return () => stations.forEach((el) => el.removeEventListener('click', onClicked));
-  },[]);
-
-  // 지하철 실시간 api ui만(자세한 지하철 정보)
-  useEffect(() => {
-  const popPop = document.querySelector('.linesdetail-subway-up-p');
-  const image1 = document.querySelector('.linesdetail-subway-up-image');
-  if (!popPop || !image1) return;
-
-  const onEnter = () => (popPop.style.visibility = 'visible');
-  const onLeave = () => (popPop.style.visibility = 'hidden');
-
-  image1.addEventListener('mouseenter', onEnter);
-  image1.addEventListener('mouseleave', onLeave);
-
-  return () => {
-    image1.removeEventListener('mouseenter', onEnter);
-    image1.removeEventListener('mouseleave', onLeave);
-  };
-}, []); // ✅ mount/unmount 시 한 번만 등록
-
-
-  // detail 링크
-  const goToDetails = (station) => {
-    navigate(`/linesdetail/${lineId}/details/${station}`)
-  }
-
-
-  // 그라디언트 반영/해제
-  const linesDetailGradientRef = useRef(null);
-
-  useEffect(() => {
-    const linesDetailGradient = linesDetailGradientRef.current;
-    if (!linesDetailGradient) return;
-
-    const handleScroll = () => {
-      const isTop = linesDetailGradient.scrollTop <= 0;
-
-      // 스크롤이 맨 위면 at-top 클래스 추가, 아니면 제거
-      if (isTop) {
-        linesDetailGradient.classList.add("at-top");
-      } else {
-        linesDetailGradient.classList.remove("at-top");
-      }
-    };
-
-    // 초기 상태 반영
-    handleScroll();
-    linesDetailGradient.addEventListener("scroll", handleScroll, { passive: true });
-    return () => linesDetailGradient.removeEventListener("scroll", handleScroll);
-  }, []);
-  
-
-
   return (
-    <div className="linesdetail-web-container" style={{ "--line-color": lineColor }}>
+    <div className="linesdetail-web-container" 
+         style={{ "--line-color": lineColor }}>
       <div className="linesdetail-container">
+
           {/* 바깥 박스틀 */}
         <div className="linesdetail-box">
+
           {/* n호선 표시 */}
           <div className="linesdetail-textbox">
             <div className="linesdetail-line-number">
@@ -180,65 +218,63 @@ function LinesDetailCopy() {
             </div>  
           </div>
           <div className="linesdetail-frame">
+
             {/* 안쪽 박스틀 */}
             <div className="linesdetail-linebox">
+
               {/* 노선  */}
-              <div className="linesdetail-line" ref={linesDetailLineRef} />
-            </div>
-            {/* 실시간 지하철 위치 */}
-            <div className="linesdetail-subwaysbox">
-              <div className="linesdetail-subways">
-                <div className="linesdetail-subway-line-up">
-                  <img className="linesdetail-subway-up-image" src="../../icon-subway.png" alt="지하철 이미지 상행선"></img>
-                  <img className="linesdetail-subway-up-image2" src="../../icon-subway.png" alt="지하철 이미지 상행선2" />
-                </div>
-                <p className="linesdetail-subway-up-p">1호선 상행 일반</p>
-                <div className="linesdetail-subway-line-down">
-                  <img className="linesdetail-subway-down-image" src="../../icon-subway.png" alt="지하철 이미지 하행선" />
-                  <img className="linesdetail-subway-down-image2" src="../../icon-subway.png" alt="지하철 이미지 하행선2" />
+                <div className="linesdetail-line" />
+
+              {/* 역들(7자 이상 ... 붙임) */}
+              <div className="linesdetail-stationscontainer">
+
+                <div className="stations-responsive-height">
+                  <div className="linesdetail-stations-height">
+                    <div className="linesdetail-stations linesdetail-hide-scrollbar" 
+                         ref={linesDetailStationsRef}>
+                      {stations.map(({ name }, idx) => {
+
+                      const branchLine = name.includes("지선");
+                      const loopLine = name.includes("순환선");
+                      
+                      const linesDetailDisplayName = (branchLine || loopLine)
+                      ? name
+                      : (name.length >= 7 ? name.slice(0, 5) + "..." : name );
+
+                      const linesDetailClassStation = [
+                      "linesdetail-station",
+                      branchLine && "linesdetail-branchLine",
+                      loopLine && "linesdetail-loopLine",
+                      "stationDrag",
+                      idx === 6 && "linesdetail-station7",
+                      idx === 7 && "linesdetail-station8",
+                      ]
+                      .filter(Boolean)
+                      .join(" ");
+
+                      return (
+                            <div
+                          className={linesDetailClassStation}
+                          key={`${lineNum}-${name}-${idx}`}
+                          onClick={() => goToDetails(name)}
+                            >
+                          {linesDetailDisplayName}
+                            </div>
+                            );
+                      })}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-            {/* 제일 위/아래 스크롤 시 튀어나온 선 없애주는 박스들 */}
-            <div className="linesdetail-hideboxes">
-              <div className="linesdetail-hideboxesverticallength" ref={scopeRef}>
-                <div className="linesdetail-hidebox1" />
-                <div className="linesdetail-hidebox2" />
-            {/* 역들(7자 이상 ... 붙임) */}
-                <div className="linesdetail-stationscontainer">
-                  <div className="linesdetail-stations linesdetail-hide-scrollbar" ref={linesDetailStationsRef}>
-                    {stations.map(({ name }, idx) => {
-
-                    const branchLine = name.includes("지선");
-                    const loopLine = name.includes("순환선");
-                    
-                    const linesDetailDisplayName = (branchLine || loopLine)
-                    ? name
-                    : (name.length >= 7 ? name.slice(0, 5) + "..." : name );
-
-                    const linesDetailClassStation = [
-                    "linesdetail-station",
-                    branchLine && "linesdetail-branchLine",
-                    loopLine && "linesdetail-loopLine",
-                    "stationDrag",
-                    idx === 6 && "station7",
-                    idx === 7 && "station8",
-                    ].join(" ");
-
-                    return (
-                         <div
-                        className={linesDetailClassStation}
-                        key={`${lineNum}-${name}-${idx}`}
-                        ref={idx === 0 ? stationRef : null}
-                        onClick={() => goToDetails(name)}
-                          >
-                        {linesDetailDisplayName}
-                          </div>
-                          );
-                    })}
-                </div>
+              
+              {/* 제일 위/아래 스크롤 시 튀어나온 선 없애주는 박스들 */}
+              <div className="linesdetail-hideboxes">
+                <div className="linesdetail-hideboxesverticallength">
+                  <div className="linesdetail-hidebox1" />
+                  <div className="linesdetail-hidebox2" />
                 </div>
               </div>
+    
             </div>
           </div>
         </div>
@@ -247,4 +283,4 @@ function LinesDetailCopy() {
   );
 }
 
-export default LinesDetailCopy;
+export default LinesDetail;

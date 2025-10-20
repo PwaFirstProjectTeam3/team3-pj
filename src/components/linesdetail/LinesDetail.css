@@ -1,89 +1,45 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
 
+
 /* width > height > position > display 순서로 정렬 */
 
+
 .linesdetail-web-container {
-  width: 100%; /* 보이는 웹페이지 화면 너비 길이 지정*/
-  height: 100%; /* 보이는 웹페이지 화면 너비 길이 지정 */
-  display: flex; /* 카드 박스 전체를 중앙 정렬 */
-  justify-content: center;
   --line-color: #000000;
 }
 
-*, *::before, *::after { box-sizing: border-box; }
 
-/* 컨테이너 지정 (부모가 .linesdetail-stations를 감싸고 있어야 함) */
-.linesdetail-stationscontainer {
-  container-type: inline-size;
-  container-name: stations;
+*, *::before, *::after { 
+  box-sizing: border-box; 
+  margin: 0; 
+  padding: 0;
 }
 
-/* 기본 해제 */
-.linesdetail-stations .linesdetail-station {
-  -webkit-mask-image: none;
-  mask-image: none;
-}
-
-@container stations (max-width: 951px) {
-  .linesdetail-stations.at-top .linesdetail-station:nth-of-type(7) {
-    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0));
-    mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0));
-    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-    -webkit-mask-size: 100% 50%;   mask-size: 100% 50%;
-    overflow: hidden;
-  }
-  .linesdetail-stations.at-top .linesdetail-station:nth-of-type(8) {
-    -webkit-mask-image: none; mask-image: none;
-    overflow: visible;
-  }
-}
-
-/* 큰 컨테이너: 8만 페이드 (atTop일 때만) */
-@container stations (min-width: 952px) {
-  .linesdetail-stations.at-top .linesdetail-station:nth-of-type(7) {
-      -webkit-mask-image: none;
-      mask-image: none;
-      overflow: visible;
-  }
-  .linesdetail-stations.at-top .linesdetail-station:nth-of-type(8) {
-    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0));
-    mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0));
-    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-    -webkit-mask-size: 100% 50%;   mask-size: 100% 50%;
-    overflow: hidden;
-  }
-}
-
-.linesdetail-container {
-  container-type: inline-size; /* cqw 단위 사용(컨테이너 크기 기반 반응형 너비 단위, 컨테이너 기준 (width)) */
-  width: clamp(402px, 90vw, 1200px); /* clamp(최소값, 선호값, 최대값) */
-  position: absolute;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(402px, 1fr));
-  place-items: center;
-}
 
 .linesdetail-box {
-  background-color: #F5F5F5;
-  width: 100%; /* 좌우 여백을 부모에 준다 → 자식은 100%만 쓰면 됨 */
-  padding-inline: 25px; /* 안전장치: 혹시라도 넘치는 픽셀은 잘라냄 */
-  height: clamp( 889px, calc(295.02013px + 100.67114cqw), 1000px );
+  width: 100%;
+  height: clamp(889px, calc(295.02013px + 100.67114dvh), 1000px);
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
   align-items: center;
+  padding-inline: 25px; /* 안전장치: 혹시라도 넘치는 픽셀은 잘라냄 */
+  background-color: #F5F5F5;
+  container-name: hidebox-height;
 }
 
+
 .linesdetail-textbox {
-  container-type: inline-size; /* cqw 단위 사용(컨테이너 크기 기반 반응형 너비 단위, 컨테이너 기준 (width)) */
+  container-type: inline-size; 
   width: clamp(402px, 90vw, 1200px); /* clamp(최소값, 선호값, 최대값), 반응형 웹/앱 위해 사용 */
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+
 .linesdetail-line-number {
+ font-family: "Noto Sans KR", sans-serif;
  font-size: 30px;
  font-weight: 700;
  font-style: normal;
@@ -94,33 +50,22 @@
  text-align: center;
 }
 
-.linesdetail-line-text {
-  font-family: "Noto Sans KR", sans-serif;
-  font-size: 30px;
-  font-weight: 700;
-  font-style: normal;
-  position: relative;
-  display: inline-block;
-  top: 10px;
-  letter-spacing: 1.5px;
-  text-align: center;
-}
 
 .linesdetail-frame {
   width: 100%;
-  height: inherit;
-  max-width: 1148px;
+  height: 100%;
+  max-width: 1148px;  
   margin-inline: auto;
   padding-inline: 25px 25px;
   position: relative;
 }
 
+
 .linesdetail-linebox {
   container-type: inline-size;
-  width: clamp(344px, calc(90vw - 50px), 1148px);
+  width: clamp(402px, calc(90vw - 50px), 1148px);
   max-width: 100%; /* 보강용 */
   margin-inline: auto;     /* 가로 중앙 */
-  height: 100%;
   position: absolute;
   top: 35px;
   left: 0;                 /* 둘 다 줘야 함 */
@@ -131,150 +76,102 @@
   align-items: center;
   background-color: #fff;
   border: 1px solid #000;
-  
+  z-index: 1;
 }
 
-.linesdetail-line {
-  width: 5px; /* 너비 고정 */
-  height: clamp( 614px, calc(554.1849866px + 14.87935657cqw), /* = 554.1849866px + 0.1487935657 * 100cqw */ 725px );
-  position: relative;
-  display: flex;
-  align-self: center;
-  background-color: var(--line-color);
-  z-index: 5;
-  border: none;
-}
-
-.linesdetail-hideboxes {
-  container-type: inline-size;
-  width: clamp(344px, calc(90vw - 50px), 1148px);
-  max-width: 100%; /* 보강용 */
-  margin-inline: auto;     /* 가로 중앙 */
-  height: 100%;
-  position: absolute;
-  top: 35px;
-  left: 0;                 /* 둘 다 줘야 함 */
-  right: 0;
-  bottom: 25px;
-  display: flex;
-  justify-content: center;
-  align-items: space-between;
-}
-
-/* 부모: JS가 --extra, --scroll-progress를 세팅하고
-   .at-top / .at-bottom 클래스를 토글 */
-.linesdetail-hideboxesverticallength {
-  container-type: size;
-  width: clamp(344px, calc(90vw - 50px), 1148px);
-  /* 높이는 너의 기존 값 유지 가능 */
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-
-  /* JS에서 세팅되는 값 */
-  --extra: 0;                 /* (line 높이 - view 높이), 단위 없는 숫자 */
-  --scroll-progress: 0;       /* 0 = 최상단, 1 = 최하단 */
-
-  /* 분배(합은 항상 extra) */
-  --p: var(--scroll-progress, 0);
-  --extra-px: calc(var(--extra, 0) * 1px);
-  --share-top:    max(0px, calc(var(--extra-px) * var(--p)));
-  --share-bottom: max(0px, calc(var(--extra-px) * (1 - var(--p))));
-
-  /* 보너스: 최상단/최하단에서만 +19px */
-  --edge-bonus: 19px;
-  --edge-top: 0;      /* .at-top일 때 1 (JS가 토글) */
-  --edge-bottom: 0;   /* .at-bottom일 때 1 (JS가 토글) */
-  --bonus-top:    calc(var(--edge-bonus) * var(--edge-top));
-  --bonus-bottom: calc(var(--edge-bonus) * var(--edge-bottom));
-}
-
-/* 공통 기본값: 항상 ≥ 183px 유지 */
-.linesdetail-hidebox1,
-.linesdetail-hidebox2 {
-  width: 20px;
-  --min: 183px;        /* ✅ 최소 183px로 고정 */
-  --pref: 5cqh;        /* 필요 시 조정해도 됨 */
-  --max: 202px;        /* 필요 시 상한(옵션) */
-  --base: clamp(var(--min), var(--pref), var(--max));
-  position: absolute;
-  display: grid;
-  place-self: center;
-  background: #fff;
-  z-index: 20;
-}
-
-/* 위쪽 박스 = base + scroll 분배 + (최상단일 때만 +19px)
-   min/max로 최종 높이도 바닥/천장 보호 */
-.linesdetail-hidebox1 {
-  top: 0;
-  height: min(
-    var(--max),
-    max(
-      var(--min),
-      calc(var(--base) + var(--share-top) + var(--bonus-top))
-    )
-  );
-  border-top: solid 1px #000;
-}
-
-/* 아래쪽 박스 = base + scroll 분배 + (최하단일 때만 +19px) */
-.linesdetail-hidebox2 {
-  position: absolute;
-  bottom: 0;
-  height: min(
-    var(--max),
-    max(
-      var(--min),
-      calc(var(--base) + var(--share-bottom) + var(--bonus-bottom))
-    )
-  );
-  border-bottom: solid 1px #000;
-}
-
-/* 상태 클래스 (JS에서 하나만 토글) */
-.linesdetail-hideboxesverticallength.at-top {
-  --edge-top: 1;
-  --edge-bottom: 0;
-}
-.linesdetail-hideboxesverticallength.at-bottom {
-  --edge-top: 0;
-  --edge-bottom: 1;
-}
 
 .linesdetail-stationscontainer {
-  width: clamp(344px, calc(90vw - 50px), 1148px);
-  max-width: 100%;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  container-type: inline-size; 
+  inline-size: min(clamp(402px, calc(90vw - 50px), 1148px), 90%);
+  height: 100%;
   margin-inline: auto;
+  position: absolute;
+  left: 0;
+  right: 0; 
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 50;
+  z-index: 100;
 }
+
+
+.linesdetail-line {
+  width: 5px; /* 너비 고정 */
+  height: clamp(504px, calc(462.22px + 10.394vw), 581.56px);
+  padding-top: 24px;
+  padding-bottom: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--line-color);
+  border: none;
+  box-sizing: content-box;
+  z-index: 0;
+}
+
+
+.linesdetail-hideboxes {
+  container-type: inline-size; 
+  width: clamp(350px, calc(90vw - 50px), 1148px);
+  height: 100%;
+  max-width: 100%;
+  margin-inline: auto;
+  position: relative;
+  z-index: 60;
+}
+
+
+.linesdetail-hideboxesverticallength {
+  height: clamp(504px, calc(462.22px + 10.394vw), 581.56px);
+  max-width: 100%;
+  margin-inline: auto;
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 100%;
+  z-index: 30;
+}
+
+.linesdetail-hidebox1.at-top {
+  width: 20px;
+  height: clamp(165px, calc(230px - 3.4vw), 212px);
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffffff;
+  z-index: 30;
+}
+
+.linesdetail-hidebox2.at-bottom {
+  width: 20px;
+  height: clamp(186px, calc(230px - 3.4vw), 220px);
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffffff;
+  z-index: 30;
+}
+
 
 .linesdetail-stations {
   font-family: "Noto Sans KR", sans-serif;
   font-size: 14px;
   font-weight: bold;
-  height: clamp(504px, calc(470.2px + 9.7015cqw), 582px); /* 576→621(= +45) */
-  position: relative; 
   padding: 16px 16px;
+  width: 100%;
+  height: 100%;
+  position: absolute;
   display: grid;
-  grid-auto-rows: min-content;
-  row-gap: 42px; 
-  place-items: center;
-  z-index: 50;
+  row-gap: 42px;
+  z-index: 70 !important;
   overflow-y: scroll;
-  scrollbar-gutter: stable both-edges;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
 }
+
 
 .linesdetail-station {
   font-family: "Noto Sans KR", sans-serif;
@@ -287,16 +184,19 @@
   border-radius: 18px;
   border: 4px solid var(--line-color);
   background-color: #fff;
-  z-index: 50;
+  z-index: 70 !important;
   cursor: pointer;
   overflow: hidden;
 }
+
 
 /* 지선, 순환선 따로 표시 */
 .linesdetail-branchLine, .linesdetail-loopLine {
   width: 126px;
   height: 36px;
   position: relative;
+  left: -8px;
+  right: -8px;
   display: grid;
   place-items: center;
   text-align: center;
@@ -309,20 +209,23 @@
   pointer-events: none !important;
 }
 
+
 .linesdetail-hide-scrollbar {
   -ms-overflow-style: none; /* IE, Edge */
   scrollbar-width: none; /* Firefox */
 }
+
 
 .linesdetail-hide-scrollbar::-webkit-scrollbar
 {
   display: none; /* Chrome, Safari */
 }
 
+
 /* 실시간 지하철 위치 */
 .linesdetail-subwaysbox {
   container-type: inline-size;
-  width: clamp(344px, calc(90vw - 50px), 1148px);
+  width: clamp(402px, calc(90vw - 50px), 1148px);
   max-width: 100%; /* 보강용 */
   margin-inline: auto;     /* 가로 중앙 */
   height: auto;
@@ -336,18 +239,17 @@
   align-items: center;
 }
 
+
 .linesdetail-subways {
   width: 100%;
-  height: clamp(
-    614px,
-    calc(554.1849866px + 14.87935657cqw),
-    725px);
+  height: clamp(614px, calc(554.1849866px + 14.87935657dvh), 725px);
   margin: 0 auto;
   position: relative;
   display: flex;
   justify-content: space-evenly;
   align-items: center;
 }
+
 
 .linesdetail-subway-line-up {
   width: 30px;
@@ -362,15 +264,18 @@
   overflow: hidden;
 }
 
+
 .linesdetail-subway-up-image {
   width: 30px;
   display: block;
 }
 
+
 .linesdetail-subway-up-image2 {
   width: 30px;
   display: block;
 }
+
 
 .linesdetail-subway-line-down {
   width: 30px;
@@ -385,22 +290,25 @@
   overflow: hidden;
 }
 
+
 .linesdetail-subway-down-image {
   width: 30px;
   display: block;
 }
 
+
 .linesdetail-subway-up-p {
-  container-type: inline-size;
+  position: absolute;   /* ← relative → absolute */
+  left: 20%;
+  top: 50%; transform: translateY(-50%); /* 세로 가운데로 띄우고 싶다면 */
   width: 140px;
-  position: relative;
-  left: -230px;
   text-align: center;
   padding: 20px 0;
   background-color: #F5F5F5;
   visibility: hidden;
   z-index: 50;
 }
+
 
 .linesdetail-subway-up-image:hover ~ .linesdetail-subway-up-p {
   display: inline-block;
@@ -409,7 +317,78 @@
   z-index: 50;
 }
 
+
 .linesdetail-subway-down-image2 {
   width: 30px;
   display: block;
-} 
+}
+
+
+/* 여기부터 그라데이션 마스크 */
+.stations-responsive-height {
+  container-type: inline-size;
+  inline-size: clamp(402px, calc(90vw - 50px), 1148px);
+  height: 100%;
+  margin-inline: auto;
+  position: relative;
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+}
+
+.linesdetail-stations-height {
+  container-type: size; 
+  width: 146px;      
+  max-inline-size: 100%; /* 부모보다 넓어지지 않게 안전장치 */
+  height: clamp(504px, calc(470px + 12cqi), 582px);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  container-name: gradient-mask-stations;
+}
+
+/* 기본 마스크 해제 */
+.linesdetail-station {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+
+/* 작은 컨테이너: statioin7만 페이드 (atTop일 때만) */
+@container gradient-mask-stations (max-height: 562.44px) {
+  .linesdetail-stations.at-top .linesdetail-station7 {
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0));
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0));
+    -webkit-mask-repeat: no-repeat; 
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 50%;   
+    mask-size: 100% 50%;
+    overflow: hidden;
+  }
+  .linesdetail-stations.at-top .linesdetail-station8 {
+    -webkit-mask-image: none; 
+    mask-image: none;
+    overflow: visible;
+  }
+}
+
+/* 큰 컨테이너: statioin8만 페이드 (atTop일 때만) */
+@container gradient-mask-stations (min-height: 562.45px) {
+  .linesdetail-stations.at-top .linesdetail-station7 {
+      -webkit-mask-image: none;
+      mask-image: none;
+      overflow: visible;
+  }
+  .linesdetail-stations.at-top .linesdetail-station8 {
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0));
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0));
+    -webkit-mask-repeat: no-repeat; 
+    mask-repeat: no-repeat; 
+    -webkit-mask-size: 100% 50%;   
+    mask-size: 100% 50%;
+    overflow: hidden;
+  }
+}
+/* 여기까지 그라데이션 마스크 */
