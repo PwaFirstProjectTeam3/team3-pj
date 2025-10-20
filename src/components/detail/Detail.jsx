@@ -33,33 +33,50 @@ function Detail() {
 
 
   // ---------- 도착 정보 ----------
+          
+  useEffect(() => {
+    dispatch(arrivalInfoIndex());
+  }, []);
+  // 현재역의 도착 정보(역명(statnNm)과 호선이 동일한 것만 가져오기)
+  const currentArrivalList = Array.isArray(arrivalInfo) ? arrivalInfo.filter((info) => {
+    const sameStation = info.statnNm === station; // 현재역명
+    const subwayIdNum = Number(info.subwayId); // 문자열 숫자로 변환
+    const validSubwayId = subwayIdNum >= 1001 && subwayIdNum <= 1009; // 1001~1009만 가져옴
+    const sameLine = subwayIdNum % 100 === Number(lineNumOnly);
 
-  // useEffect(() => {
-  //   dispatch(arrivalInfoIndex());
-  // }, []);
-  // // 현재역의 도착 정보
-  // const currentArrivalList = Array.isArray(arrivalInfo) ? arrivalInfo.filter(info => info.statnNm === station) : [];
-  // // 도착방면(trainLineNm)별로 그룹화
-  // const groupedArrival = {};
-  // currentArrivalList.forEach((train) => {
-  //   const key = train.trainLineNm;
-  //   if (!groupedArrival[key]) {
-  //   groupedArrival[key] = [];
-  //   }
-  //   groupedArrival[key].push(train);
-  // });
-  // // 각 도착방면별 첫번째, 두번째 열차만 정렬
-  // Object.keys(groupedArrival).forEach((key) => {
-  //   groupedArrival[key].sort((a,b) => Number(a.barvlDt) - Number(b.barvlDt));
-  // });
-  // // barvlDt의 초 단위를 '분'으로 변환
-  // const formatSecondsToMinutes = (sec) => {
-  //   const num = Number(sec);
-  //   if (isNaN(num) || num < 0) return "-"; // 유효하지 않은 입력 처리
-  //   if (num < 60) return "곧 도착"; // 60초 미만일 때
-  //   return `${Math.floor(num / 60)}분`; // 60초 이상일 때 분 단위로 변환
-  // };
-  // console.log("arrivalInfo:", arrivalInfo);
+    return sameStation && validSubwayId && sameLine;
+  }) : [];
+  // trainLineNm에서 '행' 앞부분 제거하고, '~방면'만 추출
+  const extractDirection = (trainLineNm) => {
+    if (!trainLineNm) return "";
+    // 예: '개화행 - 선유도방면' -> '선유도방면'
+    // ('-'을 없애고 공백을 제거함 -> ["~행", "~방면"] 중 1("~방면")만 가져옴) 
+    const parts = trainLineNm.split("-").map(p => p.trim());
+    return parts.length > 1 ? parts[1] : trainLineNm;
+  };
+
+  // 방면별로 그룹화
+  const groupedByDirection = currentArrivalList.reduce((acc, cur) => {
+    const direction = extractDirection(cur.trainLineNm);
+    if (!acc[direction]) acc[direction] = [];
+    acc[direction].push(cur);
+    return acc;
+  }, {});
+
+  // 각 방면에서 barvlDt 오름차순으로 정렬 후 2개까지만 남기기
+  Object.keys(groupedByDirection).forEach(direction => {
+    groupedByDirection[direction] = groupedByDirection[direction]
+      .sort((a, b) => a.barvlDt - b.barvlDt)
+      .slice(0, 2);
+  });
+
+  // barvlDt의 초 단위를 '분'으로 변환
+  const formatSecondsToMinutes = (sec) => {
+    const num = Number(sec);
+    if (isNaN(num) || num < 0) return "-";
+    if (num < 60) return "곧 도착";
+    return `${Math.floor(num / 60)}분`;
+  };
 
 
 
@@ -174,11 +191,11 @@ function Detail() {
         {/* 현재역 표시 */}
         <div className="now-station">
           <span className='line-num' >{lineSymbol}</span>
-          <span className='now-station-name' >{station}</span>
+          <span className={`now-station-name ${station.length > 5 ? (station.length > 7 ? "longer" : "long") : ""}`} >{station}</span>
         </div>
 
         {/* 도착정보 */}
-        <div>
+        {/* <div>
           <div className="arrival-title">
             <p>도착 정보</p>
           </div>
@@ -214,42 +231,26 @@ function Detail() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
-        {/* <div>
+        <div>
           <div className="arrival-title">
             <p>도착 정보</p>
           </div>
           <div className="arrival-container">
-            {Object.keys(groupedArrival).length > 0 ? (
-              Object.entries(groupedArrival).map(([direction, trains]) => (
+            {Object.keys(groupedByDirection).length > 0 ? (
+              Object.entries(groupedByDirection).map(([direction, trains]) => (
                 <div key={direction}>
                   <div className="arrival-direction">
-                    <p>{direction}</p>
+                    <p className={`arrival-direction-nm ${direction.length > 10 ? (direction.length > 14 ? "longer" : "long") : ""}`}>{direction}</p>
                   </div>
                   <div className="arrival-info">
-                    {trains[0] ? (
-                      <div className="arrival-info-1">
-                        <span>{trains[0].bstatnNm}</span>
-                        <span>{formatSecondsToMinutes(trains[0].barvlDt)}</span>
+                    {trains.map((train, idx) => (
+                      <div key={idx} className={`arrival-info-${idx + 1}`}>
+                        <span>{train.bstatnNm}</span>
+                        <span>{formatSecondsToMinutes(train.barvlDt)}</span>
                       </div>
-                    ) : (
-                      <div className="arrival-info-1">
-                        <span>-</span>
-                        <span>-</span>
-                      </div>
-                    )}
-                    {trains[1] ? (
-                      <div className="arrival-info-2">
-                        <span>{trains[1].bstatnNm}</span>
-                        <span>{formatSecondsToMinutes(trains[1].barvlDt)}</span>
-                      </div>
-                    ) : (
-                      <div className="arrival-info-2">
-                        <span>-</span>
-                        <span>-</span>
-                      </div>
-                    )}
+                    ))}
                   </div>
                 </div>
               ))
@@ -257,7 +258,7 @@ function Detail() {
               <p style={{ textAlign: "center", color: "gray" }}>도착 정보 없음</p>
             )}
           </div>
-        </div> */}
+        </div>
         
         {/* 편의시설 유무 */}
         <div>
