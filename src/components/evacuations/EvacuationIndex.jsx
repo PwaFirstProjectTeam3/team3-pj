@@ -192,12 +192,12 @@ function searchStation() {
                 type="text" id='station-search-input' placeholder='조회하실 역 명을 입력해주세요.'
               />
               <button className='station-search-btn' onClick={searchStation}></button>
-              {tooltipVisible && (
+              {tooltipVisible && !selectedLine && (
                 <div className="tooltip">
                   <p>호선을 선택해주세요.</p>
                 </div>
               )}
-              {stationDropdownOpen ? (filteredStations.length > 0 ? (
+              {stationDropdownOpen && selectedLine && (filteredStations.length > 0 ? (
                 <ul className="evacuation-dropdown">
                   {filteredStations.map((station) => (
                     <li
@@ -214,7 +214,7 @@ function searchStation() {
                     <li>일치하는 역이 없습니다.</li>
                   </ul>
                 )
-              ) : null}
+              )}
             </div>
           </div>
         </div>
