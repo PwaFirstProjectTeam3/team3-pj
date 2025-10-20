@@ -20,10 +20,10 @@
   width: 100%;
   height: clamp(889px, calc(295.02013px + 100.67114dvh), 1000px);
   position: relative;
+  padding-inline: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-inline: 25px; /* 안전장치: 혹시라도 넘치는 픽셀은 잘라냄 */
   background-color: #F5F5F5;
   container-name: hidebox-height;
 }
@@ -54,22 +54,21 @@
 .linesdetail-frame {
   width: 100%;
   height: 100%;
-  max-width: 1148px;  
+  max-width: 1200px;  
   margin-inline: auto;
-  padding-inline: 25px 25px;
   position: relative;
+  padding-inline: 0;
+  display: flex;
+  justify-content: center;
 }
 
 
 .linesdetail-linebox {
   container-type: inline-size;
-  width: clamp(402px, calc(90vw - 50px), 1148px);
+  inline-size: min(1200px, calc(100% - 50px)); /* = 좌우 25px씩 정확히 */
   max-width: 100%; /* 보강용 */
-  margin-inline: auto;     /* 가로 중앙 */
   position: absolute;
   top: 35px;
-  left: 0;                 /* 둘 다 줘야 함 */
-  right: 0;
   bottom: 25px;
   display: flex;
   justify-content: center;
@@ -195,8 +194,8 @@
   width: 126px;
   height: 36px;
   position: relative;
-  left: -8px;
-  right: -8px;
+  left: -4px;
+  right: -4px;
   display: grid;
   place-items: center;
   text-align: center;

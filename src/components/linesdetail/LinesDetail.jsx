@@ -56,15 +56,17 @@ function LinesDetail() {
   // Refs
   const linesDetailStationsRef = useRef(null);
 
+
   // 드래그/리사이즈/그라디언트 해제 등 보정 로직
  useEffect(() => {
   const el = linesDetailStationsRef.current;
   if (!el) return;
 
-  // hidebox 래퍼/박스들: el 기준으로 찾는다 (doc.querySelector 사용 X)
-  const host = el.closest('.linesdetail-hideboxesverticallength') ?? el;
-  const hidebox1 = host.querySelector('.linesdetail-hidebox1');
-  const hidebox2 = host.querySelector('.linesdetail-hidebox2');
+
+  // hidebox 래퍼/박스들
+  const hideboxDisplays = el.closest('.linesdetail-hideboxesverticallength') ?? el;
+  const hidebox1 = hideboxDisplays.querySelector('.linesdetail-hidebox1');
+  const hidebox2 = hideboxDisplays.querySelector('.linesdetail-hidebox2');
 
   const SCROLL_TOLERANCE = 12;
 
@@ -72,15 +74,16 @@ function LinesDetail() {
   const isAtBottom = () =>
     Math.ceil(el.scrollTop + el.clientHeight) >= Math.floor(el.scrollHeight) - SCROLL_TOLERANCE;
 
+
   // 최신 하단 상태를 유지(클로저 고정 방지)
   const wasAtBottomRef = { current: isAtBottom() };
 
-  const apply = () => {
+  const scrollBottomDisplay = () => {
     const top = isAtTop();
     const bottom = isAtBottom();
 
-    host.classList.toggle('at-top', top);
-    host.classList.toggle('at-bottom', bottom);
+    hideboxDisplays.classList.toggle('at-top', top);
+    hideboxDisplays.classList.toggle('at-bottom', bottom);
 
     if (hidebox1) hidebox1.classList.toggle('at-top', top);
     if (hidebox2) hidebox2.classList.toggle('at-bottom', bottom);
@@ -88,7 +91,7 @@ function LinesDetail() {
 
   const onScroll = () => {
     wasAtBottomRef.current = isAtBottom();
-    apply();
+    scrollBottomDisplay();
   };
 
   // 리사이즈/리플로우 후 scrollHeight 안정될 때까지 기다렸다가 바닥 고정
@@ -105,24 +108,24 @@ function LinesDetail() {
 
   const onResizeLike = () => {
     if (wasAtBottomRef.current) pinBottomSafely();
-    requestAnimationFrame(apply);
+    requestAnimationFrame(scrollBottomDisplay);
   };
 
-  // 관찰자: 스크롤 컨테이너만(라인 ref 제거)
-  const ro = new ResizeObserver(onResizeLike);
-  ro.observe(el);
+  // 스크롤 컨테이너만
+  const scrollContainerDisplay = new ResizeObserver(onResizeLike);
+ scrollContainerDisplay.observe(el);
 
   el.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onResizeLike);
 
   // 초기/리소스 로드 후 상태 적용
-  requestAnimationFrame(apply);
-  if (document.fonts?.ready) document.fonts.ready.then(apply).catch(()=>{});
-  if (document.readyState === 'complete') requestAnimationFrame(apply);
-  else window.addEventListener('load', apply, { once: true });
+  requestAnimationFrame(scrollBottomDisplay);
+  if (document.fonts?.ready) document.fonts.ready.then(scrollBottomDisplay).catch(()=>{});
+  if (document.readyState === 'complete') requestAnimationFrame(scrollBottomDisplay);
+  else window.addEventListener('load', scrollBottomDisplay, { once: true });
 
   return () => {
-    ro.disconnect();
+    scrollContainerDisplay.disconnect();
     window.removeEventListener('resize', onResizeLike);
     el.removeEventListener('scroll', onScroll);
   };
@@ -147,19 +150,19 @@ function LinesDetail() {
     return topPlusView >= full - scrollMargin;
   };
 
-  const apply = () => {
+  const hideboxScrolls = () => {
     hidebox1.classList.toggle('at-top', isAtTop());
     hidebox2.classList.toggle('at-bottom', isAtBottom());
   };
 
-  const onScroll = () => apply();
+  const onScroll = () => hideboxScrolls();
   baseStationsDisplay.addEventListener('scroll', onScroll, { passive: true });
 
   // 초기 1회 적용 + 레이아웃 확정 후 한 번 더
-  requestAnimationFrame(apply);
-  if (document.fonts?.ready) document.fonts.ready.then(apply);
-  if (document.readyState === 'complete') apply();
-  else window.addEventListener('load', apply, { once: true });
+  requestAnimationFrame(hideboxScrolls);
+  if (document.fonts?.ready) document.fonts.ready.then(hideboxScrolls);
+  if (document.readyState === 'complete') hideboxScrolls();
+  else window.addEventListener('load', hideboxScrolls, { once: true });
 
   return () => {
     baseStationsDisplay.removeEventListener('scroll', onScroll);
@@ -206,7 +209,6 @@ useEffect(() => {
   return (
     <div className="linesdetail-web-container" 
          style={{ "--line-color": lineColor }}>
-      <div className="linesdetail-container">
 
           {/* 바깥 박스틀 */}
         <div className="linesdetail-box">
@@ -278,7 +280,6 @@ useEffect(() => {
             </div>
           </div>
         </div>
-      </div>
     </div>
   );
 }
