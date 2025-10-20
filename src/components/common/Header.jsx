@@ -15,10 +15,24 @@ function Header() {
     /^\/linesdetail\/([^/]+)\/details\/([^/]+)$/,
   ]
 
+  // 현재 경로가 hiddenPatterns에 포함되는지 체크
   const hideNav = hiddenPatterns.some(pattern => pattern.test(location.pathname));
 
   function redirectBack() {
-    navigate(-1);
+    const headerPath = location.pathname;
+
+    const detailPattern = /^\/linesdetail\/([^/]+)\/details\/([^/]+)$/;
+    const lineDetailPattern = /^\/linesdetail\/([^/]+)$/;
+
+    if (detailPattern.test(headerPath)) {
+      // Detail 페이지 → LinesDetail 페이지로 이동
+      const pathMatch = headerPath.match(detailPattern);
+      const lineIdExtract = pathMatch[1]; // :lineId 추출
+      navigate(`/linesdetail/${lineIdExtract}`);
+    } else if (lineDetailPattern.test(headerPath)) {
+      // LinesDetail 페이지 → LineList 페이지로 이동
+      navigate('/');
+    }
   }
 
   return(
