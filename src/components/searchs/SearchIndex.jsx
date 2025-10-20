@@ -181,10 +181,15 @@ function SearchIndex() {
               autoComplete='off' // 브라우저 기본 자동완성 기능 끄기
               type="text" placeholder='출발지'
             />
-            {activeField === "departure" && searchFilteredStations.length > 0 && (
+            {activeField === "departure" && (searchFilteredStations.length > 0 ? (
               <ul className="search-dropdown">
                 {renderDropdown(searchFilteredStations)}
               </ul>
+              ) : (
+                <ul className="search-dropdown">
+                  <li className="no-result">일치하는 역이 없습니다.</li>
+                </ul>
+              )
             )}
           </div>
           <button className='reverse-btn' onClick={reverseBtn} type="button">
@@ -199,10 +204,15 @@ function SearchIndex() {
               autoComplete='off' // 브라우저 기본 자동완성 기능 끄기
               type="text" placeholder='도착지'
             />
-            {activeField === "arrival" && searchFilteredStations.length > 0 && (
+            {activeField === "arrival" && (searchFilteredStations.length > 0 ? (
               <ul className="search-dropdown">
                 {renderDropdown(searchFilteredStations)}
               </ul>
+              ) : (
+                <ul className="search-dropdown">
+                  <li className="no-result">일치하는 역이 없습니다.</li>
+                </ul>
+              )
             )}
           </div>
           <div className='search-btns'>

@@ -111,14 +111,14 @@ function EvacuationIndex() {
   const filteredStations = inputValue.trim() === "" ? stations : stations.filter((station) => station.includes(inputValue));
   
   // 선택된 역 이름과 같은 항목 찾기
-  function searchStation() {
-    setIsSearched(true);
-    
-    setMatchedItem(evacuationSearchList.find((item) => item.STTN === `${inputValue}역`) || null);
-    if(matchedItem !== null) {
-      setIsLoaded(false);
-    }
+function searchStation() {
+  setIsSearched(true);
+  const foundMatchedStation = evacuationSearchList.find((item) => item.STTN === `${inputValue}역`) || null;
+  setMatchedItem(foundMatchedStation);
+  if (foundMatchedStation) {
+    setIsLoaded(false);
   }
+}
   
   // onKeyDown 이벤트
   const handleEnter = (e) => {
@@ -197,7 +197,7 @@ function EvacuationIndex() {
                   <p>호선을 선택해주세요.</p>
                 </div>
               )}
-              {stationDropdownOpen && filteredStations.length > 0 && (
+              {stationDropdownOpen ? (filteredStations.length > 0 ? (
                 <ul className="evacuation-dropdown">
                   {filteredStations.map((station) => (
                     <li
@@ -209,7 +209,12 @@ function EvacuationIndex() {
                     </li>
                   ))}
                 </ul>
-              )}
+                ) : (
+                  <ul className="evacuation-dropdown">
+                    <li>일치하는 역이 없습니다.</li>
+                  </ul>
+                )
+              ) : null}
             </div>
           </div>
         </div>

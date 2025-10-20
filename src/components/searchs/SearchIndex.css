@@ -34,7 +34,7 @@
   left: 0;
   width: 100%;
   border: 1px solid #ccc;
-  border-top: 1px solid #000;
+  border-top: none;
   background-color: #fff;
   max-height: 200px; /* 항목 많을 때 스크롤 가능 */
   overflow-y: auto; /* 스크롤이 필요할 경우에만 스크롤 생성 */
