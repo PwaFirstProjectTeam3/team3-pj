@@ -19,21 +19,6 @@ const subwayLinesSlice = createSlice({
       state.list = [];
     },
   },
-  extraReducers: builder => {
-    builder
-    .addMatcher(
-        action => action => action.type.startsWith('subwayLinesSlice/') && action.type.endsWith('/pending'),
-        state => {
-          console.log('처리중입니다.');
-        }
-      )
-      .addMatcher(
-        action => action.type.startsWith('subwayLinesSlice/') && action.type.endsWith('/rejected'),
-        (state, action) => {
-          console.error('에러에러.', action.error);
-        }
-      ); 
-  }
 });
 
 export const { setSeoulLines, clearSeoulLines } = subwayLinesSlice.actions;

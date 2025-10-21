@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ROUTE_DISPLAY } from "../../configs/line-list-configs/subwayLinesRouteConfig.js";
 import LINE_COLORS from "../../configs/lineColors.js";
 import "./LinesDetail.css";
 
-
 function LinesDetail() {
+
 
   const navigate = useNavigate();
 
@@ -15,11 +15,11 @@ function LinesDetail() {
   const lineNum = lineId.replace('line', '') + '호선';
 
 
-    // detail 링크
+  // detail 링크
   const goToDetails = (station) => {
     navigate(`/linesdetail/${lineId}/details/${station}`)
   }
-  
+
 
   // 색상 호선 별로 나누기
   const lineColor = useMemo(
@@ -28,259 +28,171 @@ function LinesDetail() {
   );
 
 
-  // ROUTE_DISPLAY만 사용
+  // 역 목록
   const stations = useMemo(() => {
-    const names =
 
-    Array.isArray(ROUTE_DISPLAY[lineNum]) ? ROUTE_DISPLAY[lineNum] : [];
-    return names.map((stationName, i) => ({ name: String(stationName), idx: i }));
+    const names = Array.isArray(ROUTE_DISPLAY[lineNum])
+      ? ROUTE_DISPLAY[lineNum]
+      : [];
+
+    return names.map((stationName, i) => 
+      ({ name: String(stationName), idx: i }));
 
   }, [lineNum]);
 
+  // "n호선" 텍스트
+  const readLineHeader = (name) => {
 
-  // 호선 표기
-  const readLineTag = (name) => {
+    const matchResult = String(name).match(/([0-9]+)[ ]*호선/);
 
-    const matchResult =
-
-    String(name).match(/([0-9]+)[ ]*호선/);
-    return matchResult ? 
-    { num: matchResult[1], label: "호선" } : 
-    { num: String(name), label: "" };
-
+    return matchResult
+      ? { num: matchResult[1], label: "호선" }
+      : { num: String(name), label: "" };
   };
-
-  const { num: lineNumOnly, label: lineLabel } = readLineTag(lineNum);
-
-
-  // Refs
-  const linesDetailStationsRef = useRef(null);
+  
+  const { num: lineNumOnly, label: lineLabel } = readLineHeader(lineNum);
 
 
-  // 드래그/리사이즈/그라디언트 해제 등 보정 로직
- useEffect(() => {
-  const el = linesDetailStationsRef.current;
-  if (!el) return;
+  // 스크롤 상태
+  const scrollerRef = useRef(null);
+
+  const [atTop, setAtTop] = useState(true);
+  const [atBottom, setAtBottom] = useState(false);
+  const [hasScrollOverflow, setHasScrollOverflow] = useState(false);
 
 
-  // hidebox 래퍼/박스들
-  const hideboxDisplays = el.closest('.linesdetail-hideboxesverticallength') ?? el;
-  const hidebox1 = hideboxDisplays.querySelector('.linesdetail-hidebox1');
-  const hidebox2 = hideboxDisplays.querySelector('.linesdetail-hidebox2');
-
-  const SCROLL_TOLERANCE = 12;
-
-  const isAtTop = () => el.scrollTop <= SCROLL_TOLERANCE;
-  const isAtBottom = () =>
-    Math.ceil(el.scrollTop + el.clientHeight) >= Math.floor(el.scrollHeight) - SCROLL_TOLERANCE;
-
-
-  // 최신 하단 상태를 유지(클로저 고정 방지)
-  const wasAtBottomRef = { current: isAtBottom() };
-
-  const scrollBottomDisplay = () => {
-    const top = isAtTop();
-    const bottom = isAtBottom();
-
-    hideboxDisplays.classList.toggle('at-top', top);
-    hideboxDisplays.classList.toggle('at-bottom', bottom);
-
-    if (hidebox1) hidebox1.classList.toggle('at-top', top);
-    if (hidebox2) hidebox2.classList.toggle('at-bottom', bottom);
-  };
-
-  const onScroll = () => {
-    wasAtBottomRef.current = isAtBottom();
-    scrollBottomDisplay();
-  };
-
-  // 리사이즈/리플로우 후 scrollHeight 안정될 때까지 기다렸다가 바닥 고정
-  const pinBottomSafely = () => {
-    let lastH = -1, stable = 0;
-    const step = () => {
-      const h = el.scrollHeight;
-      if (h !== lastH) { lastH = h; stable = 0; requestAnimationFrame(step); }
-      else if (stable < 2) { stable++; requestAnimationFrame(step); }
-      else { el.scrollTop = el.scrollHeight; }
-    };
-    requestAnimationFrame(step);
-  };
-
-  const onResizeLike = () => {
-    if (wasAtBottomRef.current) pinBottomSafely();
-    requestAnimationFrame(scrollBottomDisplay);
-  };
-
-  // 스크롤 컨테이너만
-  const scrollContainerDisplay = new ResizeObserver(onResizeLike);
- scrollContainerDisplay.observe(el);
-
-  el.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onResizeLike);
-
-  // 초기/리소스 로드 후 상태 적용
-  requestAnimationFrame(scrollBottomDisplay);
-  if (document.fonts?.ready) document.fonts.ready.then(scrollBottomDisplay).catch(()=>{});
-  if (document.readyState === 'complete') requestAnimationFrame(scrollBottomDisplay);
-  else window.addEventListener('load', scrollBottomDisplay, { once: true });
-
-  return () => {
-    scrollContainerDisplay.disconnect();
-    window.removeEventListener('resize', onResizeLike);
-    el.removeEventListener('scroll', onScroll);
-  };
-}, []);
-
-  // hidebox 스크롤 최상단/최하단 
+  // 스크롤/리사이즈에 따라 상태 갱신
   useEffect(() => {
-  const baseStationsDisplay = document.querySelector('.linesdetail-stations');
-  const hidebox1 = document.querySelector('.linesdetail-hidebox1');
-  const hidebox2 = document.querySelector('.linesdetail-hidebox2');
-  if (!baseStationsDisplay || !hidebox1 || !hidebox2) return;
+    const scrollArea = scrollerRef.current;
+    if (!scrollArea) return;
+    const scrollUpdateState = () => {
+      const maxScroll = Math.max(0, scrollArea.scrollHeight - scrollArea.clientHeight);
+      const yHeight = scrollArea.scrollTop;
+      setAtTop(yHeight <= 0);
+      setAtBottom(maxScroll > 0 ? yHeight >= maxScroll - 1 : true);
+      setHasScrollOverflow(maxScroll > 0);
+    };
 
-  const scrollMargin = 12; 
+    scrollUpdateState();
+    scrollArea.addEventListener("scroll", scrollUpdateState, { passive: true });
+    const scrollDisplay = new ResizeObserver(scrollUpdateState);
+    scrollDisplay.observe(scrollArea);
+    return () => { scrollArea.removeEventListener("scroll", scrollUpdateState); scrollDisplay.disconnect(); };
+  }, []);
 
-  const isAtTop = () => baseStationsDisplay.scrollTop <= scrollMargin;
 
-  const isAtBottom = () => {
-
-    // 소수점 반올림/내림으로 안전판
-    const topPlusView = Math.ceil(baseStationsDisplay.scrollTop + baseStationsDisplay.clientHeight);
-    const full = Math.floor(baseStationsDisplay.scrollHeight);
-    return topPlusView >= full - scrollMargin;
+  // 그라데이션
+  const fadeTopStyle = {
+    position: "absolute",
+    left: 0, right: 0, top: 0,
+    height: 80,            // 필요 시 조절
+    pointerEvents: "none",
+    background: "linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0))",
+    opacity: atTop || !hasScrollOverflow ? 0 : 1,
+    transition: "opacity 160ms",
+    zIndex: 9,
   };
 
-  const hideboxScrolls = () => {
-    hidebox1.classList.toggle('at-top', isAtTop());
-    hidebox2.classList.toggle('at-bottom', isAtBottom());
+  const fadeBottomStyle = {
+    position: "absolute",
+    left: 0, right: 0, bottom: 0,
+    height: 80,            // 필요 시 조절
+    pointerEvents: "none",
+    background: "linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,0))",
+    opacity: atBottom || !hasScrollOverflow ? 0 : 1,
+    transition: "opacity 160ms",
+    zIndex: 9,
   };
-
-  const onScroll = () => hideboxScrolls();
-  baseStationsDisplay.addEventListener('scroll', onScroll, { passive: true });
-
-  // 초기 1회 적용 + 레이아웃 확정 후 한 번 더
-  requestAnimationFrame(hideboxScrolls);
-  if (document.fonts?.ready) document.fonts.ready.then(hideboxScrolls);
-  if (document.readyState === 'complete') hideboxScrolls();
-  else window.addEventListener('load', hideboxScrolls, { once: true });
-
-  return () => {
-    baseStationsDisplay.removeEventListener('scroll', onScroll);
-  };
-}, []);
-
-  // 스크롤 맨하단 시 튕기는 문제 해결
-useEffect(() => {
-  const baseStationsDisplay = document.querySelector('.linesdetail-stations');
-  if (!baseStationsDisplay) return;
-
-  const isAtBottom = () =>
-    baseStationsDisplay.scrollHeight - baseStationsDisplay.scrollTop - baseStationsDisplay.clientHeight <= 2;
-
-  let wasAtBottom = isAtBottom(); // 초기 상태 기록
-
-  const handleScroll = () => {
-    wasAtBottom = isAtBottom();   // ← 스크롤할 때마다 갱신
-  };
-
-  const handleResize = () => {
-    if (wasAtBottom) {
-      // 레이아웃 확정 뒤에 적용
-      requestAnimationFrame(() => {
-        baseStationsDisplay.scrollTop = baseStationsDisplay.scrollHeight;
-      });
-    }
-  };
-
-  const scrollBottomDisplay = new ResizeObserver(handleResize);
-  scrollBottomDisplay.observe(baseStationsDisplay);
-
-  window.addEventListener('resize', handleResize);
-  baseStationsDisplay.addEventListener('scroll', handleScroll, { passive: true });
-
-  return () => {
-    scrollBottomDisplay.disconnect();
-    window.removeEventListener('resize', handleResize);
-    baseStationsDisplay.removeEventListener('scroll', handleScroll);
-  };
-}, []);
 
 
   return (
-    <div className="linesdetail-web-container" 
-         style={{ "--line-color": lineColor }}>
+    <div className="linesdetail-web-container"
+      style={{ "--line-color": lineColor }}>
 
-          {/* 바깥 박스틀 */}
-        <div className="linesdetail-box">
+      {/* 바깥 박스틀 */}
+      <div className="linesdetail-box">
 
-          {/* n호선 표시 */}
-          <div className="linesdetail-textbox">
-            <div className="linesdetail-line-number">
-              {lineNumOnly}{lineLabel}
-            </div>  
-          </div>
-          <div className="linesdetail-frame">
-
-            {/* 안쪽 박스틀 */}
-            <div className="linesdetail-linebox">
-
-              {/* 노선  */}
-                <div className="linesdetail-line" />
-
-              {/* 역들(7자 이상 ... 붙임) */}
-              <div className="linesdetail-stationscontainer">
-
-                <div className="stations-responsive-height">
-                  <div className="linesdetail-stations-height">
-                    <div className="linesdetail-stations linesdetail-hide-scrollbar" 
-                         ref={linesDetailStationsRef}>
-                      {stations.map(({ name }, idx) => {
-
-                      const branchLine = name.includes("지선");
-                      const loopLine = name.includes("순환선");
-                      
-                      const linesDetailDisplayName = (branchLine || loopLine)
-                      ? name
-                      : (name.length >= 7 ? name.slice(0, 5) + "..." : name );
-
-                      const linesDetailClassStation = [
-                      "linesdetail-station",
-                      branchLine && "linesdetail-branchLine",
-                      loopLine && "linesdetail-loopLine",
-                      "stationDrag",
-                      idx === 6 && "linesdetail-station7",
-                      idx === 7 && "linesdetail-station8",
-                      ]
-                      .filter(Boolean)
-                      .join(" ");
-
-                      return (
-                            <div
-                          className={linesDetailClassStation}
-                          key={`${lineNum}-${name}-${idx}`}
-                          onClick={() => goToDetails(name)}
-                            >
-                          {linesDetailDisplayName}
-                            </div>
-                            );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* 제일 위/아래 스크롤 시 튀어나온 선 없애주는 박스들 */}
-              <div className="linesdetail-hideboxes">
-                <div className="linesdetail-hideboxesverticallength">
-                  <div className="linesdetail-hidebox1" />
-                  <div className="linesdetail-hidebox2" />
-                </div>
-              </div>
-    
-            </div>
+        {/* n호선 표시 */}
+        <div className="linesdetail-textbox">
+          <div className="linesdetail-line-number">
+            {lineNumOnly}{lineLabel}
           </div>
         </div>
-    </div>
+        
+        {/* 흰배경 검은바탕선 박스틀 */}
+        <div className="linesdetail-frame">
+          <div className="stations-responsive-height">
+
+            {/* 최상단/최하단 스크롤 아닐 시 상/하단 그라디언트 마스크 적용 */}
+            <div style={fadeTopStyle} />
+            <div style={fadeBottomStyle} /> 
+
+            <div className="linesdetail-stations-height" ref={scrollerRef}>
+              <div className="linesdetail-stations linesdetail-hide-scrollbar">
+
+                {stations.map(({ name }, idx) => {
+
+                  {/* 지선/순환선 레이아웃 및 이름 표시용 */}
+                  const branchLine = name.includes("지선");
+                  const loopLine = name.includes("순환선");
+
+                  const linesDetailDisplayName = (branchLine || loopLine)
+                    ? name
+                    : (name.length >= 7 ? name.slice(0, 5) + "..." : name);
+
+                  {/* css 클래스명이랑 jsx 코드 연결해서 스타일 적용하고 싶은 부분에만 스타일 적용 */}  
+                  const linesDetailClassStation = [
+                    "linesdetail-station",
+                    branchLine && "linesdetail-branchLine",
+                    loopLine && "linesdetail-loopLine",
+                    fadeTopStyle && "linesdetail-station",
+                  ]
+                    .filter(Boolean)
+                    .join(" ");
+
+                  return (
+                    <div className="line-box" key={`${lineNum}-${name}-${idx}`}>
+                      <div className="top-line-color" />
+                        <div
+                          className={linesDetailClassStation}
+                          onClick={() => goToDetails(name)}
+                        >
+                          {linesDetailDisplayName}
+                        </div>
+                      <div className="bottom-line-color" />
+
+                      {/* 2호선에 hidebox1에서 가려진 box-shadow 순환선 박스 복사해서 제일 위 레이어로 올려서 그림자 표시 */}
+                      {loopLine && (
+                        <div className="linesdetail-loopLine-duplicate">
+                          {name}
+                        </div>
+                      )}
+                    </div>
+                    
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* 제일 위/아래 스크롤 시 튀어나온 선 없애주는 박스들 */}
+          <div className="linesdetail-hideboxesverticallength">
+          <div className="linesdetail-hidebox1" 
+          style={{
+            opacity: atTop && hasScrollOverflow ? 1 : 0 }}
+            aria-hidden={!atTop}
+          />
+          <div className="linesdetail-hidebox2" 
+          style={{
+              opacity: atBottom && hasScrollOverflow ? 1 : 0,
+            }}
+            aria-hidden={!atBottom}
+          />
+        </div>
+
+          </div>
+        </div>
+      </div>
   );
 }
 
