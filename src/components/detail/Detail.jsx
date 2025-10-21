@@ -32,20 +32,80 @@ function Detail() {
 
 
 
+  
   // ---------- 도착 정보 ----------
-          
+
+  const stationNameMapping = {
+    line1: {
+      "쌍용": "쌍용(나사렛대)"
+    },
+    line4: {
+      "이수": "총신대입구(이수)"
+    },
+    line5: {
+      "신정": "신정(은행정)",
+      "오목교": "오목교(목동운동장앞)",
+      "군자": "군자(능동)",
+      "아차산": "아차산(어린이대공원후문)",
+      "광나루": "광나루(장신대)",
+      "천호": "천호(풍납토성)",
+      "굽은다리": "굽은다리(강동구민회관앞)",
+      "올림픽공원": "올림픽공원(한국체대)"
+    },
+    line6: {
+      "응암": "응암순환(상선)",
+      "새절": "새절(신사)",
+      "증산": "증산(명지대앞)",
+      "월드컵경기장": "월드컵경기장(성산)",
+      "대흥": "대흥(서강대앞)",
+      "안암": "안암(고대병원앞)",
+      "월곡": "월곡(동덕여대)",
+      "상월곡": "상월곡(한국과학기술연구원)",
+      "화랑대": "화랑대(서울여대입구)"
+    },
+    line7: {
+      "공릉": "공릉(서울산업대입구)",
+      "군자": "군자(능동)",
+      "어린이대공원": "어린이대공원(세종대)",
+      "이수": "총신대입구(이수)",
+      "숭실대입구": "숭실대입구(살피재)",
+      "상도": "상도(중앙대앞)"
+    },
+    line8: {
+      "천호": "천호(풍납토성)",
+      "몽촌토성": "몽촌토성(평화의문)",
+      "남한산성입구": "남한산성입구(성남법원,검찰청)"
+    }
+  };
+
   useEffect(() => {
     dispatch(arrivalInfoIndex());
   }, []);
+
   // 현재역의 도착 정보(역명(statnNm)과 호선이 동일한 것만 가져오기)
   const currentArrivalList = Array.isArray(arrivalInfo) ? arrivalInfo.filter((info) => {
-    const sameStation = info.statnNm === station; // 현재역명
-    const subwayIdNum = Number(info.subwayId); // 문자열 숫자로 변환
-    const validSubwayId = subwayIdNum >= 1001 && subwayIdNum <= 1009; // 1001~1009만 가져옴
-    const sameLine = subwayIdNum % 100 === Number(lineNumOnly);
+  // 역명이 같으면
+    if (info.statnNm === station) {
+      const sameStation = info.statnNm === station; // 현재역명
+      const subwayIdNum = Number(info.subwayId); // 문자열 숫자로 변환
+      const validSubwayId = subwayIdNum >= 1001 && subwayIdNum <= 1009; // 1001~1009만 가져옴
+      const sameLine = subwayIdNum % 100 === Number(lineNumOnly);
 
-    return sameStation && validSubwayId && sameLine;
+      return sameStation && validSubwayId && sameLine; // 동일한 호선 및 유효한 subwayId일 때만 반환
+    } else {
+      // 역명이 다르면 stationNameMapping을 기준으로 비교
+      const mappedStation = stationNameMapping[lineId]?.[station]; // stationNameMapping에서 역명 비교
+      if (mappedStation && mappedStation === info.statnNm) {
+        const subwayIdNum = Number(info.subwayId); // 문자열 숫자로 변환
+        const validSubwayId = subwayIdNum >= 1001 && subwayIdNum <= 1009; // 1001~1009만 가져옴
+        const sameLine = subwayIdNum % 100 === Number(lineNumOnly);
+
+        return validSubwayId && sameLine; // 동일한 호선 및 유효한 subwayId일 때만 반환
+      }
+      return false; // station과 statnNm이 다르면 아무것도 반환하지 않음
+    }
   }) : [];
+
   // trainLineNm에서 '행' 앞부분 제거하고, '~방면'만 추출
   const extractDirection = (trainLineNm) => {
     if (!trainLineNm) return "";
@@ -118,10 +178,10 @@ function Detail() {
 
   const currentStationInfo = Array.isArray(stationInfo)
     ? stationInfo.find(info =>
-        info.SBWY_STNS_NM === station && (
+        info.SBWY_STNS_NM.includes(station) && (
           matchesLineField(info.SBWY_ROUT_LN) || matchesLineField(info.SBWY_ROUT_LN?.toString?.())
         )
-      ) || stationInfo.find(info => info.SBWY_STNS_NM === station) // fallback: 이름만
+      ) 
     : null;
 
 
@@ -203,7 +263,7 @@ function Detail() {
             {Object.keys(groupedByDirection).length > 0 ? (
               Object.entries(groupedByDirection).map(([direction, trains]) => (
                 <div key={direction}>
-                  <div className="arrival-direction">
+                  <div className={`arrival-direction ${direction.length > 17 ? "long" : ""}`}>
                     <p>{direction}</p>
                   </div>
                   <div className="arrival-info">
