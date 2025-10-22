@@ -2,16 +2,17 @@
 
 
 .linesdetail-web-container {
-  --line-color: #000000;
+  width: 100vw;
+  height: 700px;
+  max-width: 100%;
+  margin-inline: auto;
+  padding: 0; 
   display: flex;
   justify-content: center;
   align-items: center;
   min-width: 360px;
-  width: 100%;
-  max-width: 1200px;
-  padding-inline: 25px;  /* ← 좌우 정확히 25px */
-  margin-inline: auto;   /* ← 중앙 정렬 */
-  container-type: inline-size;
+  container-type: inline-size; /* cqw 활성화 */
+  --line-color: #000000;
 }
 
 * {
@@ -21,8 +22,13 @@
 }
 
 .linesdetail-box {
-  width: 100%;
-  max-width: 1200px;
+  width: 1200px;
+  block-size: 690px;       /* cqh 기준을 안정적으로 제공 */
+  padding-top: 10px;
+  display: grid;
+  place-items: center;
+  grid-template-rows: auto auto 1fr auto;
+  container-type: inline-size
 }
 
 .linesdetail-textbox {
@@ -35,32 +41,30 @@
 }
 
 .linesdetail-frame {
-  inline-size: 100%;
-  max-inline-size: 1146px;
-  min-inline-size: 310px;
+  /* 너비: 310~1146px → 약 17~63vw로 변환 */
+  inline-size: calc(100cqw - 50px);
 
-  /* 높이: 컨테이너 너비에 비례시키되, 554~723px 사이로만 움직이게 */
-  block-size: min(723px, max(554px, 52cqw));
+  /* 높이: 800~1143px → 약 44~63vh로 변환 (cqh 포함) */
+  block-size: min(67.1vh, max(56.9vh,
+                calc(56.9vh + ((100cqw - 31.9vh) * 0.138059701)))) ;
 
   margin-top: 35px;
-  margin-bottom: 25px;
-  padding-block: 30px;
+  margin-bottom: 0;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   background-color: #fff;
-  border: 1px solid #000;
+  border: 1px solid #000;  
 }
 
 .stations-responsive-height {
-  inline-size: 100%;
-
-  /* 504~582px 사이에서, 부모 너비에 비례(예: 42cqw) */
-  block-size: min(582px, max(504px, 42cqw));
-
+  inline-size: 100%; 
+  block-size: min(1083px, max(640px, 42cqw));
+  padding: 30px 0;
   position: relative;
-  overflow-y: hidden;  /* 세로 스크롤 제거 */
+  overflow-y: hidden;  
 }
 
 .linesdetail-stations-height {
@@ -75,8 +79,8 @@
 }
 
 .linesdetail-stations {
-  min-height: 504px;
-  height: 100%;
+  min-height: 542px; 
+  height: 100%; 
   max-height: 582px;
   position: relative;
   display: flex;
@@ -100,7 +104,7 @@
 }
 
 .linesdetail-branchLine {
-  width: 126px;
+  width: 136px;
   height: 36px;
   position: relative;
   display: grid;
@@ -112,6 +116,7 @@
   color: #fff;
   box-shadow: 0 2px 7px #333;
   z-index: 100;
+  pointer-events: none;
 }
 
 .line-box {
@@ -119,6 +124,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 .top-line-color,
@@ -130,62 +136,10 @@
   background-color: var(--line-color);
 }
 
-.linesdetail-hideboxesverticallength {
-  min-width: 348px;
-  width: 100%;
-  max-width: 1146px;
-  min-height: 535px;
-  height: 100%;
-  max-height: 723px;
-  position: absolute;
-  top: 0;
-  bottom: 24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  z-index: 100; 
-  pointer-events: none;
-}
-
-.linesdetail-hidebox1 {
-  width: 20px;
-  height: 50px;
-  position: relative;
-  top: 1px;
-  background: #ffffff;
-  z-index: 300;
-}
-
-.linesdetail-hidebox2 {
-  width: 20px;
-  height: 50px;
-  position: relative;
-  bottom: 1px;
-  background: #ffffff;
-  z-index: 100;
-}
-
 .linesdetail-loopLine {
-  width: 126px;
+  width: 136px;
   height: 36px;
   position: relative;
-  display: grid;
-  place-items: center;
-  text-align: center;
-  border-radius: 0;
-  border: 4px solid #fff;
-  background-color: #35A344;
-  color: #fff;
-  pointer-events: none;
-}
-
-.linesdetail-loopLine-duplicate {
-  width: 126px;
-  height: 36px;
-  position: absolute;
-  top: 21px;
-  margin: 0 auto;
   display: grid;
   place-items: center;
   text-align: center;
@@ -195,5 +149,16 @@
   color: #fff;
   box-shadow: 0 2px 7px #333;
   pointer-events: none;
-  z-index: 1100;
+}
+
+.top-line-color.first { opacity: 0; }
+.bottom-line-color.last { opacity: 0; }
+
+.grid-spacer {
+width: 100%;
+height: 25px; 
+} 
+
+@media (max-width: 1146px) {
+
 }

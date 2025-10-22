@@ -65,18 +65,24 @@ function LinesDetail() {
   useEffect(() => {
     const scrollArea = scrollerRef.current;
     if (!scrollArea) return;
+
     const scrollUpdateState = () => {
       const maxScroll = Math.max(0, scrollArea.scrollHeight - scrollArea.clientHeight);
       const yHeight = scrollArea.scrollTop;
+
       setAtTop(yHeight <= 0);
       setAtBottom(maxScroll > 0 ? yHeight >= maxScroll - 1 : true);
       setHasScrollOverflow(maxScroll > 0);
+      
     };
 
     scrollUpdateState();
-    scrollArea.addEventListener("scroll", scrollUpdateState, { passive: true });
+    scrollArea.addEventListener("scroll", scrollUpdateState, 
+      { passive: true });
+
     const scrollDisplay = new ResizeObserver(scrollUpdateState);
     scrollDisplay.observe(scrollArea);
+
     return () => { scrollArea.removeEventListener("scroll", scrollUpdateState); scrollDisplay.disconnect(); };
   }, []);
 
@@ -84,7 +90,9 @@ function LinesDetail() {
   // 그라데이션
   const fadeTopStyle = {
     position: "absolute",
-    left: 0, right: 0, top: 0,
+    left: 0, 
+    right: 0, 
+    top: 0,
     height: 80,            // 필요 시 조절
     pointerEvents: "none",
     background: "linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0))",
@@ -95,7 +103,9 @@ function LinesDetail() {
 
   const fadeBottomStyle = {
     position: "absolute",
-    left: 0, right: 0, bottom: 0,
+    left: 0, 
+    right: 0, 
+    bottom: 0,
     height: 80,            // 필요 시 조절
     pointerEvents: "none",
     background: "linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,0))",
@@ -121,6 +131,8 @@ function LinesDetail() {
         
         {/* 흰배경 검은바탕선 박스틀 */}
         <div className="linesdetail-frame">
+
+
           <div className="stations-responsive-height">
 
             {/* 최상단/최하단 스크롤 아닐 시 상/하단 그라디언트 마스크 적용 */}
@@ -128,7 +140,10 @@ function LinesDetail() {
             <div style={fadeBottomStyle} /> 
 
             <div className="linesdetail-stations-height" ref={scrollerRef}>
-              <div className="linesdetail-stations linesdetail-hide-scrollbar">
+               <div
+                className={`linesdetail-stations linesdetail-hide-scrollbar
+                  ${atTop ? "at-top" : ""} ${atBottom ? "at-bottom" : ""}`}
+              >
 
                 {stations.map(({ name }, idx) => {
 
@@ -138,9 +153,14 @@ function LinesDetail() {
 
                   const linesDetailDisplayName = (branchLine || loopLine)
                     ? name
-                    : (name.length >= 7 ? name.slice(0, 5) + "..." : name);
+                    : 
+                    (
+                      name.length >= 7 
+                      ? 
+                      name.slice(0, 5) + "..." : name
+                    );
 
-                  {/* css 클래스명이랑 jsx 코드 연결해서 스타일 적용하고 싶은 부분에만 스타일 적용 */}  
+                  {/* css 클래스명이랑 jsx 코드 연결해서 스타일 적용하고 싶은 부분에만 스타일 적용 */}
                   const linesDetailClassStation = [
                     "linesdetail-station",
                     branchLine && "linesdetail-branchLine",
@@ -152,21 +172,19 @@ function LinesDetail() {
 
                   return (
                     <div className="line-box" key={`${lineNum}-${name}-${idx}`}>
-                      <div className="top-line-color" />
-                        <div
-                          className={linesDetailClassStation}
-                          onClick={() => goToDetails(name)}
-                        >
-                          {linesDetailDisplayName}
-                        </div>
-                      <div className="bottom-line-color" />
+                      <div
+                        className={`top-line-color ${idx === 0 ? "first" : ""}`}
+                      />
+                      <div
+                        className={linesDetailClassStation}
+                        onClick={() => goToDetails(name)}
+                      >
+                        {linesDetailDisplayName}
+                      </div>
+                      <div
+                        className={`bottom-line-color ${idx === stations.length - 1 ? "last" : ""}`}
+                      />
 
-                      {/* 2호선에 hidebox1에서 가려진 box-shadow 순환선 박스 복사해서 제일 위 레이어로 올려서 그림자 표시 */}
-                      {loopLine && (
-                        <div className="linesdetail-loopLine-duplicate">
-                          {name}
-                        </div>
-                      )}
                     </div>
                     
                   );
@@ -175,22 +193,8 @@ function LinesDetail() {
             </div>
           </div>
 
-          {/* 제일 위/아래 스크롤 시 튀어나온 선 없애주는 박스들 */}
-          <div className="linesdetail-hideboxesverticallength">
-          <div className="linesdetail-hidebox1" 
-          style={{
-            opacity: atTop && hasScrollOverflow ? 1 : 0 }}
-            aria-hidden={!atTop}
-          />
-          <div className="linesdetail-hidebox2" 
-          style={{
-              opacity: atBottom && hasScrollOverflow ? 1 : 0,
-            }}
-            aria-hidden={!atBottom}
-          />
-        </div>
-
           </div>
+          <div className="grid-spacer" aria-hidden="true" />
         </div>
       </div>
   );
