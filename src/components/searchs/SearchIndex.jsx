@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import './SearchIndex.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { setArrivalStationFrCord, setArrivalStationId, setDepartureStationFrCord, setDepartureStationId } from '../../store/slices/searchSlice';
-import { searchIndex } from '../../store/thunks/searchThunk';
+import { setArrivalStationFrCord, setArrivalStationId, setDepartureStationFrCord, setDepartureStationId } from '../../store/slices/searchSlice.js';
+import { searchIndex } from '../../store/thunks/searchThunk.js';
+import { getSearchRoute } from '../../store/thunks/searchRouteThunk.js';
 
 function SearchIndex() {
   const dispatch = useDispatch();
@@ -19,6 +20,7 @@ function SearchIndex() {
   const [departureInputValue, setDepartureInputValue] = useState(""); // 출발지 input에 입력된 역 명
   const [arrivalInputValue, setArrivalInputValue] = useState(""); // 도착지 input에 입력된 역 명
   const [activeField, setActiveField] = useState(null); // 출발지, 도착지 검색창 중 어떤 것이 활성화 되어있는지
+  cosnt [LoadingAllowed, setIsLoading]
  
   // 드롭다운 열기
   const searchOpenDropdown = (field) => {
@@ -153,7 +155,23 @@ function SearchIndex() {
       dispatch(setArrivalStationFrCord(''));
     }
   }
-  
+
+  // 검색 버튼 
+  const searchBtn = async () => {
+    if (!searchDepartureStationId || !searchArrivalStationId) {
+      alert('출발/도착 역을 먼저 선택하세요.');
+      return;
+    }
+    dispatch(getSearchRoute());
+  };
+
+  const sKindLabel = (sKind) => {
+    const kind = sKind;
+    if (kind === '1') return '최단시간';
+    if (kind === '2') return '';
+    if (kind === '3') return '';
+  };
+
   // 외부 클릭 시 드롭다운 닫기
   useEffect(() => {
     dispatch(searchIndex());
@@ -167,6 +185,19 @@ function SearchIndex() {
 
     return () => document.removeEventListener("mousedown", handleSearchClickOutside);
   }, []);
+
+
+  // ---------------- 길찾기 카드 출력 처리 ----------------
+  const totalTransferCnt = useSelector(state => state.search.totalTransferCnt);
+  const totalStationCnt = useSelector(state => state.search.totalStationCnt);
+  const totalTime = useSelector(state => state.search.totalTime);
+  const resultData = useSelector(state => state.search.resultData);
+  const sKind = useSelector(state => state.search.sKind);
+
+  function lineColor(line) {
+
+    return `line-num${line}`;
+  }
 
   return (
     <>
@@ -217,317 +248,41 @@ function SearchIndex() {
           </div>
           <div className='search-btns'>
             <button className='reset-btn' onClick={resetBtn} type="button">리셋</button>
-            <button className='search-btn' type="button">길찾기</button>
+            <button className='search-btn' type="button" onClick={searchBtn}>길찾기</button>
           </div>
         </div>
-        <div className='search-card-container'>
-          <div className="card">
-            <p className='card-running-time'>16분</p>
-            <p className='card-content-group'>최단시간</p>
-            <p className='card-process'>6개역 환승 2회</p>
-            <div className='card-route-container'>
-              <div className='route-group'>
-                <p className='estimated-time'>09:53</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>6</p>
-                  <p className='station-name'>망원역</p>
-                </div>
-              </div>
-              <div className='route-group'>
-                <p className='estimated-time'>09:56</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>2</p>
-                  <p className='station-name'>합정역</p>
-                </div>
-              </div>
-              <div className='route-group'>
-                <p className='estimated-time'>10:07</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>1</p>
-                  <p className='station-name'>신도림역</p>
-                </div>
-              </div>
-              <div className='route-group'>
-                <p className='estimated-time'>10:09</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>1</p>
-                  <p className='station-name'>구로역</p>
+        {
+          resultData.length > 0 && (
+            <div className='search-card-container'>
+              <div className="card">
+                <p className='card-running-time'>{totalTime}</p>
+                <p className='card-content-group'>{sKindLabel(sKind)}</p>
+                <p className='card-process'>{totalStationCnt}개역 환승 {totalTransferCnt}회</p>
+                <div className="card-route-container">
+                  {
+                    resultData.length > 0 && resultData.map((item, idx) => {
+                      return (
+                        <>
+                          <div className='route-group' key={`${item.transferStationLine}${idx}`}>
+                            <p className='estimated-time'>{item.transferStationTime}</p>
+                            <div className='route-map'>
+                              <div className={`search-circle ${lineColor(item.transferStationLine)}`}></div>
+                              <div className={`search-line ${lineColor(item.transferStationLine)}`}></div>
+                            </div>
+                            <div className='apply-station'>
+                              <p className={`search-line-number ${lineColor(item.transferStationLine)}`}>{item.transferStationLine}</p>
+                              <p className='station-name'>{item.transferStationName}</p>
+                            </div>
+                          </div>
+                        </>
+                      )
+                    })
+                  }
                 </div>
               </div>
             </div>
-          </div>
-          <div className="card">
-            <p className='card-running-time'>16분</p>
-            <p className='card-content-group'>최소환승</p>
-            <p className='card-process'>6개역 환승 2회</p>
-            <div className='card-route-container'>
-              <div className='route-group'>
-                <p className='estimated-time'>09:53</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>6</p>
-                  <p className='station-name'>망원역</p>
-                </div>
-              </div>
-              <div className='route-group'>
-                <p className='estimated-time'>09:56</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>2</p>
-                  <p className='station-name'>합정역</p>
-                </div>
-              </div>
-              <div className='route-group'>
-                <p className='estimated-time'>10:07</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>1</p>
-                  <p className='station-name'>신도림역</p>
-                </div>
-              </div>
-              <div className='route-group'>
-                <p className='estimated-time'>10:09</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>1</p>
-                  <p className='station-name'>구로역</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="card">
-            <p className='card-running-time'>16분</p>
-            <p className='card-content-group'>최소요금</p>
-            <p className='card-process'>6개역 환승 2회</p>
-            <div className='card-route-container'>
-              <div className='route-group'>
-                <p className='estimated-time'>09:53</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>6</p>
-                  <p className='station-name'>망원역</p>
-                </div>
-              </div>
-              <div className='route-group'>
-                <p className='estimated-time'>09:56</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>2</p>
-                  <p className='station-name'>합정역</p>
-                </div>
-              </div>
-              <div className='route-group'>
-                <p className='estimated-time'>10:07</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>1</p>
-                  <p className='station-name'>신도림역</p>
-                </div>
-              </div>
-              <div className='route-group'>
-                <p className='estimated-time'>10:09</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>1</p>
-                  <p className='station-name'>구로역</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="card">
-            <p className='card-running-time'>16분</p>
-            <p className='card-content-group'></p>
-            <p className='card-process'>6개역 환승 2회</p>
-            <div className='card-route-container'>
-              <div className='route-group'>
-                <p className='estimated-time'>09:53</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>6</p>
-                  <p className='station-name'>망원역</p>
-                </div>
-              </div>
-              <div className='route-group'>
-                <p className='estimated-time'>09:56</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>2</p>
-                  <p className='station-name'>합정역</p>
-                </div>
-              </div>
-              <div className='route-group'>
-                <p className='estimated-time'>10:07</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>1</p>
-                  <p className='station-name'>신도림역</p>
-                </div>
-              </div>
-              <div className='route-group'>
-                <p className='estimated-time'>10:09</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>1</p>
-                  <p className='station-name'>구로역</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="card">
-            <p className='card-running-time'>16분</p>
-            <p className='card-content-group'></p>
-            <p className='card-process'>6개역 환승 2회</p>
-            <div className='card-route-container'>
-              <div className='route-group'>
-                <p className='estimated-time'>09:53</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>6</p>
-                  <p className='station-name'>망원역</p>
-                </div>
-              </div>
-              <div className='route-group'>
-                <p className='estimated-time'>09:56</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>2</p>
-                  <p className='station-name'>합정역</p>
-                </div>
-              </div>
-              <div className='route-group'>
-                <p className='estimated-time'>10:07</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>1</p>
-                  <p className='station-name'>신도림역</p>
-                </div>
-              </div>
-              <div className='route-group'>
-                <p className='estimated-time'>10:09</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>1</p>
-                  <p className='station-name'>구로역</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="card">
-            <p className='card-running-time'>16분</p>
-            <p className='card-content-group'></p>
-            <p className='card-process'>6개역 환승 2회</p>
-            <div className='card-route-container'>
-              <div className='route-group'>
-                <p className='estimated-time'>09:53</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>6</p>
-                  <p className='station-name'>망원역</p>
-                </div>
-              </div>
-              <div className='route-group'>
-                <p className='estimated-time'>09:56</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>2</p>
-                  <p className='station-name'>합정역</p>
-                </div>
-              </div>
-              <div className='route-group'>
-                <p className='estimated-time'>10:07</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>1</p>
-                  <p className='station-name'>신도림역</p>
-                </div>
-              </div>
-              <div className='route-group'>
-                <p className='estimated-time'>10:09</p>
-                <div className='route-map'>
-                  <div className='search-circle'></div>
-                  <div className='search-line'></div>
-                </div>
-                <div className='apply-station'>
-                  <p className='search-line-number'>1</p>
-                  <p className='station-name'>구로역</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+          )
+        }
       </div>
     </>
   )

@@ -170,14 +170,15 @@
   width: 15px;
   height: 15px;
   border-radius: 50%;
-  border: 4px solid #AD7A00;
+  border: 4px solid var(--line-color);
 }
 
 .search-line {
   width: 0;
   height: 20px;
-  border: 2px solid #AD7A00;
+  border: 2px solid var(--line-color);
 }
+
 
 .apply-station {
   display: flex;
@@ -189,7 +190,7 @@
 .search-line-number {
   width: 18px;
   height: 18px;
-  background-color: #AD7A00;
+  background-color: var(--line-color);
   border-radius: 50%;
   color: #fff;
   text-align: center;
@@ -206,4 +207,33 @@
 
 .route-group:last-child .route-map .search-line {
   display: none;
+}
+
+/* 호선 별 고유 색상 */
+.line-num1 {
+  --line-color: #163191;
+}
+.line-num2 {
+  --line-color: #35A344;
+}
+.line-num3 {
+  --line-color: #E88200;
+}
+.line-num4 {
+  --line-color: #39A6E1;
+}
+.line-num5 {
+  --line-color: #9C4A9D;
+}
+.line-num6 {
+  --line-color: #AD7A00;
+}
+.line-num7 {
+  --line-color: #637531;
+}
+.line-num8 {
+  --line-color: #DF4C71;
+}
+.line-num9 {
+  --line-color: #BA9300;
 }
