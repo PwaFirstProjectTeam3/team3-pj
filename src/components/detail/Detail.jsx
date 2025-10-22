@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import './Detail.css';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { arrivalInfoIndex, convenienceInfoIndex, stationInfoIndex } from '../../store/thunks/detailThunk';
 import LINE_COLORS from "../../configs/lineColors.js";
 
@@ -9,6 +9,8 @@ function Detail() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { lineId, station } = useParams();
+
+  const [ refreshing, setRefreshing ] = useState(false);
 
   const lines = useSelector((state) => state.detail.lines);
   const stationInfo = useSelector((state) => state.detail.stationInfo);
@@ -81,6 +83,13 @@ function Detail() {
   useEffect(() => {
     dispatch(arrivalInfoIndex());
   }, []);
+
+  // 새로고침 버튼 클릭 시 실행
+  const handleRefresh = async() => {
+    setRefreshing(true);
+    await dispatch(arrivalInfoIndex()); // 최신 도착 정보 다시 불러오기
+    setTimeout(() => setRefreshing(false), 800); // 로딩 표시 잠깐 유지
+  };
 
   // 현재역의 도착 정보(역명(statnNm)과 호선이 동일한 것만 가져오기)
   const currentArrivalList = Array.isArray(arrivalInfo) ? arrivalInfo.filter((info) => {
@@ -258,6 +267,8 @@ function Detail() {
         <div>
           <div className="arrival-title">
             <p>도착 정보</p>
+            {/* <button type="button" className='refresh-btn' onClick={handleRefresh} >🔄</button> */}
+            <img className={`refresh-btn ${refreshing ? "rotating" : ""}`} onClick={handleRefresh} src={`/icons/refresh-icon-2.svg`} alt="새로고침" />
           </div>
           <div className="arrival-container">
             {Object.keys(groupedByDirection).length > 0 ? (
@@ -301,7 +312,7 @@ function Detail() {
               <p style={{color: getConvenienceInfo("PARKING").textColor}}>환승주차장</p>
             </div>
             <div className="convenience-info">
-              {/* TODO : 공공api에 자전거보관소(BICYCLE) 값이 모두 빈칸"" */}
+              {/* 공공api에 자전거보관소(BICYCLE) 값이 모두 빈칸"" */}
               {/* <img src={getConvenienceInfo("BICYCLE").iconSrc} alt="자전거보관소" />
               <p style={{color: getConvenienceInfo("BICYCLE").textColor}}>자전거보관소</p> */}
               <img src={`/icons/bicycleshed-icon-y.svg`} alt="자전거보관소" />

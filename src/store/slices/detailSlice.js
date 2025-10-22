@@ -49,7 +49,7 @@ const detailSlice = createSlice ({
       })
       .addMatcher(
         action => action.type.startsWith('detailSlice/') && action.type.endsWith('/pending'),
-        (state) => {
+        () => {
           console.log('처리중입니다.');
         }
       )
