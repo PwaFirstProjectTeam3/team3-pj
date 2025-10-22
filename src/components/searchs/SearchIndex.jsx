@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './SearchIndex.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { setArrivalStationFrCord, setArrivalStationId, setDepartureStationFrCord, setDepartureStationId } from '../../store/slices/searchSlice.js';
@@ -20,7 +20,6 @@ function SearchIndex() {
   const [departureInputValue, setDepartureInputValue] = useState(""); // 출발지 input에 입력된 역 명
   const [arrivalInputValue, setArrivalInputValue] = useState(""); // 도착지 input에 입력된 역 명
   const [activeField, setActiveField] = useState(null); // 출발지, 도착지 검색창 중 어떤 것이 활성화 되어있는지
-  cosnt [LoadingAllowed, setIsLoading]
  
   // 드롭다운 열기
   const searchOpenDropdown = (field) => {
