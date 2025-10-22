@@ -13,6 +13,9 @@ const searchSlice = createSlice({
     departureStationFrCord: '',
     arrivalStationFrCord: '',
     sKind: '1', // 경로 탐색 기준
+    resultSKind: '1',
+
+    loading: 'idle', // 로딩
 
     // 길찾기 출력 스테이트
     totalTransferCnt: 0,
@@ -33,19 +36,21 @@ const searchSlice = createSlice({
     setArrivalStationFrCord: (state, action) => {
       state.arrivalStationFrCord = action.payload;
     },
-    setDepartureStation: (state, action) => {
-      state.departureStation = action.payload;
-    },
-    setArrivalStation: (state, action) => {
-      state.arrivalStation = action.payload;
-    },
+    setSKind: (state, action) => {
+      state.sKind = action.payload;
+    }
   },
   extraReducers: builder => {
     builder
       .addCase(searchIndex.fulfilled, (state, action) => {
         state.list = action.payload;
       })
+      .addCase(getSearchRoute.pending, (state) => {
+        state.status = 'loading';
+      })
       .addCase(getSearchRoute.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.resultSKind = state.sKind;
         const parsedXMLResponse = parseXMLResponse(action.payload?.rawXML);
 
         // 변수 선언
@@ -114,6 +119,7 @@ const searchSlice = createSlice({
       .addMatcher(
         action => action.type.startsWith('searchSlice/') && action.type.endsWith('/rejected'),
         (state, action) => {
+          state.status = 'failed';
           console.error('searchSlice Error', action.payload, action.error);
         }
       )
@@ -125,8 +131,7 @@ export const {
   setDepartureStationFrCord,
   setArrivalStationId,
   setArrivalStationFrCord,
-  setDepartureStation,
-  setArrivalStation,
+  setSKind,
 } = searchSlice.actions;
 
 export default searchSlice.reducer;

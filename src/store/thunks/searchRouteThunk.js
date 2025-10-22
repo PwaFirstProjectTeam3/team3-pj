@@ -11,7 +11,7 @@ const getSearchRoute = createAsyncThunk(
       const formData = new FormData()
       formData.append('departureId', state.departureStationId) // 출발역 ID
       formData.append('arrivalId', state.arrivalStationId) // 도착역 ID
-      formData.append('sKind', state.sKind) // 검색 종류
+      formData.append('sKind', state.sKind) // 검색 종류 1 = 최소 시간 4 = 최단 거리 2= 최소 환승
 
       const response = await axios.post('/api/kr/getRouteSearchResult.do',
         formData,

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import './SearchIndex.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { setArrivalStationFrCord, setArrivalStationId, setDepartureStationFrCord, setDepartureStationId } from '../../store/slices/searchSlice.js';
+import { setArrivalStationFrCord, setArrivalStationId, setDepartureStationFrCord, setDepartureStationId, setSKind } from '../../store/slices/searchSlice.js';
 import { searchIndex } from '../../store/thunks/searchThunk.js';
 import { getSearchRoute } from '../../store/thunks/searchRouteThunk.js';
 
@@ -11,15 +11,19 @@ function SearchIndex() {
   const departureRef = useRef(null);
   const arrivalRef = useRef(null);
 
+  const optionsRef = useRef(null);
+
   const allStationList = useSelector(state => state.search.list);
   const searchDepartureStationId = useSelector(state => state.search.departureStationId);
   const searchArrivalStationId = useSelector(state => state.search.arrivalStationId);
   const searchDepartureStationFrCord = useSelector(state => state.search.departureStationFrCord);
   const searchArrivalStationFrCord = useSelector(state => state.search.arrivalStationFrCord);
+  const searchLoading = useSelector(state => state.search.status);
 
   const [departureInputValue, setDepartureInputValue] = useState(""); // 출발지 input에 입력된 역 명
   const [arrivalInputValue, setArrivalInputValue] = useState(""); // 도착지 input에 입력된 역 명
   const [activeField, setActiveField] = useState(null); // 출발지, 도착지 검색창 중 어떤 것이 활성화 되어있는지
+
  
   // 드롭다운 열기
   const searchOpenDropdown = (field) => {
@@ -155,7 +159,46 @@ function SearchIndex() {
     }
   }
 
-  // 검색 버튼 
+  // 외부 클릭 시 드롭다운 닫기
+  useEffect(() => {
+    dispatch(searchIndex());
+
+    function handleSearchClickOutside(event) {
+      const clickOutsideInput = departureRef.current && !departureRef.current.contains(event.target) && arrivalRef.current && !arrivalRef.current.contains(event.target);
+
+      const clickOutsideOptions = optionsRef.current && !optionsRef.current.contains(event.target)
+      
+      if (clickOutsideInput && clickOutsideOptions) {
+        searchCloseDropdown();
+      }
+      if (clickOutsideOptions) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleSearchClickOutside);
+
+    return () => document.removeEventListener("mousedown", handleSearchClickOutside);
+  }, []);
+
+  // ----------------검색 버튼 및 탐색 기준 버튼 처리-----------------
+  const sKind = useSelector(state => state.search.sKind);
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  // 드랍다운 표시 목록
+  const searchOptions = [
+    { value: '1', label: '최소 시간' },
+    { value: '2', label: '최소 환승' },
+    { value: '4', label: '최단 거리' },
+  ];
+
+  // 옵션 클릭 함수
+  const handleOptionClick = (sKind) => {
+    dispatch(setSKind(sKind)); // Redux의 sKind 상태 변경
+    setIsOpen(false); // 드롭다운 닫기
+  };
+
+    // 검색 버튼 
   const searchBtn = async () => {
     if (!searchDepartureStationId || !searchArrivalStationId) {
       alert('출발/도착 역을 먼저 선택하세요.');
@@ -164,26 +207,15 @@ function SearchIndex() {
     dispatch(getSearchRoute());
   };
 
+  // 검색 버튼 로딩 처리
+  const isLoading = searchLoading === 'loading';
+
   const sKindLabel = (sKind) => {
     const kind = sKind;
-    if (kind === '1') return '최단시간';
-    if (kind === '2') return '';
-    if (kind === '3') return '';
+    if (kind === '1') return '최소 시간';
+    if (kind === '2') return '최소 환승';
+    if (kind === '4') return '최단 거리';
   };
-
-  // 외부 클릭 시 드롭다운 닫기
-  useEffect(() => {
-    dispatch(searchIndex());
-
-    function handleSearchClickOutside(event) {
-      if (departureRef.current && !departureRef.current.contains(event.target) && arrivalRef.current && !arrivalRef.current.contains(event.target)) {
-        searchCloseDropdown();
-      }
-    }
-    document.addEventListener("mousedown", handleSearchClickOutside);
-
-    return () => document.removeEventListener("mousedown", handleSearchClickOutside);
-  }, []);
 
 
   // ---------------- 길찾기 카드 출력 처리 ----------------
@@ -191,7 +223,7 @@ function SearchIndex() {
   const totalStationCnt = useSelector(state => state.search.totalStationCnt);
   const totalTime = useSelector(state => state.search.totalTime);
   const resultData = useSelector(state => state.search.resultData);
-  const sKind = useSelector(state => state.search.sKind);
+  const resultSKind = useSelector(state => state.search.resultSKind);
 
   function lineColor(line) {
 
@@ -201,6 +233,22 @@ function SearchIndex() {
   return (
     <>
       <div className="search-container">
+        <div className="search-option-container" ref={optionsRef}>
+          <button type="button" className='search-kind' onClick={() => setIsOpen(!isOpen)}><span className={`dropdown-option-arrow ${isOpen ? 'open' : ''}`}>▼</span>{sKindLabel(sKind)}</button>
+          {isOpen && (
+          <ul className="option-list">
+            {searchOptions.map((option) => (
+              <li
+                key={option.value}
+                className="option-dropdown-item"
+                onClick={() => handleOptionClick(option.value)}
+              >
+                {option.label}
+              </li>
+            ))}
+          </ul>
+        )}
+        </div>
         <div className='search-box'>
           <div className='search-departure-station' ref={departureRef}>
             <input className='departure-station'
@@ -247,7 +295,9 @@ function SearchIndex() {
           </div>
           <div className='search-btns'>
             <button className='reset-btn' onClick={resetBtn} type="button">리셋</button>
-            <button className='search-btn' type="button" onClick={searchBtn}>길찾기</button>
+            <button className='search-btn' type="button" onClick={searchBtn} disabled={isLoading}>
+              {isLoading ? '검색 중...' : '길찾기'}
+            </button>
           </div>
         </div>
         {
@@ -255,7 +305,7 @@ function SearchIndex() {
             <div className='search-card-container'>
               <div className="card">
                 <p className='card-running-time'>{totalTime}</p>
-                <p className='card-content-group'>{sKindLabel(sKind)}</p>
+                <p className='card-content-group'>{sKindLabel(resultSKind)}</p>
                 <p className='card-process'>{totalStationCnt}개역 환승 {totalTransferCnt}회</p>
                 <div className="card-route-container">
                   {
