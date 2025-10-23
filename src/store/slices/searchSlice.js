@@ -21,6 +21,7 @@ const searchSlice = createSlice({
     totalTransferCnt: 0,
     totalStationCnt: 0,
     totalTime: '0',
+    endStationName: '',
     resultData: [],
   },
   reducers: {
@@ -38,7 +39,13 @@ const searchSlice = createSlice({
     },
     setSKind: (state, action) => {
       state.sKind = action.payload;
-    }
+    },
+    resetCard: (state) => {
+      state.resultData = [];
+      state.status = 'idle';
+      state.sKind = '1';
+      state.committedSKind = '1';
+    },
   },
   extraReducers: builder => {
     builder
@@ -76,7 +83,11 @@ const searchSlice = createSlice({
           }
         }
         
+        let loopCnt = 0;
+        const pathListLength = parsedXMLResponse.pathList.length;
         for (const item of parsedXMLResponse.pathList) {
+          loopCnt++;
+
           if(!transferStationName) {
             transferStationName = item.startStation;
             transferStationLine = item.line;
@@ -101,19 +112,30 @@ const searchSlice = createSlice({
             transferStationLine = '';
             transferStationTime = null;
           }
+
+          // 가장 마지막 루프일 때 처리
+          if(loopCnt >= pathListLength) {
+            // 마지막 환승역 result 추가
+            result.push({
+              transferStationName,
+              transferStationLine,
+              transferStationTime: transferStationTime.format('HH:mm'),
+            });
+
+            // 도착역 result 추가
+            result.push({
+              transferStationName: item.endStation,
+              transferStationLine: item.line,
+              transferStationTime: totalTime.format('HH:mm'),
+            });
+          }
         }
         
-        // 마지막 아이템 result 추가
-        result.push({
-          transferStationName,
-          transferStationLine,
-          transferStationTime: transferStationTime.format('HH:mm'),
-        });
-
         // 스테이트에 저장
         state.totalTransferCnt = totalTransferCnt;
         state.totalStationCnt = totalStationCnt;
         state.totalTime = formatMinuteToHour(parsedXMLResponse.totalTime);
+        state.endStationName = parsedXMLResponse.endStationName;
         state.resultData = result;
       })
       .addMatcher(
@@ -132,6 +154,7 @@ export const {
   setArrivalStationId,
   setArrivalStationFrCord,
   setSKind,
+  resetCard,
 } = searchSlice.actions;
 
 export default searchSlice.reducer;

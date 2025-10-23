@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import './SearchIndex.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { setArrivalStationFrCord, setArrivalStationId, setDepartureStationFrCord, setDepartureStationId, setSKind } from '../../store/slices/searchSlice.js';
+import { resetCard, setArrivalStationFrCord, setArrivalStationId, setDepartureStationFrCord, setDepartureStationId, setSKind } from '../../store/slices/searchSlice.js';
 import { searchIndex } from '../../store/thunks/searchThunk.js';
 import { getSearchRoute } from '../../store/thunks/searchRouteThunk.js';
 
@@ -19,7 +19,7 @@ function SearchIndex() {
   const searchArrivalStationId = useSelector(state => state.search.arrivalStationId);
   const searchDepartureStationFrCord = useSelector(state => state.search.departureStationFrCord);
   const searchArrivalStationFrCord = useSelector(state => state.search.arrivalStationFrCord);
-  const searchLoading = useSelector(state => state.search.status);
+  const searchStatus = useSelector(state => state.search.status);
   
   // 카드 출력
   const totalTransferCnt = useSelector(state => state.search.totalTransferCnt);
@@ -167,6 +167,7 @@ function SearchIndex() {
       dispatch(setDepartureStationFrCord(''));
       dispatch(setArrivalStationFrCord(''));
     }
+    dispatch(resetCard());
   }
 
   // 드랍다운 표시 목록
@@ -192,8 +193,8 @@ function SearchIndex() {
   };
   
   // 검색 버튼 로딩 처리
-  const isLoading = searchLoading === 'loading';
-  
+  const isLoading = searchStatus === 'loading';
+
   const sKindLabel = (sKind) => {
     const kind = sKind;
     if (kind === '1') return '최소 시간';
@@ -201,10 +202,54 @@ function SearchIndex() {
     if (kind === '4') return '최단 거리';
   };
   
-  
+  const koreanToNumber = {
+  '서해선': 'seo',
+  '신림선': 'sinlim',
+  '우이신설경전철': 'wooi',
+  '김포도시철도': 'kimpo',
+  };
+
+  const lineToShortenName = {
+    'in1': '인1',
+    'in2': '인2',
+    'bun': '분당',
+    'sinbun': '신분',
+    'kyung': '경의',
+    'kong': '공항',
+    'chun': '경춘',
+    'yongin': '용인',
+    'kyeongkang': '경강',
+    '서해선': '서해',
+    '김포도시철도': '김포',
+    '신림선': '신림',
+    '의정부경전철': '의정부',
+    '우이신설경전철': '우이',
+  }
+
+  function lineName(line) {
+    const changedName = lineToShortenName[line];
+    if(changedName) {
+      return changedName;
+    } else {
+      return line;
+    }
+  }
+
+  function fontSizeChange(changedName) {
+    if(changedName.length === 2) {
+      return 'line-name-two-letter';
+    } else if(changedName.lentgh === 3) {
+      return 'line-name-three-letter';
+    }
+  }
+
   function lineColor(line) {
-    
-    return `line-num${line}`;
+    const koreanCode = koreanToNumber[line];
+    if(koreanCode) {
+      return `line-${koreanCode}`;
+    } else {
+    return `line-${line}`;
+    }
   }
   
   // 외부 클릭 시 드롭다운 닫기
@@ -302,8 +347,8 @@ function SearchIndex() {
             </button>
           </div>
         </div>
-        {
-          resultData.length > 0 && (
+            {
+            resultData.length > 0 && (
             <div className='search-card-container'>
               <div className="card">
                 <div className='card-take-group'>
@@ -316,14 +361,14 @@ function SearchIndex() {
                     resultData.length > 0 && resultData.map((item, idx) => {
                       return (
                         <>
-                          <div className='route-group' key={`${item.transferStationLine}${idx}`}>
+                          <div className='route-group' key={`${item.transferStationLine}${item.transferStationName}${idx}`}>
                             <p className='estimated-time'>{item.transferStationTime}</p>
                             <div className='route-map'>
                               <div className={`search-circle ${lineColor(item.transferStationLine)}`}></div>
                               <div className={`search-line ${lineColor(item.transferStationLine)}`}></div>
                             </div>
                             <div className='apply-station'>
-                              <p className={`search-line-number ${lineColor(item.transferStationLine)}`}>{item.transferStationLine}</p>
+                              <p className={`search-line-number ${lineColor(item.transferStationLine)} ${fontSizeChange(lineName(item.transferStationLine))}`}>{lineName(item.transferStationLine)}</p>
                               <p className='station-name'>{item.transferStationName}</p>
                             </div>
                           </div>

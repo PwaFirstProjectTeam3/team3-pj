@@ -249,6 +249,14 @@
   font-size: 18px;
 }
 
+.line-name-two-letter {
+  font-size: 10px;
+}
+
+.line-name-three-letter {
+  font-size: 7px;
+}
+
 .station-name {
   font-size: 15px;
   font-weight: bold;
@@ -259,30 +267,72 @@
 }
 
 /* 호선 별 고유 색상 */
-.line-num1 {
+.line-1 {
   --line-color: #163191;
 }
-.line-num2 {
+.line-2 {
   --line-color: #35A344;
 }
-.line-num3 {
+.line-3 {
   --line-color: #E88200;
 }
-.line-num4 {
+.line-4 {
   --line-color: #39A6E1;
 }
-.line-num5 {
+.line-5 {
   --line-color: #9C4A9D;
 }
-.line-num6 {
+.line-6 {
   --line-color: #AD7A00;
 }
-.line-num7 {
+.line-7 {
   --line-color: #637531;
 }
-.line-num8 {
+.line-8 {
   --line-color: #DF4C71;
 }
-.line-num9 {
+.line-9 {
   --line-color: #BA9300;
+}
+.line-in1 {
+  --line-color: #6c97e1;
+}
+.line-in2 {
+  --line-color: #f59801;
+}
+.line-bun {
+  --line-color: #f7d100;
+}
+.line-sinbun {
+  --line-color: #c41e30;
+}
+.line-kyung {
+  --line-color: #81c09f;
+}
+.line-kong {
+  --line-color: #2f8fa1;
+}
+.line-chun {
+  --line-color: #51c7a7;
+}
+.line-yongin {
+  --line-color: #61ab26;
+}
+.line-kyeongkang {
+  --line-color: #1b4faa;
+}
+.line-seo {
+  --line-color: #9de818;
+}
+.line-kimpo {
+  --line-color: #d8c579;
+}
+.line-sinlim {
+  --line-color: #4a9aff;
+}
+.line-ujb {
+  --line-color: #f0b900;
+}
+.line-wooi {
+  --line-color: #b7b7b7;
 }
