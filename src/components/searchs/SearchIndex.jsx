@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { resetCard, setArrivalStationFrCord, setArrivalStationId, setDepartureStationFrCord, setDepartureStationId, setSKind } from '../../store/slices/searchSlice.js';
 import { searchIndex } from '../../store/thunks/searchThunk.js';
 import { getSearchRoute } from '../../store/thunks/searchRouteThunk.js';
+import { useNavigate } from 'react-router-dom';
 
 function SearchIndex() {
   const dispatch = useDispatch();
@@ -251,6 +252,16 @@ function SearchIndex() {
     return `line-${line}`;
     }
   }
+
+  const navigate = useNavigate();
+
+  const handleStationClick = (line, stationName) => {
+    const lineId = 'line' + line
+    navigate(`/linesdetail/${lineId}/details/${stationName}`);
+  }
+
+  const allowedLines = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
   
   // 외부 클릭 시 드롭다운 닫기
   useEffect(() => {
@@ -367,7 +378,10 @@ function SearchIndex() {
                               <div className={`search-circle ${lineColor(item.transferStationLine)}`}></div>
                               <div className={`search-line ${lineColor(item.transferStationLine)}`}></div>
                             </div>
-                            <div className='apply-station'>
+                            <div className='apply-station' onClick={
+                              allowedLines.includes(item.transferStationLine)
+                              ? () => handleStationClick(item.transferStationLine, item.transferStationName)
+                            : null} style={{cursor: allowedLines.includes(item.transferStationLine) ? 'pointer' : 'default'}}>
                               <p className={`search-line-number ${lineColor(item.transferStationLine)} ${fontSizeChange(lineName(item.transferStationLine))}`}>{lineName(item.transferStationLine)}</p>
                               <p className='station-name'>{item.transferStationName}</p>
                             </div>

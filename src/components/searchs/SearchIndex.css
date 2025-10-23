@@ -234,8 +234,10 @@
 
 
 .apply-station {
+  height: 23px;
   display: flex;
   gap: 15px;
+  cursor: pointer;
 }
 
 .search-line-number {
