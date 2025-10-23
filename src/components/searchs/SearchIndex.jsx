@@ -10,21 +10,31 @@ function SearchIndex() {
 
   const departureRef = useRef(null);
   const arrivalRef = useRef(null);
-
   const optionsRef = useRef(null);
-
+  
+  // 검색창
+  const sKind = useSelector(state => state.search.sKind); // 필터
   const allStationList = useSelector(state => state.search.list);
   const searchDepartureStationId = useSelector(state => state.search.departureStationId);
   const searchArrivalStationId = useSelector(state => state.search.arrivalStationId);
   const searchDepartureStationFrCord = useSelector(state => state.search.departureStationFrCord);
   const searchArrivalStationFrCord = useSelector(state => state.search.arrivalStationFrCord);
   const searchLoading = useSelector(state => state.search.status);
-
+  
+  // 카드 출력
+  const totalTransferCnt = useSelector(state => state.search.totalTransferCnt);
+  const totalStationCnt = useSelector(state => state.search.totalStationCnt);
+  const totalTime = useSelector(state => state.search.totalTime);
+  const resultData = useSelector(state => state.search.resultData);
+  const resultSKind = useSelector(state => state.search.resultSKind);
+  
+  
+  const [filterDropboxOpen, setFilterDropboxOpen] = useState(false); // 필터 드랍박스가 열렸는지 안 열렸는지
   const [departureInputValue, setDepartureInputValue] = useState(""); // 출발지 input에 입력된 역 명
   const [arrivalInputValue, setArrivalInputValue] = useState(""); // 도착지 input에 입력된 역 명
   const [activeField, setActiveField] = useState(null); // 출발지, 도착지 검색창 중 어떤 것이 활성화 되어있는지
-
- 
+  
+  
   // 드롭다운 열기
   const searchOpenDropdown = (field) => {
     setActiveField(field); // 어떤 input이 활성화 되었는지
@@ -159,6 +169,44 @@ function SearchIndex() {
     }
   }
 
+  // 드랍다운 표시 목록
+  const searchOptions = [
+    { value: '1', label: '최소 시간' },
+    { value: '2', label: '최소 환승' },
+    { value: '4', label: '최단 거리' },
+  ];
+  
+  // 옵션 클릭 함수
+  const handleOptionClick = (sKind) => {
+    dispatch(setSKind(sKind)); // Redux의 sKind 상태 변경
+    setFilterDropboxOpen(false); // 드롭다운 닫기
+  };
+  
+  // 검색 버튼 
+  const searchBtn = async () => {
+    if (!searchDepartureStationId || !searchArrivalStationId) {
+      alert('출발 / 도착 역을 선택해주세요.');
+      return;
+    }
+    dispatch(getSearchRoute());
+  };
+  
+  // 검색 버튼 로딩 처리
+  const isLoading = searchLoading === 'loading';
+  
+  const sKindLabel = (sKind) => {
+    const kind = sKind;
+    if (kind === '1') return '최소 시간';
+    if (kind === '2') return '최소 환승';
+    if (kind === '4') return '최단 거리';
+  };
+  
+  
+  function lineColor(line) {
+    
+    return `line-num${line}`;
+  }
+  
   // 외부 클릭 시 드롭다운 닫기
   useEffect(() => {
     dispatch(searchIndex());
@@ -172,7 +220,7 @@ function SearchIndex() {
         searchCloseDropdown();
       }
       if (clickOutsideOptions) {
-        setIsOpen(false);
+        setFilterDropboxOpen(false);
       }
     }
     document.addEventListener("mousedown", handleSearchClickOutside);
@@ -180,68 +228,22 @@ function SearchIndex() {
     return () => document.removeEventListener("mousedown", handleSearchClickOutside);
   }, []);
 
-  // ----------------검색 버튼 및 탐색 기준 버튼 처리-----------------
-  const sKind = useSelector(state => state.search.sKind);
-
-  const [isOpen, setIsOpen] = useState(false);
-
-  // 드랍다운 표시 목록
-  const searchOptions = [
-    { value: '1', label: '최소 시간' },
-    { value: '2', label: '최소 환승' },
-    { value: '4', label: '최단 거리' },
-  ];
-
-  // 옵션 클릭 함수
-  const handleOptionClick = (sKind) => {
-    dispatch(setSKind(sKind)); // Redux의 sKind 상태 변경
-    setIsOpen(false); // 드롭다운 닫기
-  };
-
-    // 검색 버튼 
-  const searchBtn = async () => {
-    if (!searchDepartureStationId || !searchArrivalStationId) {
-      alert('출발/도착 역을 먼저 선택하세요.');
-      return;
-    }
-    dispatch(getSearchRoute());
-  };
-
-  // 검색 버튼 로딩 처리
-  const isLoading = searchLoading === 'loading';
-
-  const sKindLabel = (sKind) => {
-    const kind = sKind;
-    if (kind === '1') return '최소 시간';
-    if (kind === '2') return '최소 환승';
-    if (kind === '4') return '최단 거리';
-  };
-
-
-  // ---------------- 길찾기 카드 출력 처리 ----------------
-  const totalTransferCnt = useSelector(state => state.search.totalTransferCnt);
-  const totalStationCnt = useSelector(state => state.search.totalStationCnt);
-  const totalTime = useSelector(state => state.search.totalTime);
-  const resultData = useSelector(state => state.search.resultData);
-  const resultSKind = useSelector(state => state.search.resultSKind);
-
-  function lineColor(line) {
-
-    return `line-num${line}`;
-  }
-
   return (
     <>
       <div className="search-container">
         <div className="search-option-container" ref={optionsRef}>
-          <button type="button" className='search-kind' onClick={() => setIsOpen(!isOpen)}><span className={`dropdown-option-arrow ${isOpen ? 'open' : ''}`}>▼</span>{sKindLabel(sKind)}</button>
-          {isOpen && (
-          <ul className="option-list">
+          <button type="button" className='search-kind'
+            onClick={() => setFilterDropboxOpen(!filterDropboxOpen)}
+          >
+            <span className={`dropdown-option-arrow ${filterDropboxOpen ? 'open' : ''}`}>▼</span>{sKindLabel(sKind)}
+          </button>
+          {filterDropboxOpen && (
+            <ul className="option-list">
             {searchOptions.map((option) => (
               <li
-                key={option.value}
-                className="option-dropdown-item"
-                onClick={() => handleOptionClick(option.value)}
+              key={option.value}
+              className="option-dropdown-item"
+              onClick={() => handleOptionClick(option.value)}
               >
                 {option.label}
               </li>
@@ -304,8 +306,10 @@ function SearchIndex() {
           resultData.length > 0 && (
             <div className='search-card-container'>
               <div className="card">
-                <p className='card-running-time'>{totalTime}</p>
-                <p className='card-content-group'>{sKindLabel(resultSKind)}</p>
+                <div className='card-take-group'>
+                  <p className='card-running-time'>{totalTime}</p>
+                  <p className='card-content-group'>{sKindLabel(resultSKind)}</p>
+                </div>
                 <p className='card-process'>{totalStationCnt}개역 환승 {totalTransferCnt}회</p>
                 <div className="card-route-container">
                   {

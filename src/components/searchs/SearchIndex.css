@@ -111,12 +111,12 @@
 /* 검색 옵션 */
 .search-option-container {
   margin-bottom: 20px;
-  width: 120px; 
   position: relative; 
 }
 
 .search-kind {
-  width: 100%;
+  width: 120px;
+  height: 30px;
   padding: 8px 10px;
   border: 1px solid #000;
   background-color: #fff;
@@ -129,6 +129,7 @@
 
 .dropdown-option-arrow {
   font-size: 12px;
+  transform-origin: center center;
   transition: transform 0.2s ease;
 }
 
@@ -161,13 +162,15 @@
 
 /* 카드 */
 .search-card-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 15px;
+  width: 100%;
 }
 
 .card {
   padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
   border: 1px solid #000;
   background-color: #fff;
 }
@@ -194,16 +197,16 @@
 
 /* 환승노선도 */
 .card-route-container {
-  margin-top: 15px;
+  margin-top: 10px;
 }
 
 .route-group {
   display: flex;
-  gap: 30px;
+  gap: 25px;
 }
 
 .estimated-time {
-  font-size: 7px;
+  font-size: 10px;
   font-weight: bold;
   color: #898989;
   position: relative;
@@ -217,15 +220,15 @@
 }
 
 .search-circle {
-  width: 15px;
-  height: 15px;
+  width: 23px;
+  height: 23px;
   border-radius: 50%;
   border: 4px solid var(--line-color);
 }
 
 .search-line {
   width: 0;
-  height: 20px;
+  height: 25px;
   border: 2px solid var(--line-color);
 }
 
@@ -233,26 +236,22 @@
 .apply-station {
   display: flex;
   gap: 15px;
-  position: relative;
-  top: -2px;
 }
 
 .search-line-number {
-  width: 18px;
-  height: 18px;
+  width: 23px;
+  height: 23px;
   background-color: var(--line-color);
   border-radius: 50%;
   color: #fff;
   text-align: center;
-  line-height: 18px;
-  font-size: 14px;
+  line-height: 22px;
+  font-size: 18px;
 }
 
 .station-name {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: bold;
-  position: relative;
-  top: -2px;
 }
 
 .route-group:last-child .route-map .search-line {
