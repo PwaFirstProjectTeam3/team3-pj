@@ -155,8 +155,16 @@ function Detail() {
     dispatch(convenienceInfoIndex());
   }, []);
 
-  const currentConvenienceInfo = Array.isArray(convenienceInfo) ? convenienceInfo.find(info =>
-    info.STATION_NAME === station && (matchesLineField(info.LINE) || matchesLineField(info.LINE?.toString?.()))) || convenienceInfo.find(info => info.STATION_NAME === station) : null;
+  // const currentConvenienceInfo = Array.isArray(convenienceInfo)
+  //   ? convenienceInfo.find(info =>
+  //     info.STATION_NAME === station && (matchesLineField(info.LINE) || matchesLineField(info.LINE?.toString?.())))
+  //     || convenienceInfo.find(info => info.STATION_NAME === station)
+  //   : null;
+  const currentConvenienceInfo = Array.isArray(convenienceInfo)
+    ? convenienceInfo.find(info =>
+      info.STATION_NAME.includes(station) && (matchesLineField(info.LINE) || matchesLineField(info.LINE?.toString?.())))
+      || convenienceInfo.find(info => info.STATION_NAME === station)
+    : null;
 
   const getConvenienceInfo = (key) => {
     const value = currentConvenienceInfo?.[key];
@@ -187,10 +195,7 @@ function Detail() {
 
   const currentStationInfo = Array.isArray(stationInfo)
     ? stationInfo.find(info =>
-        info.SBWY_STNS_NM.includes(station) && (
-          matchesLineField(info.SBWY_ROUT_LN) || matchesLineField(info.SBWY_ROUT_LN?.toString?.())
-        )
-      ) 
+      info.SBWY_STNS_NM.includes(station) && (matchesLineField(info.SBWY_ROUT_LN) || matchesLineField(info.SBWY_ROUT_LN?.toString?.())))
     : null;
 
 
