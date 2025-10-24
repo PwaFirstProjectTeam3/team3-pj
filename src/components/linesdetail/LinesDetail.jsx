@@ -1,202 +1,432 @@
-import { useMemo, useEffect, useRef, useState } from "react";
+import { useMemo, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 import { ROUTE_DISPLAY } from "../../configs/line-list-configs/subwayLinesRouteConfig.js";
 import LINE_COLORS from "../../configs/lineColors.js";
 import "./LinesDetail.css";
+import SUBWAY_ID_LABEL from "../../configs/line-list-configs/linesDetailSubwayNum.js";
 
-function LinesDetail() {
+/* ───────── API */
+const API_KEY = "7645675657716f773239596a787471";
+const BASE_URL = "http://swopenAPI.seoul.go.kr/api/subway";
+const URL_ALL = `${BASE_URL}/${API_KEY}/json/realtimeStationArrival/ALL`;
 
+/* ───────── 노선별 절대 길이(px) */
+const LEN_MAP = {
+  "1호선": 7956,
+  "2호선": 3978,
+  "3호선": 3432,
+  "4호선": 3978,
+  "5호선": 4368,
+  "6호선": 3042,
+  "7호선": 4134,
+  "8호선": 1872,
+  // 필요 시 추가: "공항철도": 0000,
+};
 
-  const navigate = useNavigate();
+/* ───────── 유틸 (정규화 1개만) */
+function normalizeStationKey(name) {
+  return String(name)
+    .normalize("NFC")
+    .replace(/역$/, "")
+    .replace(/\(.*?\)/g, "")
+    .replace(/[·ㆍ・.\-–—]/g, "")
+    .replace(/\s+/g, "")
+    .trim();
+}
+function makeRoughStation(raw) {
+  return String(raw ?? "").replace(/\(.*?\)/g, "").replace(/\s+/g, "");
+}
+function parseLineHeader(label) {
+  const m = String(label).match(/([0-9]+)\s*호선/);
+  return m ? { num: m[1], suffix: "호선" } : { num: String(label), suffix: "" };
+}
 
-
-  // 호선 표기 url에서 빼서 화면에 표시
-  const { lineId } = useParams();
-  const lineNum = lineId.replace('line', '') + '호선';
-
-
-  // detail 링크
-  const goToDetails = (station) => {
-    navigate(`/linesdetail/${lineId}/details/${station}`)
-  }
-
-
-  // 색상 호선 별로 나누기
-  const lineColor = useMemo(
-    () => LINE_COLORS[lineNum] ?? "#000000",
-    [lineNum]
-  );
-
-
-  // 역 목록
-  const stations = useMemo(() => {
-
-    const names = Array.isArray(ROUTE_DISPLAY[lineNum])
-      ? ROUTE_DISPLAY[lineNum]
-      : [];
-
-    return names.map((stationName, i) => 
-      ({ name: String(stationName), idx: i }));
-
-  }, [lineNum]);
-
-  // "n호선" 텍스트
-  const readLineHeader = (name) => {
-
-    const matchResult = String(name).match(/([0-9]+)[ ]*호선/);
-
-    return matchResult
-      ? { num: matchResult[1], label: "호선" }
-      : { num: String(name), label: "" };
-  };
-  
-  const { num: lineNumOnly, label: lineLabel } = readLineHeader(lineNum);
-
-
-  // 스크롤 상태
-  const scrollerRef = useRef(null);
-
+/* ───────── 스크롤 상태 훅 */
+function useScrollState(ref) {
   const [atTop, setAtTop] = useState(true);
   const [atBottom, setAtBottom] = useState(false);
-  const [hasScrollOverflow, setHasScrollOverflow] = useState(false);
+  const [hasOverflow, setHasOverflow] = useState(false);
 
-
-  // 스크롤/리사이즈에 따라 상태 갱신
   useEffect(() => {
-    const scrollArea = scrollerRef.current;
-    if (!scrollArea) return;
+    const el = ref.current;
+    if (!el) return;
+    const update = () => {
+      const maxScroll = Math.max(0, el.scrollHeight - el.clientHeight);
+      const y = el.scrollTop;
+      setAtTop(y <= 0);
+      setAtBottom(maxScroll > 0 ? y >= maxScroll - 1 : true);
+      setHasOverflow(maxScroll > 0);
+    };
+    update();
+    el.addEventListener("scroll", update, { passive: true });
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => {
+      el.removeEventListener("scroll", update);
+      ro.disconnect();
+    };
+  }, [ref]);
 
-    const scrollUpdateState = () => {
-      const maxScroll = Math.max(0, scrollArea.scrollHeight - scrollArea.clientHeight);
-      const yHeight = scrollArea.scrollTop;
+  return { atTop, atBottom, hasOverflow };
+}
 
-      setAtTop(yHeight <= 0);
-      setAtBottom(maxScroll > 0 ? yHeight >= maxScroll - 1 : true);
-      setHasScrollOverflow(maxScroll > 0);
-      
+/* ───────── 한 호선 전용 페이지 (B안) */
+function LinesDetail() {
+  const navigate = useNavigate();
+  const { lineId } = useParams(); // e.g. 'line2'
+
+  // '2호선' 같은 라벨
+  const lineLabelFull = useMemo(() => {
+    const n = lineId?.match(/\d+/)?.[0] ?? "";
+    return n ? `${n}호선` : String(lineId ?? "");
+  }, [lineId]);
+  const { num: lineNumOnly, suffix: lineSuffix } = parseLineHeader(lineLabelFull);
+
+  // 색상
+  const lineColor = useMemo(
+    () => LINE_COLORS[lineLabelFull] ?? "#000000",
+    [lineLabelFull]
+  );
+
+  // 화면 표시용 역 목록
+  const stations = useMemo(() => {
+    const names = Array.isArray(ROUTE_DISPLAY[lineLabelFull])
+      ? ROUTE_DISPLAY[lineLabelFull]
+      : [];
+    return names.map((name, idx) => ({ name: String(name), idx }));
+  }, [lineLabelFull]);
+
+  // 역명 → index 매핑
+  const routeIndexByKey = useMemo(() => {
+    const map = new Map();
+    stations.forEach((st, i) => map.set(normalizeStationKey(st.name), i));
+    return map;
+  }, [stations]);
+
+  // refs
+  const scrollerRef = useRef(null);     // 스크롤 컨테이너 (.linesdetail-stations-height)  overflow-y: auto
+  const stationsListRef = useRef(null); // 실제 리스트(.linesdetail-stations)  position: relative; 필수
+  const overlayRef = useRef(null);      // 아이콘 오버레이(absolute; inset:0)
+  const stationRefs = useRef({});       // 각 역 DOM(ref)
+
+  // 오버레이 높이(콘텐츠 전체 scrollHeight 동기화)
+  const [overlayHeight, setOverlayHeight] = useState(0);
+
+  // 스크롤 상태
+  const { atTop, atBottom, hasOverflow } = useScrollState(scrollerRef);
+
+  // 상태
+  const [status, setStatus] = useState("idle");
+  const [error, setError] = useState(null);
+  const [trains, setTrains] = useState([]);      // {id, dir, name(key), rawName, eta, msg, orderIdx, lineLabel}
+  const [positions, setPositions] = useState({}); // {id: topPx}
+
+  // 겹침 방지 오프셋
+  const stackedOffsets = useMemo(() => {
+    const groups = new Map();
+    trains.forEach((t) => {
+      const key = `${t.dir}-${t.orderIdx ?? -1}`;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(t.id);
+    });
+    const offsets = new Map();
+    groups.forEach((ids) => {
+      const mid = (ids.length - 1) / 2;
+      ids.forEach((id, i) => offsets.set(id, (i - mid) * 14));
+    });
+    return offsets;
+  }, [trains]);
+
+  // 이 라인 소속 판정(느슨 매칭)
+  const belongsToRoute = (raw) => {
+    const key = normalizeStationKey(raw);
+    if (routeIndexByKey.has(key)) return true;
+    const key2 = normalizeStationKey(makeRoughStation(raw));
+    return routeIndexByKey.has(key2);
+  };
+
+  // API 폴링(10s) → 현재 호선 역에 매칭
+  useEffect(() => {
+    if (!stations.length || routeIndexByKey.size === 0) return;
+
+    let cancelled = false;
+    let timer;
+
+    const toDir = (v) => {
+      const s = String(v ?? "");
+      if (/상|내|up|UP|상행/.test(s)) return "up";
+      if (/하|외|down|DOWN|하행/.test(s)) return "down";
+      if (s === "0") return "up";
+      if (s === "1") return "down";
+      return "down";
+    };
+    const toETA = (v) => {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
     };
 
-    scrollUpdateState();
-    scrollArea.addEventListener("scroll", scrollUpdateState, 
-      { passive: true });
+    const fetchOnce = async () => {
+      setStatus("loading");
+      setError(null);
+      try {
+        const { data } = await axios.get(URL_ALL);
+        const list = Array.isArray(data?.realtimeArrivalList)
+          ? data.realtimeArrivalList
+          : [];
 
-    const scrollDisplay = new ResizeObserver(scrollUpdateState);
-    scrollDisplay.observe(scrollArea);
+        const filtered = list.filter((a) => belongsToRoute(a?.statnNm));
 
-    return () => { scrollArea.removeEventListener("scroll", scrollUpdateState); scrollDisplay.disconnect(); };
+        const mapped = filtered.map((a) => {
+          const raw = String(a?.statnNm ?? "");
+          const nameKey = normalizeStationKey(raw);
+          const idStable =
+            String(a?.btrainNo ?? "") || `${a?.subwayId ?? "X"}-${nameKey}-${a?.updnLine ?? "?"}`;
+          return {
+            id: idStable,
+            dir: toDir(a?.updnLine),
+            name: nameKey,
+            rawName: raw,
+            eta: toETA(a?.barvlDt),
+            msg: a?.arvlMsg2 || a?.arvlMsg3 || "",
+            orderIdx: routeIndexByKey.get(nameKey) ?? Number.POSITIVE_INFINITY,
+            lineLabel:
+              SUBWAY_ID_LABEL[Number(a?.subwayId)] ?? String(a?.subwayId ?? ""),
+          };
+        });
+
+        const inRoute = mapped.filter((t) => Number.isFinite(t.orderIdx));
+        const up = inRoute.filter(t => t.dir === "up").sort((a,b)=>a.orderIdx-b.orderIdx).slice(0,8);
+        const down = inRoute.filter(t => t.dir === "down").sort((a,b)=>a.orderIdx-b.orderIdx).slice(0,8);
+
+        if (!cancelled) {
+          setTrains([...up, ...down]);
+          setStatus("succeeded");
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setStatus("failed");
+          setError(e?.message || "API 요청 실패");
+          setTrains([]);
+        }
+      }
+    };
+
+    fetchOnce();
+    timer = setInterval(fetchOnce, 10_000);
+    return () => {
+      cancelled = true;
+      if (timer) clearInterval(timer);
+    };
+  }, [lineLabelFull, stations.length, routeIndexByKey]);
+
+  /* ───────── 오버레이 높이 = 콘텐츠 전체 높이(scrollHeight) */
+  useLayoutEffect(() => {
+    const listEl = stationsListRef.current;
+    if (!listEl) return;
+
+    const updateHeight = () => {
+      setOverlayHeight(listEl.scrollHeight); // 콘텐츠 전체 높이
+    };
+    updateHeight();
+
+    const ro = new ResizeObserver(updateHeight);
+    ro.observe(listEl);
+
+    const scroller = scrollerRef.current;
+    const onScroll = () => requestAnimationFrame(updateHeight);
+    scroller?.addEventListener("scroll", onScroll, { passive: true });
+
+    return () => {
+      ro.disconnect();
+      scroller?.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
+  /* ───────── 아이콘 Y좌표 계산: offsetTop 기준(같은 컨테이너 기준) */
+  useLayoutEffect(() => {
+    const calc = () => {
+      const listEl = stationsListRef.current;
+      if (!listEl) return;
+      const next = {};
+      for (const t of trains) {
+        const idx = routeIndexByKey.get(t.name);
+        const el = stationRefs.current[idx];
+        if (!el) continue;
+        const top = el.offsetTop + el.offsetHeight / 2; // 컨테이너 기준
+        next[t.id] = Math.max(0, Math.round(top));
+      }
+      setPositions(next);
+    };
 
-  // 그라데이션
+    calc();
+    let rafId; if (typeof window !== "undefined") rafId = requestAnimationFrame(calc);
+
+    const scroller = scrollerRef.current;
+    window.addEventListener("resize", calc);
+    scroller?.addEventListener("scroll", calc, { passive: true });
+
+    // 역 DOM 크기/배치 변화도 감지
+    const ro = new ResizeObserver(calc);
+    Object.values(stationRefs.current).forEach((el) => el && ro.observe(el));
+
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener("resize", calc);
+      scroller?.removeEventListener("scroll", calc);
+      ro.disconnect();
+    };
+  }, [trains, routeIndexByKey]);
+
+  // 노선별 절대 길이(px) → CSS var
+  useEffect(() => {
+    const len = LEN_MAP[lineLabelFull] ?? 0;
+    const el = scrollerRef.current;
+    if (el) el.style.setProperty("--line-length", len > 0 ? `${len}px` : "");
+  }, [lineLabelFull]);
+
+  // 페이드 스타일
   const fadeTopStyle = {
     position: "absolute",
-    left: 0, 
-    right: 0, 
-    top: 0,
-    height: 80,            // 필요 시 조절
-    pointerEvents: "none",
+    left: 0, right: 0, top: 0,
+    height: 80, pointerEvents: "none",
     background: "linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0))",
-    opacity: atTop || !hasScrollOverflow ? 0 : 1,
+    opacity: atTop || !hasOverflow ? 0 : 1,
     transition: "opacity 160ms",
-    zIndex: 9,
+    zIndex: 30,
   };
-
   const fadeBottomStyle = {
     position: "absolute",
-    left: 0, 
-    right: 0, 
-    bottom: 0,
-    height: 80,            // 필요 시 조절
-    pointerEvents: "none",
+    left: 0, right: 0, bottom: 0,
+    height: 80, pointerEvents: "none",
     background: "linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,0))",
-    opacity: atBottom || !hasScrollOverflow ? 0 : 1,
+    opacity: atBottom || !hasOverflow ? 0 : 1,
     transition: "opacity 160ms",
-    zIndex: 9,
+    zIndex: 30,
   };
 
+  const displayNameOf = (name) =>
+    name.length >= 7 ? name.slice(0, 5) + "..." : name;
+
+  const goToDetails = (station) => {
+    navigate(`/linesdetail/${lineId}/details/${station}`);
+  };
 
   return (
-    <div className="linesdetail-web-container"
-      style={{ "--line-color": lineColor }}>
-
-      {/* 바깥 박스틀 */}
+    <div className="linesdetail-web-container" style={{ "--line-color": lineColor }}>
       <div className="linesdetail-box">
-
-        {/* n호선 표시 */}
+        {/* 헤더 */}
         <div className="linesdetail-textbox">
-          <div className="linesdetail-line-number">
-            {lineNumOnly}{lineLabel}
-          </div>
+          <div className="linesdetail-line-number">{lineNumOnly}{lineSuffix}</div>
         </div>
-        
-        {/* 흰배경 검은바탕선 박스틀 */}
+
+        {/* 프레임 */}
         <div className="linesdetail-frame">
-
-
-          <div className="stations-responsive-height">
-
-            {/* 최상단/최하단 스크롤 아닐 시 상/하단 그라디언트 마스크 적용 */}
-            <div style={fadeTopStyle} />
-            <div style={fadeBottomStyle} /> 
-
-            <div className="linesdetail-stations-height" ref={scrollerRef}>
-               <div
-                className={`linesdetail-stations linesdetail-hide-scrollbar
-                  ${atTop ? "at-top" : ""} ${atBottom ? "at-bottom" : ""}`}
+          {/* 스크롤 컨테이너(바깥) */}
+          <div className="linesdetail-stations-height" ref={scrollerRef}>
+            <div className="linesdetail-content">
+              {/* 리스트(콘텐츠, 반드시 position: relative;) */}
+              <div
+                className="linesdetail-stations linesdetail-hide-scrollbar"
+                ref={stationsListRef}
               >
-
-                {stations.map(({ name }, idx) => {
-
-                  {/* 지선/순환선 레이아웃 및 이름 표시용 */}
-                  const branchLine = name.includes("지선");
-                  const loopLine = name.includes("순환선");
-
-                  const linesDetailDisplayName = (branchLine || loopLine)
-                    ? name
-                    : 
-                    (
-                      name.length >= 7 
-                      ? 
-                      name.slice(0, 5) + "..." : name
-                    );
-
-                  {/* css 클래스명이랑 jsx 코드 연결해서 스타일 적용하고 싶은 부분에만 스타일 적용 */}
-                  const linesDetailClassStation = [
-                    "linesdetail-station",
-                    branchLine && "linesdetail-branchLine",
-                    loopLine && "linesdetail-loopLine",
-                    fadeTopStyle && "linesdetail-station",
-                  ]
-                    .filter(Boolean)
-                    .join(" ");
-
-                  return (
-                    <div className="line-box" key={`${lineNum}-${name}-${idx}`}>
-                      <div
-                        className={`top-line-color ${idx === 0 ? "first" : ""}`}
-                      />
-                      <div
-                        className={linesDetailClassStation}
-                        onClick={() => goToDetails(name)}
-                      >
-                        {linesDetailDisplayName}
-                      </div>
-                      <div
-                        className={`bottom-line-color ${idx === stations.length - 1 ? "last" : ""}`}
-                      />
-
+                {/* ✅ 오버레이: 리스트 내부, 콘텐츠 전체 높이로 확장 */}
+                <div
+                  className="linesdetail-subwaysbox masked"
+                  ref={overlayRef}
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    height: overlayHeight ? `${overlayHeight}px` : "100%",
+                    pointerEvents: "none",
+                  }}
+                >
+                  <div className="linesdetail-subways">
+                    {/* 상행 */}
+                    <div className="linesdetail-subway-line-up">
+                      {trains.filter(t => t.dir === "up").map((t) => {
+                        const top = (positions[t.id] ?? -9999) + (stackedOffsets.get(t.id) ?? 0);
+                        return (
+                          <img
+                            key={t.id}
+                            className="linesdetail-subway-up-image"
+                            src="/subway.png"
+                            alt="상행"
+                            title={`${t.rawName} • ${t.lineLabel} (${t.msg})`}
+                            style={{
+                              position: "absolute",
+                              left: 0,
+                              top,
+                              transform: "translateY(-50%)",
+                              transition: "top 400ms ease",
+                            }}
+                          />
+                        );
+                      })}
                     </div>
-                    
-                  );
-                })}
+                    {/* 하행 */}
+                    <div className="linesdetail-subway-line-down">
+                      {trains.filter(t => t.dir === "down").map((t) => {
+                        const top = (positions[t.id] ?? -9999) + (stackedOffsets.get(t.id) ?? 0);
+                        return (
+                          <img
+                            key={t.id}
+                            className="linesdetail-subway-down-image"
+                            src="/subway.png"
+                            alt="하행"
+                            title={`${t.rawName} • ${t.lineLabel} (${t.msg})`}
+                            style={{
+                              position: "absolute",
+                              right: 0,
+                              top,
+                              transform: "translateY(-50%)",
+                              transition: "top 400ms ease",
+                            }}
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 역 아이템 */}
+                {stations.map(({ name }, idx) => (
+                  <div className="line-box" key={`${lineLabelFull}-${name}-${idx}`}>
+                    <div
+                      className={`top-line-color ${idx === 0 ? "first" : ""}`}
+                      ref={(el) => { if (el) stationRefs.current[idx] = el; }}
+                    />
+                    <div
+                      className="linesdetail-station"
+                      onClick={() => goToDetails(name)}
+                      ref={(el) => { if (el) stationRefs.current[idx] = el; }}
+                    >
+                      {displayNameOf(name)}
+                    </div>
+                    <div
+                      className={`bottom-line-color ${idx === stations.length - 1 ? "last" : ""}`}
+                      ref={(el) => { if (el) stationRefs.current[idx] = el; }}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           </div>
 
-          </div>
-          <div className="grid-spacer" aria-hidden="true" />
+          {/* 외곽 페이드 */}
+          <div style={fadeTopStyle} />
+          <div style={fadeBottomStyle} />
         </div>
       </div>
+
+      {status === "failed" && (
+        <div className="linesdetail-error" role="alert" style={{ marginTop: 8 }}>
+          API 오류: {String(error)}
+        </div>
+      )}
+    </div>
   );
 }
 

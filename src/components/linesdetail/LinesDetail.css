@@ -47,46 +47,50 @@
 
   margin-top: 35px;
   margin-bottom: 0;
-  padding: 30px 0;
   position: relative;
+  overflow: visible;  
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   background-color: #fff;
   border: 1px solid #000;  
+  overflow-y: hidden;
 }
 
 .stations-responsive-height {
   inline-size: 100%; 
   block-size: min(1083px, max(640px, 42cqw));
   position: relative;
-  overflow-y: hidden;  
+  overflow: visible; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .linesdetail-stations-height {
   width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  display: grid;
-  place-items: center;
-  overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
   /* iOS 부드러운 스크롤 */
+  position: relative;
+  /* ‘뷰포트 제한’만 담당 → 여기서만 스크롤 */
+  block-size: var(--line-length, min(582px, max(504px, 62vh))); /* 네가 원하던 프레임 높이로 조절 */
+  block-size: var(--line-length);
+  overflow-y: auto;
   -ms-overflow-style: none; /* IE, Edge */
   scrollbar-width: none; /* Firefox */
   z-index: auto;
 }
 
 .linesdetail-stations {
-  min-height: 542px;
-  max-height: 582px;
   position: relative;
   display: flex;
+  margin-bottom: 0; 
   flex-direction: column;
   align-items: center;
   border-color: var(--line-color);
+  z-index: 10;
 }
 
 .linesdetail-station {
@@ -152,10 +156,110 @@
   pointer-events: none;
 }
 
-.top-line-color.first { opacity: 0; }
-.bottom-line-color.last { opacity: 0; }
+.top-line-color.first { 
+  display: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.bottom-line-color.last { 
+  display: none; 
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
 
 .grid-spacer {
 width: 100%; 
-height: 25px; 
+height: 25px;
 } 
+
+.linesdetail-content {
+  position: relative;   /* ✅ 오버레이 absolute 기준 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.linesdetail-subwaysbox {
+  position: absolute;      
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;          /* 필요 시 조절 */
+  block-size: 100%;
+  margin: 0;               /* ← margin-bottom 250px 제거 (어긋남 원인) */
+  display: flex;
+  align-items: space-between;
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* ② 내부 레일 컨테이너도 절대배치로 오버레이 영역을 그대로 쓰게 */
+.linesdetail-subways {
+  position: absolute;      /* ← inset 쓰려면 position 필요 */
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0; 
+  display: flex;
+  justify-content: space-between;
+  overflow: visible;
+}
+
+.linesdetail-subway-line-up {
+  inline-size: 5px;                 /* 선 두께 */
+  block-size: 100%;      /* 리스트 실제 높이와 동일 */
+  position: relative;    /* 아이콘 absolute 기준 */
+}
+
+.linesdetail-subway-line-down {
+  inline-size: 5px;                 /* 선 두께 */
+  block-size: 100%;      /* 리스트 실제 높이와 동일 */
+  position: relative;    /* 아이콘 absolute 기준 */
+}
+
+.linesdetail-subway-up-image {
+  width: 15px;
+  height: 15px;
+  z-index: 21;            /* 페이드(마스크)보다 아래/위 원하는대로 조절 */
+  pointer-events: auto;
+}
+
+.linesdetail-subway-down-image {
+  width: 15px;
+  height: 15px;
+  z-index: 21;            /* 페이드(마스크)보다 아래/위 원하는대로 조절 */
+  pointer-events: auto;
+}
+
+
+.linesdetail-subwaysbox.masked {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 80px,
+    #000 calc(100% - 80px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 80px,
+    #000 calc(100% - 80px),
+    transparent 100%
+  );
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+/* 페이드는 가장 위에서 가리기만 함 */
+.linesdetail-fade {
+  position: sticky;     /* ✅ 스크롤해도 상단/하단에 붙기 */
+  left: 0; right: 0;
+  height: 80px;
+  pointer-events: none;
+  z-index: 30;
+}
+.linesdetail-fade.top { top: 0; background: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); }
+.linesdetail-fade.bottom { bottom: 0; background: linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,0)); }

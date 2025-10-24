@@ -9,5 +9,4 @@ const LINE_COLORS = {
   "8호선": "#DF4C71",
   "9호선": "#BA9300",
 };
-
 export default LINE_COLORS;
