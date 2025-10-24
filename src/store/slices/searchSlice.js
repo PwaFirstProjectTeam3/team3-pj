@@ -135,7 +135,7 @@ const searchSlice = createSlice({
         state.totalTransferCnt = totalTransferCnt;
         state.totalStationCnt = totalStationCnt;
         state.totalTime = formatMinuteToHour(parsedXMLResponse.totalTime);
-        state.endStationName = parsedXMLResponse.endStationName;
+        state.endStationName = parsedXMLResponse.endStation;
         state.resultData = result;
       })
       .addMatcher(

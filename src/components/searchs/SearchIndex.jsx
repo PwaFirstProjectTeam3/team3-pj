@@ -190,6 +190,10 @@ function SearchIndex() {
       alert('출발 / 도착 역을 선택해주세요.');
       return;
     }
+    if (departureInputValue && departureInputValue === arrivalInputValue) {
+      alert('출발역과 도착역이 동일합니다.');
+      return;
+    }
     dispatch(getSearchRoute());
   };
   
