@@ -273,7 +273,7 @@ function Detail() {
           <div className="arrival-title">
             <p>도착 정보</p>
             {/* <button type="button" className='refresh-btn' onClick={handleRefresh} >🔄</button> */}
-            <img className={`refresh-btn ${refreshing ? "rotating" : ""}`} onClick={handleRefresh} src={`/icons/refresh-icon-2.svg`} alt="새로고침" />
+            <img className={`refresh-btn ${refreshing ? "rotating" : ""}`} onClick={handleRefresh} src={`/btn/refresh-btn.svg`} alt="새로고침" />
           </div>
           <div className="arrival-container">
             {Object.keys(groupedByDirection).length > 0 ? (
