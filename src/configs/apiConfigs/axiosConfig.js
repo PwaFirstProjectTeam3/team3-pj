@@ -1,6 +1,7 @@
 const axiosConfig = {
   SEARCH_EVACUATION_BASE_URL: 'https://app11.green-meerkat.kro.kr/openAPI',
   DETAIL_BASE_URL: 'https://app11.green-meerkat.kro.kr/swopenAPI/api/subway',
+  SEOUL_METRO_BASE_URL: 'https://app11.green-meerkat.kro.kr/seoulmetro',
   KEY: '65534f666b73756e3932595350767a',
   TYPE: 'json',
   EVACUATION_SERVICE: 'SmrtEmergerncyGuideImg',

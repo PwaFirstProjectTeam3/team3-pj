@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import axiosConfig from '../../configs/apiConfigs/axiosConfig';
 
 const getSearchRoute = createAsyncThunk(
   'searchSlice/getSearchRoute',
@@ -13,7 +14,7 @@ const getSearchRoute = createAsyncThunk(
       formData.append('arrivalId', state.arrivalStationId) // 도착역 ID
       formData.append('sKind', state.sKind) // 검색 종류 1 = 최소 시간 4 = 최단 거리 2= 최소 환승
 
-      const response = await axios.post('/api/kr/getRouteSearchResult.do',
+      const response = await axios.post(`${axiosConfig.SEOUL_METRO_BASE_URL}/kr/getRouteSearchResult.do`,
         formData,
         {
           responseType: 'text',
