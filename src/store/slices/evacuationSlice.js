@@ -4,7 +4,7 @@ import { evacuationIndex } from "../thunks/evacuationThunk.js";
 const evacuationSlice = createSlice({
   name: 'evacuationSlice',
   initialState: {
-    list: [],
+    evacuationList: [],
   },
   reducers: {
 
@@ -12,7 +12,7 @@ const evacuationSlice = createSlice({
   extraReducers: builder => {
     builder
       .addCase(evacuationIndex.fulfilled, (state, action) => {
-        state.list = action.payload;
+        state.evacuationList = action.payload;
       });
   }
 })

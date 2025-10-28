@@ -13,37 +13,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { evacuationIndex } from '../../store/thunks/evacuationThunk.js';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 
-const lineMap = {
-  "line-1": line1List,
-  "line-2": line2List,
-  "line-3": line3List,
-  "line-4": line4List,
-  "line-5": line5List,
-  "line-6": line6List,
-  "line-7": line7List,
-  "line-8": line8List,
-  "line-9": line9List,
-}
-
-// 호선 목록
-// value 내부 식별용 키 / label UI 표시 용
-const lineOptions = [
-  { value: "line-1", label: "1호선" },
-  { value: "line-2", label: "2호선" },
-  { value: "line-3", label: "3호선" },
-  { value: "line-4", label: "4호선" },
-  { value: "line-5", label: "5호선" },
-  { value: "line-6", label: "6호선" },
-  { value: "line-7", label: "7호선" },
-  { value: "line-8", label: "8호선" },
-  { value: "line-9", label: "9호선" },
-];
 
 function EvacuationIndex() {
   const dispatch = useDispatch();
-
-  const evacuationSearchList = useSelector(state => state.evacuation.list);
-
+  
+  const evacuationList = useSelector(state => state.evacuation.evacuationList);
+  
   const [selectedLine, setSelectedLine] = useState(""); // 선택된 호선
   const [lineDropdownOpen, setLineDropdownOpen] = useState(false); // 호선의 선택창의 드랍다운이 열렸는지 안 열렸는지
   const [inputValue, setInputValue] = useState(""); // input에 입력된 역 명
@@ -52,9 +27,35 @@ function EvacuationIndex() {
   const [isLoaded, setIsLoaded] = useState(false); // 이미지가 로드 됐는지 안 됐는지
   const [matchedItem, setMatchedItem] = useState([]); // inputValue와 api의 역 명이 같은 아이템 하나
   const [isSearched, setIsSearched] = useState(false); // 검색 여부 저장
-
+  
   const evacuationLineSearchRef = useRef(null);
   const evacuationStationSearchRef = useRef(null);
+  
+  const lineMap = {
+    "line-1": line1List,
+    "line-2": line2List,
+    "line-3": line3List,
+    "line-4": line4List,
+    "line-5": line5List,
+    "line-6": line6List,
+    "line-7": line7List,
+    "line-8": line8List,
+    "line-9": line9List,
+  }
+  
+  // 호선 목록
+  // value 내부 식별용 키 / label UI 표시 용
+  const lineOptions = [
+    { value: "line-1", label: "1호선" },
+    { value: "line-2", label: "2호선" },
+    { value: "line-3", label: "3호선" },
+    { value: "line-4", label: "4호선" },
+    { value: "line-5", label: "5호선" },
+    { value: "line-6", label: "6호선" },
+    { value: "line-7", label: "7호선" },
+    { value: "line-8", label: "8호선" },
+    { value: "line-9", label: "9호선" },
+  ];
 
   // 선택된 호선의 역 배열 가져오기
   const stations = lineMap[selectedLine] || [];
@@ -111,14 +112,14 @@ function EvacuationIndex() {
   const filteredStations = inputValue.trim() === "" ? stations : stations.filter((station) => station.includes(inputValue));
   
   // 선택된 역 이름과 같은 항목 찾기
-function searchStation() {
-  setIsSearched(true);
-  const foundMatchedStation = evacuationSearchList.find((item) => item.STTN === `${inputValue}역`) || null;
-  setMatchedItem(foundMatchedStation);
-  if (foundMatchedStation) {
-    setIsLoaded(false);
+  function searchStation() {
+    setIsSearched(true);
+    const foundMatchedStation = evacuationList.find((item) => item.STTN === `${inputValue}역`) || null;
+    setMatchedItem(foundMatchedStation);
+    if (foundMatchedStation) {
+      setIsLoaded(false);
+    }
   }
-}
   
   // onKeyDown 이벤트
   const handleEnter = (e) => {
