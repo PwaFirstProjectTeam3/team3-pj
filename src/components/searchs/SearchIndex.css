@@ -110,6 +110,7 @@
 
 /* 검색 옵션 */
 .search-option-container {
+  width: 120px;
   margin-bottom: 20px;
   position: relative; 
 }

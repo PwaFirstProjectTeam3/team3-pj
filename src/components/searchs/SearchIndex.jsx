@@ -308,8 +308,8 @@ function SearchIndex() {
                 {option.label}
               </li>
             ))}
-          </ul>
-        )}
+            </ul>
+          )}
         </div>
         <div className='search-box'>
           <div className='search-departure-station' ref={departureRef}>
