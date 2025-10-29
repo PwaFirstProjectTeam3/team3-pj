@@ -184,11 +184,28 @@ function EvacuationIndex() {
             <div className='station-dropdown-container'>
               <input className='evacuation-input'
                 value={inputValue}
-                onChange={handleInputChange}
+                onChange={(e) => {
+                  // 호선이 선택되지 않았을 시 입력 차단
+                  if (!selectedLine) return;
+                  handleInputChange(e);
+                }}
                 onFocus={handleInputFocus}
                 onBlur={() => setTooltipVisible(false)}
-                onKeyDown={handleEnter}
-                onClick={handleInputValueChange}
+                onKeyDown={(e) => {
+                  // 호선 미선택 시 Enter나 키 입력 막기
+                  if (!selectedLine) {
+                    e.preventDefault();
+                    return;
+                  }
+                  handleEnter(e);
+                }}
+                onClick={(e) => {
+                  if (!selectedLine) {
+                    setTooltipVisible(true); // 호선 선택 툴팁 띄우기
+                    return;
+                  }
+                  handleInputValueChange(e);
+                }}
                 autoComplete="off" // 브라우저 기본 자동완성 기능 끄기
                 type="text" id='station-search-input' placeholder='조회하실 역 명을 입력해주세요.'
               />
